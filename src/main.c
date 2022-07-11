@@ -12,6 +12,11 @@
 
 #include <stdio.h>
 
+typedef struct s_token {
+
+
+};
+
 typedef struct s_syntax_tree {
 	// ...
 }	t_syntax_tree;

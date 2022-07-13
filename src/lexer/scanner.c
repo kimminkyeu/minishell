@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:03:41 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 17:35:22 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 17:51:30 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,10 +76,9 @@ t_list	*tokenize(char *line)
 	t_token		*token;
 	char		c;
 
-	/** init list pointer and iterator */
-	scanner.state = E_PARSE_START;
-	init_iterator(&(scanner.iter), line);
+	/** init list pointer and scanner */
 	token_list = NULL;
+	init_scanner(&scanner, line);
 
 	/* while iterator meets '\n' or '\0', keep reading */
 	while (scanner.f_has_next(&scanner))

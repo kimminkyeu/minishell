@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/12 12:32:38 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/12 12:39:54 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/13 14:50:51 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,34 +22,23 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME 			= lexer.o
+NAME 			= lexer
 CC				= cc
 CFLAGS			= -Werror -Wextra -Wall
 
 # NOTE: Add souce files here!
 # ==========================================
-SRC_FILES			= 
+SRC_FILES			= string_test string
 # ==========================================
 
-LIBFT		= libft
+LIBFT		= ../libft
 RM			= rm -f
 
 SRC 			= $(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC_FILES)))
 OBJ 			= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_FILES)))
-OBJ_MANDATORY	= $(OBJ)
-
-SRC_BONUS 		= $(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC_FILES_BONUS)))
-OBJ_BONUS 		= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_FILES_BONUS)))
 
 SRC_DIR		= 
 OBJ_DIR		= obj/
-
-# Keep makefile from relink
-ifdef BONUS
-     OBJ_RESULT = $(OBJ_BONUS)
-else
-     OBJ_RESULT = $(OBJ_MANDATORY)
-endif
 
 # Colors
 DEF_COLOR = \033[0;39m
@@ -66,10 +55,9 @@ OBJ_MKDIR		=	create_dir
 
 all: $(NAME)
 
-$(NAME): $(OBJ_RESULT)
+$(NAME): $(OBJ)
 	@make bonus -C $(LIBFT)
-	mv libft/libft.a ./$(OBJ_DIR)
-	$(CC) $(CFLAGS) $^ $(OBJ_DIR)libft.a -o $@
+	$(CC) $(CFLAGS) $^ ../libft/libft.a -o $@
 	@echo "$(YELLOW)============================================$(DEF_COLOR)"
 	@echo "$(YELLOW)|         Lexer compile finished.          |$(DEF_COLOR)"
 	@echo "$(YELLOW)============================================$(DEF_COLOR)"
@@ -82,8 +70,6 @@ $(OBJ_MKDIR):
 	@mkdir -p $(OBJ_DIR)
 
 clean:
-	@$(RM) -rf libft.a
-	@make fclean -C $(LIBFT)
 	@$(RM) -rf $(OBJ_DIR)
 	@echo "$(BLUE)Lexer obj files has been deleted.$(DEF_COLOR)"
 

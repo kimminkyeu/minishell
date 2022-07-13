@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 12:30:54 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 16:27:44 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 19:56:37 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,8 @@ t_string	*new_string(size_t init_capacity)
 
 void	delete_string(t_string **address_of_string)
 {
-	free((*address_of_string)->text);
+	if (*address_of_string != NULL)
+		free((*address_of_string)->text);
 	free(*address_of_string);
 	address_of_string = NULL;
 }

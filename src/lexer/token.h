@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 17:31:05 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 20:25:15 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,13 +29,16 @@ typedef enum e_token_type {
 	E_TYPE_PIPE,				//	[|]
 	E_TYPE_REDIRECT,			//	[< << > >>]
 
-	E_TYPE_BRACKET,			//	[(] [)]
-	E_TYPE_SEMICOLON,		//	[;]
-	E_TYPE_DOUBLE_AMPERSAND, //	[&&]
+	E_TYPE_BRACKET_OPEN,		//	[(]
+	E_TYPE_BRACKET_CLOSE,		//  [)]
+	E_TYPE_SEMICOLON,			//	[;]
+	E_TYPE_DOUBLE_AMPERSAND,	//	[&&]
 	E_TYPE_DOUBLE_PIPE, 		//  [||]
-	E_TYPE_VAR,				//	[$VAR]
+	E_TYPE_VAR,					//	[$VAR]
 					
-	E_TYPE_EOF				//  [ EOF special token like NULL ]
+	E_TYPE_EOF,					//  [ EOF special token like NULL ]
+
+	E_TYPE_ERROR				//  [ Error token. ]
 }	t_token_type;
 
 typedef struct s_token	t_token;

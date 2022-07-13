@@ -6,10 +6,11 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:03:41 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 17:51:30 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 20:39:48 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <stdio.h>
 #include "libft.h"
 #include "iterator.h"
 #include "token.h"
@@ -51,6 +52,31 @@ void	scanner_skip_white_space(t_scanner *scan)
 {
 	scan->iter.f_skip_white_space(&scan->iter);
 }
+/** --------------------------------------------------------------- */
+
+/** tokenizing functions */
+t_token *get_pipe(t_scanner *scan)
+{
+	t_token	*tok;
+
+
+
+	return (tok);
+}
+
+t_toke *get_ampersand(t_scanner *scan)
+{
+	t_token	*tok;
+
+
+
+	return (tok);
+}
+
+
+
+
+
 
 /** --------------------------------------------------------------- */
 
@@ -84,35 +110,74 @@ t_list	*tokenize(char *line)
 	while (scanner.f_has_next(&scanner))
 	{
 		/** (0) init new token to add to the list */
-		token = new_token("");
+		c = scanner.f_peek(&scanner);
 
-		c = scanner.f_next(&scanner);
+		/** NOTE (1) : 규칙. cmd규칙과 관계 없이 무조건 기호 기준으로 자른다.  */
+
+		/** NOTE (2) : rule of 우선순위 in brackets
+		 * a='This string'
+		 * ( a=banana; mkdir $a )
+		 * echo $a
+		 * # => 'This string'
+		 * ls
+		 * # => ...
+		 * # => banana/ */
 
 		/** (1) read one token ... */
-		if (c == '|' && scanner.f_peek(&scanner) != '|')
-			;// ... pipe |
-		else if (c == '|' && scanner.f_peek(&scanner) == '|')
-			;// ... ||
-		else if (c == '&' && scanner.f_peek(&scanner) != '&')
-			;// ... &
-		else if (c == '&' && scanner.f_peek(&scanner) == '&')
-			;// ... &&
-		else if (c == '<' && scanner.f_peek(&scanner) != '<')
-			;// ... <
-		else if (c == '<' && scanner.f_peek(&scanner) == '<')
-			;// ... <<
-		else if (c == '>' && scanner.f_peek(&scanner) != '>')
-			;// ... <
-		else if (c == '>' && scanner.f_peek(&scanner) == '>')
-			;// ... <<
-		else if (c == '(' || c == ')')
-			;// ... <
+		if (c == '|')
+			token = get_pipe(&scanner);
+		else if (c == '&')
+			token = get_ampersand(&scanner);
+		else if (c == '<' || c == '>')
+			token = get_redirection(&scanner);
+		else if (c == '\"')
+			token = get_double_quote(&scanner); // NOTE : if scanner doesn't find pair-quote, then error.
+		else if (c == '\'')
+			token = get_single_quote(&scanner); // NOTE : 다른 ' 를 만나기 전까지 그 전체를 감싸준다.
+		else if (c == '(' || c == ')') // 예는 감싸지 말고, 그냥 bracket처리만 하자.
+			token = get_bracket(&scanner); // NOTE : 만약 bracket이 규칙이 안맞는다면 에러 처리 (...) ((...)) (((..)))
 		else
-			;// -> normal cmd or arg. use state machine
+			token = get_simple_cmd(&scanner); // move scanner iterator, them return token
 
-		/* NOTE : After this logic, string wiil be stored in token */
 
+
+		/** if (c == '|' && scanner.f_peek(&scanner) != '|')
+		  *     token = get_pipe(&scanner);
+		  * else if (c == '|' && scanner.f_peek(&scanner) == '|')
+		  *     token = get_double_pipe(&scanner);
+		  * else if (c == '&' && scanner.f_peek(&scanner) != '&')
+		  *     token = get_single_ampersand(&scanner);
+		  * else if (c == '&' && scanner.f_peek(&scanner) == '&')
+		  *     token = get_double_ampersand(&scanner);
+		  * else if (c == '<' && scanner.f_peek(&scanner) != '<')
+		  *     token = get_redirection_in(&scanner);
+		  * else if (c == '<' && scanner.f_peek(&scanner) == '<')
+		  *     token = get_redirection_heredoc(&scanner);
+		  * else if (c == '>' && scanner.f_peek(&scanner) != '>')
+		  *     token = get_redirection_out_overwrite(&scanner);
+		  * else if (c == '>' && scanner.f_peek(&scanner) == '>')
+		  *     token = get_redirection_out_append(&scanner);
+		  * else if (c == '\"')
+		  *     token = get_double_quote_string(&scanner); // NOTE : if scanner doesn't find pair-quote, then error.
+		  * else if (c == '\'')
+		  *     token = get_single_quote_string(&scanner); // NOTE : 다른 ' 를 만나기 전까지 그 전체를 감싸준다.
+		  * else if (c == '(' || c == ')') // 예는 감싸지 말고, 그냥 bracket처리만 하자.
+		  *     token = get_bracket(&scanner); // NOTE : 만약 bracket이 규칙이 안맞는다면 에러 처리 (...) ((...)) (((..)))
+		  * else
+		  *     token = get_simple_cmd(&scanner); // move scanner iterator, them return token */
+
+
+		/** if one of the token type is error, then stop. */
+		if (scanner.state == E_PARSE_ERROR)
+		{
+			printf("Syntax Error.\t[TODO] : change this to shell-like messege\n");
+			return (NULL);
+		}
+
+		/** NOTE : After this logic, string wiil be stored in token */
 		/** (2) add token to list */
 		ft_lstadd_back(&token_list, ft_lstnew(token));
+
+		/** NOTE : Stored token list would be [ls -al][|][echo] */
 	}
 }

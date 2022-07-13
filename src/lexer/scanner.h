@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:04:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 17:25:17 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 20:11:25 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 # define SCANNER_H
 
 # include "iterator.h"
+
+# define PARSE_ERROR (10)
 
 typedef enum e_state {
 	E_PARSE_START,		// default state

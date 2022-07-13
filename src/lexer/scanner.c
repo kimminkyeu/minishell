@@ -3,55 +3,116 @@
 /*                                                        :::      ::::::::   */
 /*   scanner.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
+/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/12 13:03:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 12:27:37 by minkyeki         ###   ########.fr       */
+/*   Created: 2022/07/13 16:03:41 by minkyeki          #+#    #+#             */
+/*   Updated: 2022/07/13 17:22:00 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include "scanner.h"
 #include "iterator.h"
-#include "string.h"
+#include "token.h"
+#include "scanner.h"
 
-/** ====================================================== */
-
-
-
-/** if full, then realloc token */
-void	add_char_to_token(char c)
+/** TODO : move below functions to scanner_utils.c/h */
+void	init_scanner(t_scanner *scan, char *line)
 {
-	
-
+	init_iterator(&scan->iter, line);
+	scan->state = E_PARSE_START;
+	scan->f_has_next = scanner_has_next;
+	scan->f_next = scanner_next;
+	scan->f_unget = scanner_unget;
+	scan->f_peek = scanner_peek;
+	scan->f_skip_white_space = scanner_skip_white_space;
 }
 
-
-/** Free allocated token */
-void	free_token(t_token *token)
+int		scanner_has_next(const t_scanner *scan)
 {
-	if (token->text != NULL)
-		free(token->text);
-	free(token);
+	return (scan->iter.f_has_next(&scan->iter));
 }
 
-
-/* Create single token datastructure (malloc) */
-t_token	*new_token_malloc(char *str)
+char	scanner_next(t_scanner *scan)
 {
-	t_token *token;
-
-	token = ft_calloc(1, sizeof(*token));
-	token->text_len = ft_strlen(str);
-	token->text = ft_calloc(1, token->text_len + 1);
-	if (token->text == NULL)
-		return (NULL);
-	ft_memmove(token->text, str, token->text_len);
-	return (token);
+	return (scan->iter.f_next(&scan->iter));
 }
 
-/**  */
-void tokenize(char *str, t_vector *token)
+void	scanner_unget(t_scanner *scan)
 {
+	scan->iter.f_unget(&scan->iter);
+}
 
+char	scanner_peek(t_scanner *scan)
+{
+	return (scan->iter.f_peek(&scan->iter));
+}
+
+void	scanner_skip_white_space(t_scanner *scan)
+{
+	scan->iter.f_skip_white_space(&scan->iter);
+}
+
+/** --------------------------------------------------------------- */
+
+/* NOTE : scanner is the main logic of tokenizer
+ * ----------------------------------------------
+ *
+ * (^ = space)
+ *
+ * 명령어 예시 : [ ls^-al|grep^token>result<<heredoc ]
+ *
+ * 실행 결과 :
+ * 위 명령어는 heredoc의 입력과 ls-al의 입력 둘다 grep의 input pipe로 들어간다.
+ *
+ * */
+
+
+/** 입력된 문자열 토큰을 리스트로 반환. */
+t_list	*tokenize(char *line)
+{
+	t_scanner	scanner;
+	t_list		*token_list;
+	t_token		*token;
+	char		c;
+
+	/** init list pointer and iterator */
+	scanner.state = E_PARSE_START;
+	init_iterator(&(scanner.iter), line);
+	token_list = NULL;
+
+	/* while iterator meets '\n' or '\0', keep reading */
+	while (scanner.f_has_next(&scanner))
+	{
+		/** (0) init new token to add to the list */
+		token = new_token("");
+
+		c = scanner.f_next(&scanner);
+
+		/** (1) read one token ... */
+		if (c == '|' && scanner.f_peek(&scanner) != '|')
+			;// ... pipe |
+		else if (c == '|' && scanner.f_peek(&scanner) == '|')
+			;// ... ||
+		else if (c == '&' && scanner.f_peek(&scanner) != '&')
+			;// ... &
+		else if (c == '&' && scanner.f_peek(&scanner) == '&')
+			;// ... &&
+		else if (c == '<' && scanner.f_peek(&scanner) != '<')
+			;// ... <
+		else if (c == '<' && scanner.f_peek(&scanner) == '<')
+			;// ... <<
+		else if (c == '>' && scanner.f_peek(&scanner) != '>')
+			;// ... <
+		else if (c == '>' && scanner.f_peek(&scanner) == '>')
+			;// ... <<
+		else if (c == '(' || c == ')')
+			;// ... <
+		else
+			;// -> normal cmd or arg. use state machine
+
+		/* NOTE : After this logic, string wiil be stored in token */
+
+		/** (2) add token to list */
+		ft_lstadd_back(&token_list, ft_lstnew(token));
+	}
 }

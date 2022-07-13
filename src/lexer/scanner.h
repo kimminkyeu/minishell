@@ -6,54 +6,44 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:04:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/12 21:23:47 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 17:07:30 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SCANNER_H
 # define SCANNER_H
 
-# include "iterator.h"
-
 typedef enum e_state {
 	E_PARSE_START,		// default state
-	E_PARSE_END,
 	E_PARSE_OPTION,		// ls => -al
 	E_PARSE_ARG,		// double or signle quote + CMD_Argument
 	E_PARSE_CMD,
+	E_PARSE_META_CHAR,
 	// E_PARSE_WHITESPACE,
 	E_PARSE_ERROR,
 	// ... Add accordingly
 }	t_state;
 
-typedef enum e_token_type {
-	E_SPACE, 			// isspace()
-	E_CMD,				// simple_command
-	E_ARG,				// argument -> ex) echo [hello] --> hello = argument
+typedef struct s_scanner	t_scanner;
 
-	E_SINGLE_QUOTE, 	//  ['']
-	E_DOUBLE_QUOTE,		//  [""]
+typedef struct s_scanner {
+	t_state		state;
+	t_iterator	iter;
 
-	E_PIPE,				//	[|]
-	E_REDIRECT,			//	[< << > >>]
+	int		(*f_has_next)(const t_scanner *scan);
+	char	(*f_next)(t_scanner *scan);
+	void	(*f_unget)(t_scanner *scan);
+	char	(*f_peek)(t_scanner *scan);
+	void	(*f_skip_white_space)(t_scanner *scan);
+}	t_scanner;
 
-	E_SEMICOLON,		//	[;]
-	E_DOUBLE_AMPERSAND, //	[&&]
-	E_DOUBLE_PIPE, 		//  [||]
-	E_VAR,				//	[$VAR]
-					
-	E_EOF				//  [ EOF special token like NULL ]
-}	t_token_type;
+void	init_scanner(t_scanner *scan, char *line);
 
-typedef struct s_token {
-	t_token_type	type;
-	t_iterator		*src; // source of input for token data access
-	int				text_len;	// length of string
-	char			*text;		// pointer to string
-}	t_token;
+/* Wrapper function of iterator. */
+int		scanner_has_next(const t_scanner *scan);
+char	scanner_next(t_scanner *scan);
+void	scanner_unget(t_scanner *scan);
+char	scanner_peek(t_scanner *scan);
+void	scanner_skip_white_space(t_scanner *scan);
 
-/* add data to t_vector *tokens */
-void	tokenize(char *str, t_vector *tokens);
-
-// void	free_token(t_token *token);
 #endif /* SCANNER_H */

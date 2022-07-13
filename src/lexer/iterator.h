@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:24:31 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/12 21:11:35 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 17:06:15 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,20 +21,23 @@
 typedef struct s_iterator t_iterator;
 
 typedef struct s_iterator {
-	char	*buffer; 	/* the input text */
-	long	bufsize;	/* size of the input text */
-	long	curpos;		/* absolute char position in source */
+	char	*line;		/* the input text */
+	long	line_len;	/* size of the input text */
+	long	curpos;		/* iterator position is line */
 
+	int		(*f_has_next)(const t_iterator *iter);
+	char	(*f_next)(t_iterator *iter);
+	void	(*f_unget)(t_iterator *iter);
+	char	(*f_peek)(t_iterator *iter);
+	void	(*f_skip_white_space)(t_iterator *iter);
 }	t_iterator;
 
-char	next(t_iterator *iter);
+void	init_iterator(t_iterator *iter, char *line);
 
-void	unget(t_iterator *iter);
-
-char	peek(t_iterator *iter);
-
-void	skip_white_space(t_iterator *iter);
-
-
+int		iter_has_next(const t_iterator *iter);
+char	iter_next(t_iterator *iter);
+void	iter_unget(t_iterator *iter);
+char	iter_peek(t_iterator *iter);
+void	iter_skip_white_space(t_iterator *iter);
 
 #endif /* ITERATOR_H */

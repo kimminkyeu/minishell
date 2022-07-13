@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 12:30:54 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 14:48:57 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 16:27:44 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -119,6 +119,8 @@ int	str_append(t_string *str, const char *str2)
 	size_t	str2_len;
 
 	str2_len = ft_strlen(str2);
+	if (str2_len == 0)
+		return (NO_ACTION);
 	if (str->capacity - 1 < (str->text_len + str2_len))
 	{
 		if (str_reserve(str, (str->capacity * 2) + str2_len) != SUCCESS)

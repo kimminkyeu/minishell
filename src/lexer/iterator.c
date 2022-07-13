@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:23:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/12 21:12:25 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 17:06:44 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,31 +14,37 @@
 #include "libft.h"
 #include "iterator.h"
 
-// typedef struct s_iterator {
-// 	char	*buffer; 	/* the input text */
-// 	long	bufsize;	/* size of the input text */
-// 	long	curpos;		/* absolute char position in source */
-// }	t_iterator;
+void	init_iterator(t_iterator *iter, char *line)
+{
+	iter->line = line;
+	iter->line_len = ft_strlen(line);
+	iter->curpos = INIT_SRC_POS;
+	iter->f_next = iter_next;
+	iter->f_peek = iter_peek;
+	iter->f_skip_white_space = iter_skip_white_space;
+	iter->f_unget = iter_unget;
+	iter->f_has_next = iter_has_next;
+}
 
 /** 다음 문자가 있는지, eof는 아닌지 체크 */
-bool has_next(const t_iterator *iter)
+int	iter_has_next(const t_iterator *iter)
 {
-	char c;
+	char next_char;
 	
-	c = iter->buffer[iter->curpos];
-	if (c != '\n' && c != '\0')
-		return (true);
+	next_char = iter->line[iter->curpos];
+	if (next_char != '\n' && next_char != '\0')
+		return (1);
 	else
-		return (false);
+		return (0);
 }
 
 /* move iterator to point next character */
-char next(t_iterator *iter)
+char iter_next(t_iterator *iter)
 {
 	char c1;
 
 	c1 = '\0';
-	if (!iter || !(iter->buffer))
+	if (!iter || !(iter->line))
 	{
 		errno = ENODATA;
 		return (ERRCHAR);
@@ -46,16 +52,16 @@ char next(t_iterator *iter)
 	if (iter->curpos == INIT_SRC_POS)
 		iter->curpos = -1;
 	else
-		c1 = iter->buffer[iter->curpos];
-	if (++iter->curpos >= iter->bufsize)
+		c1 = iter->line[iter->curpos];
+	if (++iter->curpos >= iter->line_len)
 	{
-		iter->curpos = iter->bufsize;
+		iter->curpos = iter->line_len;
 		return (EOF);
 	}
 	return (c1);
 }
 
-void unget(t_iterator *iter)
+void iter_unget(t_iterator *iter)
 {
 	if (iter->curpos < 0)
 		return;
@@ -63,11 +69,11 @@ void unget(t_iterator *iter)
 }
 
 /** NOTE : cursur_pos를 움직이지 않고 다음 문자만 확인. */
-char peek(t_iterator *iter)
+char iter_peek(t_iterator *iter)
 {
 	long	pos;
 
-	if (!iter || !iter->buffer)
+	if (!iter || !iter->line)
 	{
 		errno = ENODATA;
 		return (ERRCHAR);
@@ -76,25 +82,19 @@ char peek(t_iterator *iter)
 	if (pos == INIT_SRC_POS)
 		pos++;
 	pos++;
-	if (pos >= iter->bufsize)
+	if (pos >= iter->line_len)
 		return (EOF);
-	return (iter->buffer[pos]);
+	return (iter->line[pos]);
 }
 
 /* move iterator to point next character */
-void	skip_white_space(t_iterator *iter)
+void	iter_skip_white_space(t_iterator *iter)
 {
 	char	c;
 
-	if (!iter || !iter->buffer)
+	if (!iter || !iter->line)
 		return ;
 	/** 다음 문자가 EOF가 아니고 공백일 때 까지 */
-	while (((c = peek(iter)) != EOF) && (ft_isspace(c)))
-		next(iter);
+	while (((c = iter->f_peek(iter)) != EOF) && (ft_isspace(c)))
+		iter->f_next(iter);
 }
-
-
-
-
-
-

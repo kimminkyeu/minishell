@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 15:49:11 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 17:31:05 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ typedef struct s_token {
 }	t_token;
 
 t_token	*new_token(char *str_input);
-void	delete_token(t_token *token);
+void	delete_token(void *token);
 
 void	token_reset(t_token *token);
 void	token_push_back(t_token *token, char c);

@@ -6,12 +6,14 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:04:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 17:07:30 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 17:25:17 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SCANNER_H
 # define SCANNER_H
+
+# include "iterator.h"
 
 typedef enum e_state {
 	E_PARSE_START,		// default state
@@ -36,6 +38,9 @@ typedef struct s_scanner {
 	char	(*f_peek)(t_scanner *scan);
 	void	(*f_skip_white_space)(t_scanner *scan);
 }	t_scanner;
+
+
+t_list	*tokenize(char *line);
 
 void	init_scanner(t_scanner *scan, char *line);
 

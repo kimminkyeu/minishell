@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:03:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 15:50:36 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 17:31:57 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,11 @@ void	token_append(t_token *token, const char *str_in)
 	string->append(string, str_in);
 }
 
-void	delete_token(t_token *token)
+void	delete_token(void *_token)
 {
+	t_token *token;
+
+	token = _token;
 	if (token->str != NULL)
 		delete_string(&token->str);
 	free(token);

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:03:41 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 17:22:00 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 17:35:22 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,10 +59,11 @@ void	scanner_skip_white_space(t_scanner *scan)
  *
  * (^ = space)
  *
- * 명령어 예시 : [ ls^-al|grep^token>result<<heredoc ]
+ * 명령어 예시 1. [ ls^-al|grep^token>result<<heredoc ]
+ * - 위 명령어는 heredoc의 입력과 ls-al의 입력 둘다 grep의 input pipe로 들어간다.
  *
- * 실행 결과 :
- * 위 명령어는 heredoc의 입력과 ls-al의 입력 둘다 grep의 input pipe로 들어간다.
+ * 명령어 예시 2. [ echo 123 >result 456 ] 
+ * - 위 명령어는 123456이 result로 들어간다.
  *
  * */
 

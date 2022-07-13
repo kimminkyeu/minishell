@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:23:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 17:06:44 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 23:58:16 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,16 +27,18 @@ void	init_iterator(t_iterator *iter, char *line)
 }
 
 /** 다음 문자가 있는지, eof는 아닌지 체크 */
-int	iter_has_next(const t_iterator *iter)
+int	iter_has_next(t_iterator *iter)
 {
 	char next_char;
 	
-	next_char = iter->line[iter->curpos];
-	if (next_char != '\n' && next_char != '\0')
+	next_char = iter->f_peek(iter);
+	if (next_char != '\n' && next_char != '\0' && next_char != EOF)
 		return (1);
 	else
 		return (0);
 }
+
+#include <stdio.h>
 
 /* move iterator to point next character */
 char iter_next(t_iterator *iter)
@@ -51,13 +53,15 @@ char iter_next(t_iterator *iter)
 	}
 	if (iter->curpos == INIT_SRC_POS)
 		iter->curpos = -1;
-	else
-		c1 = iter->line[iter->curpos];
+	/** printf("line len : %zd\n", iter->line_len); */
 	if (++iter->curpos >= iter->line_len)
 	{
 		iter->curpos = iter->line_len;
 		return (EOF);
 	}
+	c1 = iter->line[iter->curpos];
+
+	printf("iterator next :%c, curpos:%ld\n", c1, iter->curpos);
 	return (c1);
 }
 

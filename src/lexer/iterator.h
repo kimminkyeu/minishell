@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:24:31 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 17:06:15 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 23:57:31 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ typedef struct s_iterator {
 	long	line_len;	/* size of the input text */
 	long	curpos;		/* iterator position is line */
 
-	int		(*f_has_next)(const t_iterator *iter);
+	int		(*f_has_next)(t_iterator *iter);
 	char	(*f_next)(t_iterator *iter);
 	void	(*f_unget)(t_iterator *iter);
 	char	(*f_peek)(t_iterator *iter);
@@ -34,7 +34,7 @@ typedef struct s_iterator {
 
 void	init_iterator(t_iterator *iter, char *line);
 
-int		iter_has_next(const t_iterator *iter);
+int		iter_has_next(t_iterator *iter);
 char	iter_next(t_iterator *iter);
 void	iter_unget(t_iterator *iter);
 char	iter_peek(t_iterator *iter);

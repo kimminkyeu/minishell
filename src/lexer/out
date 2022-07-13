@@ -1,0 +1,16 @@
+total 56
+drwxrwxr-x 2 kyeu kyeu 4096  7월 13 21:54 .
+drwxrwxr-x 5 kyeu kyeu 4096  7월 13 12:23 ..
+-rw-rw-r-- 1 kyeu kyeu 2593  7월 13 17:06 iterator.c
+-rw-rw-r-- 1 kyeu kyeu 1680  7월 13 17:06 iterator.h
+lrwxrwxrwx 1 kyeu kyeu   24  7월 13 12:23 libft.h -> ../libft/include/libft.h
+-rw-rw-r-- 1 kyeu kyeu 3210  7월 13 14:53 Makefile
+-rw-rw-r-- 1 kyeu kyeu    0  7월 13 21:54 out
+-rw-rw-r-- 1 kyeu kyeu 8069  7월 13 21:53 scanner.c
+-rw-rw-r-- 1 kyeu kyeu 1886  7월 13 21:11 scanner.h
+-rw-rw-r-- 1 kyeu kyeu 3427  7월 13 21:11 string.c
+-rw-rw-r-- 1 kyeu kyeu 2498  7월 13 14:41 string.h
+-rw-rw-r-- 1 kyeu kyeu 1582  7월 13 14:42 string_test.c
+-rw-rw-r-- 1 kyeu kyeu 1345  7월 13 17:33 test.c
+-rw-rw-r-- 1 kyeu kyeu 1948  7월 13 17:32 token.c
+-rw-rw-r-- 1 kyeu kyeu 2285  7월 13 21:51 token.h

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:03:41 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 20:39:48 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 20:54:40 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,13 @@ t_token *get_pipe(t_scanner *scan)
 {
 	t_token	*tok;
 
+	/** FIXME : 이 상태가 굳이 필요한가?  */
 
 
 	return (tok);
 }
 
-t_toke *get_ampersand(t_scanner *scan)
+t_token *get_ampersand(t_scanner *scan)
 {
 	t_token	*tok;
 
@@ -72,6 +73,51 @@ t_toke *get_ampersand(t_scanner *scan)
 
 	return (tok);
 }
+
+t_token	*get_redirection(t_scanner *scan)
+{
+	t_token	*tok;
+
+	return (tok);
+}
+
+t_token	*get_double_quote(t_scanner *scan)
+{
+	t_token	*tok;
+
+	return (tok);
+}
+
+t_token	*get_single_quote(t_scanner *scan)
+{
+	t_token	*tok;
+
+	return (tok);
+}
+
+t_token	*get_double_quote(t_scanner *scan)
+{
+	t_token	*tok;
+
+	return (tok);
+}
+
+t_token	*get_bracket(t_scanner *scan)
+{
+	t_token	*tok;
+
+	return (tok);
+}
+
+t_token *get_simple_cmd(t_scanner *scan)
+{
+	t_token	*tok;
+
+	return (tok);
+}
+
+
+
 
 
 
@@ -102,6 +148,7 @@ t_list	*tokenize(char *line)
 	t_token		*token;
 	char		c;
 
+	/** NOTE : 복잡하게 상태기계 쓰지 말고, 토큰 다 만들고 검사를 나중에 하자.  */
 	/** init list pointer and scanner */
 	token_list = NULL;
 	init_scanner(&scanner, line);
@@ -168,11 +215,11 @@ t_list	*tokenize(char *line)
 
 
 		/** if one of the token type is error, then stop. */
-		if (scanner.state == E_PARSE_ERROR)
-		{
-			printf("Syntax Error.\t[TODO] : change this to shell-like messege\n");
-			return (NULL);
-		}
+		/** if (scanner.state == E_PARSE_ERROR)
+		  * {
+		  *     printf("Syntax Error.\t[TODO] : change this to shell-like messege\n");
+		  *     return (NULL);
+		  * } --> FIXME : 토큰화 단계에선 오류 체크를 하지 말것. 다 하고 나서 하자.*/
 
 		/** NOTE : After this logic, string wiil be stored in token */
 		/** (2) add token to list */

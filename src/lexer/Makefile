@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/12 12:32:38 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/13 14:50:51 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/13 14:53:45 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -74,6 +74,7 @@ clean:
 	@echo "$(BLUE)Lexer obj files has been deleted.$(DEF_COLOR)"
 
 fclean:		clean
+	@make fclean -C $(LIBFT)
 	@$(RM) -f $(NAME)
 	@echo "$(BLUE)Lexer archive files has been deleted.$(DEF_COLOR)"
 

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:03:41 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 20:54:40 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/13 21:05:56 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,15 +59,25 @@ t_token *get_pipe(t_scanner *scan)
 {
 	t_token	*tok;
 
-	/** FIXME : 이 상태가 굳이 필요한가?  */
+	tok = new_token("");
 
-
+	/** consume one letter (|) */
+	tok->push_back(tok, scan->f_next(scan));
+	tok->type = E_TYPE_PIPE;
+	if (scan->f_peek(scan) == '|')
+	{
+		tok->push_back(tok, scan->f_next(scan));
+		tok->type = E_TYPE_DOUBLE_PIPE;
+	}
 	return (tok);
 }
 
 t_token *get_ampersand(t_scanner *scan)
 {
 	t_token	*tok;
+
+	tok = new_token("");
+
 
 
 
@@ -106,6 +116,7 @@ t_token	*get_bracket(t_scanner *scan)
 {
 	t_token	*tok;
 
+	tok = new_token("|");
 	return (tok);
 }
 
@@ -113,6 +124,7 @@ t_token *get_simple_cmd(t_scanner *scan)
 {
 	t_token	*tok;
 
+	tok = new_token("|");
 	return (tok);
 }
 
@@ -156,9 +168,7 @@ t_list	*tokenize(char *line)
 	/* while iterator meets '\n' or '\0', keep reading */
 	while (scanner.f_has_next(&scanner))
 	{
-		/** (0) init new token to add to the list */
-		c = scanner.f_peek(&scanner);
-
+		
 		/** NOTE (1) : 규칙. cmd규칙과 관계 없이 무조건 기호 기준으로 자른다.  */
 
 		/** NOTE (2) : rule of 우선순위 in brackets
@@ -170,21 +180,25 @@ t_list	*tokenize(char *line)
 		 * # => ...
 		 * # => banana/ */
 
+		/** (0) init new token to add to the list */
+		
+		token = new_token("");
 		/** (1) read one token ... */
+		c = scanner.f_peek(&scanner);
 		if (c == '|')
-			token = get_pipe(&scanner);
+			get_pipe(token, &scanner);
 		else if (c == '&')
-			token = get_ampersand(&scanner);
+			get_ampersand(token, &scanner);
 		else if (c == '<' || c == '>')
-			token = get_redirection(&scanner);
+			get_redirection(token, &scanner);
 		else if (c == '\"')
-			token = get_double_quote(&scanner); // NOTE : if scanner doesn't find pair-quote, then error.
+			get_double_quote(token, &scanner); // NOTE : if scanner doesn't find pair-quote, then error.
 		else if (c == '\'')
-			token = get_single_quote(&scanner); // NOTE : 다른 ' 를 만나기 전까지 그 전체를 감싸준다.
+			get_single_quote(token, &scanner); // NOTE : 다른 ' 를 만나기 전까지 그 전체를 감싸준다.
 		else if (c == '(' || c == ')') // 예는 감싸지 말고, 그냥 bracket처리만 하자.
-			token = get_bracket(&scanner); // NOTE : 만약 bracket이 규칙이 안맞는다면 에러 처리 (...) ((...)) (((..)))
+			get_bracket(token, &scanner); // NOTE : 만약 bracket이 규칙이 안맞는다면 에러 처리 (...) ((...)) (((..)))
 		else
-			token = get_simple_cmd(&scanner); // move scanner iterator, them return token
+			get_simple_cmd(token, &scanner); // move scanner iterator, them return token
 
 
 

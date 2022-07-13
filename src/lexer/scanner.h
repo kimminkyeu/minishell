@@ -6,14 +6,14 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:04:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/12 13:31:24 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/12 21:23:47 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SCANNER_H
 # define SCANNER_H
 
-#include "iterator.h"
+# include "iterator.h"
 
 typedef enum e_state {
 	E_PARSE_START,		// default state
@@ -26,7 +26,7 @@ typedef enum e_state {
 	// ... Add accordingly
 }	t_state;
 
-typedef enum e_id {
+typedef enum e_token_type {
 	E_SPACE, 			// isspace()
 	E_CMD,				// simple_command
 	E_ARG,				// argument -> ex) echo [hello] --> hello = argument
@@ -40,19 +40,20 @@ typedef enum e_id {
 	E_SEMICOLON,		//	[;]
 	E_DOUBLE_AMPERSAND, //	[&&]
 	E_DOUBLE_PIPE, 		//  [||]
-
 	E_VAR,				//	[$VAR]
-}	t_id;
+					
+	E_EOF				//  [ EOF special token like NULL ]
+}	t_token_type;
 
 typedef struct s_token {
-	t_iterator	*src; // source of input
-
-	t_id		id;
-	char		*text; // pointer to string
-	int			text_len; // length of string
+	t_token_type	type;
+	t_iterator		*src; // source of input for token data access
+	int				text_len;	// length of string
+	char			*text;		// pointer to string
 }	t_token;
 
+/* add data to t_vector *tokens */
+void	tokenize(char *str, t_vector *tokens);
 
-
-
+// void	free_token(t_token *token);
 #endif /* SCANNER_H */

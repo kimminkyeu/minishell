@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/12 14:06:52 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/14 15:14:23 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/14 20:19:11 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -51,7 +51,7 @@ OBJ_MKDIR		=	create_dir
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	make -C $(LIBFT)
+	make bonus -C $(LIBFT)
 	make -C $(LEXER)
 	$(CC) $(CFLAGS) $^ $(LIBFT)/libft.a $(LEXER)/lexer.a -lreadline -o $@
 	@echo "$(BLUE)--------------------------------------------------------------------------$(DEF_COLOR)"
@@ -73,7 +73,6 @@ $(OBJ_MKDIR):
 	@mkdir -p $(OBJ_DIR)
 
 clean:
-	# @$(RM) -rf libft.a
 	@make fclean -C $(LIBFT)
 	@make fclean -C $(LEXER)
 	@$(RM) -rf $(OBJ_DIR)

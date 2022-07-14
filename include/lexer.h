@@ -6,17 +6,21 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/14 14:25:00 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/14 14:37:18 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/14 20:23:38 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef LEXER_H
 # define LEXER_H
 
+/* Libft functions */
 #include "./libft.h"
+
+/* t_string header */
+#include "../src/lexer/string.h"
 #include "../src/lexer/scanner.h"
 #include "../src/lexer/token.h"
-//
+#include "../src/lexer/iterator.h"
 
 /* @ Returns t_token list.
  * @ NOTE : doesn't check synstax error!

@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/12 12:32:38 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/13 22:51:46 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/14 15:00:37 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,17 +22,18 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME 			= lexer
+NAME 			= lexer.a
 CC				= cc
 CFLAGS			= -Werror -Wextra -Wall
 
 # NOTE: Add souce files here!
 # ==========================================
-SRC_FILES			= test string iterator token scanner
+SRC_FILES			= string iterator token scanner #test
 # ==========================================
 
 LIBFT		= ../libft
 RM			= rm -f
+AR          = ar rcs
 
 SRC 			= $(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC_FILES)))
 OBJ 			= $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_FILES)))
@@ -57,10 +58,10 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@make bonus -C $(LIBFT)
-	$(CC) $(CFLAGS) $^ ../libft/libft.a -o $@
-	@echo "$(YELLOW)============================================$(DEF_COLOR)"
+	$(AR) $(NAME) $^ $(LIBFT)/libft.a
+	@echo "$(YELLOW)--------------------------------------------$(DEF_COLOR)"
 	@echo "$(YELLOW)|         Lexer compile finished.          |$(DEF_COLOR)"
-	@echo "$(YELLOW)============================================$(DEF_COLOR)"
+	@echo "$(YELLOW)--------------------------------------------$(DEF_COLOR)"
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_MKDIR)
 	$(CC) $(CFLAGS) -c $^ -o $@
@@ -74,7 +75,6 @@ clean:
 	@echo "$(BLUE)Lexer obj files has been deleted.$(DEF_COLOR)"
 
 fclean:		clean
-	@make fclean -C $(LIBFT)
 	@$(RM) -f $(NAME)
 	@echo "$(BLUE)Lexer archive files has been deleted.$(DEF_COLOR)"
 

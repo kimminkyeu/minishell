@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 22:41:46 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/14 14:21:56 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,10 +46,10 @@ typedef struct s_token {
 	t_token_type	type;
 	t_string		*str;
 
-	void	(*reset)(t_token *token);						/* 모든 토큰 초기화 */
-	void	(*push_back)(t_token *token, char c);			/* 토큰에 문자 추가 */
-	void	(*pop_back)(t_token *token);					/* 토큰의 마지막 문자 제거 */
-	void	(*append)(t_token *token, const char *str_in);	/* 토큰에 문자열 추가 */
+	void	(*f_reset)(t_token *token);						/* 모든 토큰 초기화 */
+	void	(*f_push_back)(t_token *token, char c);			/* 토큰에 문자 추가 */
+	void	(*f_pop_back)(t_token *token);					/* 토큰의 마지막 문자 제거 */
+	void	(*f_append)(t_token *token, const char *str_in);	/* 토큰에 문자열 추가 */
 }	t_token;
 
 t_token	*new_token(char *str_input);

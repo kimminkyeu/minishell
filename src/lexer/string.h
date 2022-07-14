@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 12:26:31 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 14:14:08 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/14 14:22:30 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,13 +26,13 @@ typedef struct s_string {
 	size_t		text_len;
 	size_t		capacity;
 
-	int	(*append)(t_string *str, const char *str2);
-	int (*push_back)(t_string *str, char c);
-	int	(*pop_back)(t_string *str);
-	int (*is_empty)(t_string *str);
-	int	(*reserve)(t_string *str, size_t new_capacity);
-	int	(*clear)(t_string *str);
-	int	(*shrink_to_fit)(t_string *str);
+	int	(*f_append)(t_string *str, const char *str2);
+	int (*f_push_back)(t_string *str, char c);
+	int	(*f_pop_back)(t_string *str);
+	int (*f_is_empty)(t_string *str);
+	int	(*f_reserve)(t_string *str, size_t new_capacity);
+	int	(*f_clear)(t_string *str);
+	int	(*f_shrink_to_fit)(t_string *str);
 
 }	t_string;
 

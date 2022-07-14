@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 12:30:54 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 19:56:37 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/14 14:22:39 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,13 +27,13 @@ t_string	*new_string(size_t init_capacity)
 	str->text_len = 0;
 	str->capacity = init_capacity;
 
-	str->append = str_append;
-	str->clear = str_clear;
-	str->is_empty = str_is_empty;
-	str->pop_back = str_pop_back;
-	str->push_back = str_push_back;
-	str->reserve = str_reserve;
-	str->shrink_to_fit = str_shrink_to_fit;
+	str->f_append = str_append;
+	str->f_clear = str_clear;
+	str->f_is_empty = str_is_empty;
+	str->f_pop_back = str_pop_back;
+	str->f_push_back = str_push_back;
+	str->f_reserve = str_reserve;
+	str->f_shrink_to_fit = str_shrink_to_fit;
 
 	return (str);
 }

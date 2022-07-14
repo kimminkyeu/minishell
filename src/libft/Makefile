@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/16 15:31:26 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/10 18:02:56 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/14 14:59:56 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -82,9 +82,9 @@ all: $(NAME)
 
 $(NAME): $(OBJ_RESULT)
 	@$(AR) $(NAME) $^
-	@echo "$(BLUE)===========================$(DEF_COLOR)"
+	@echo "$(BLUE)---------------------------$(DEF_COLOR)"
 	@echo "$(BLUE)| Libft compile finished. |$(DEF_COLOR)"
-	@echo "$(BLUE)===========================$(DEF_COLOR)"
+	@echo "$(BLUE)---------------------------$(DEF_COLOR)"
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_MKDIR)
 	@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@

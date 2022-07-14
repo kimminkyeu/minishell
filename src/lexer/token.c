@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:03:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 17:31:57 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/14 14:24:02 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	token_reset(t_token *token)
 	t_string	*string;
 	
 	string = token->str;
-	string->clear(string);
+	string->f_clear(string);
 	token->type = E_TYPE_DEFAULT;
 }
 
@@ -26,7 +26,7 @@ void	token_push_back(t_token *token, char c)
 	t_string	*string;
 
 	string = token->str;
-	string->push_back(string, c);
+	string->f_push_back(string, c);
 }
 
 void	token_pop_back(t_token *token)
@@ -34,7 +34,7 @@ void	token_pop_back(t_token *token)
 	t_string	*string;
 
 	string = token->str;
-	string->pop_back(string);
+	string->f_pop_back(string);
 }
 
 void	token_append(t_token *token, const char *str_in)
@@ -42,7 +42,7 @@ void	token_append(t_token *token, const char *str_in)
 	t_string	*string;
 
 	string = token->str;
-	string->append(string, str_in);
+	string->f_append(string, str_in);
 }
 
 void	delete_token(void *_token)
@@ -64,10 +64,10 @@ t_token	*new_token(char *str_input)
 	token->str = new_string(8);
 	if (token->str == NULL)
 		return (NULL);
-	token->str->append(token->str, str_input);
-	token->append = token_append;
-	token->pop_back = token_pop_back;
-	token->push_back = token_push_back;
-	token->reset = token_reset;
+	token->str->f_append(token->str, str_input);
+	token->f_append = token_append;
+	token->f_pop_back = token_pop_back;
+	token->f_push_back = token_push_back;
+	token->f_reset = token_reset;
 	return (token);
 }

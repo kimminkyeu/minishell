@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/12 14:06:52 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/12 12:31:43 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/14 15:14:23 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,17 +17,15 @@ CFLAGS			= -Werror -Wextra -Wall
 
 # NOTE: Add source files here!
 # ==========================================
-SRC_FILES       = main
-LEXER_SRC_FILES	= 
+SRC_FILES       = minishell
 # ==========================================
 
-LIBFT           = libft
-# LEXER           = lexer
+LIBFT           = src/libft
+LEXER           = src/lexer
 INCLUDE         = include
 RM              = rm -f
 
 SRC_DIR		    = src/
-LEXER_SRC_DIR	= src/lexer
 OBJ_DIR		    = obj/
 
 
@@ -53,24 +51,31 @@ OBJ_MKDIR		=	create_dir
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	@make -C $(LIBFT)
-	mkdir $(OBJ_DIR)
-	mv libft/libft.a ./$(OBJ_DIR)
-	$(CC) $(CFLAGS) $^ $(OBJ_DIR)/libft.a -o $@
-	@echo "$(BLUE)============================================$(DEF_COLOR)"
-	@echo "$(BLUE)|        Minishell compile finished.       |$(DEF_COLOR)"
-	@echo "$(BLUE)============================================$(DEF_COLOR)"
+	make -C $(LIBFT)
+	make -C $(LEXER)
+	$(CC) $(CFLAGS) $^ $(LIBFT)/libft.a $(LEXER)/lexer.a -lreadline -o $@
+	@echo "$(BLUE)--------------------------------------------------------------------------$(DEF_COLOR)"
+	@echo "$(BLUE)|                                                                        |$(DEF_COLOR)"
+	@echo "$(BLUE)|  ██╗     ███████╗███████╗    ███████╗██╗  ██╗███████╗██╗     ██╗       |$(DEF_COLOR)"
+	@echo "$(BLUE)|  ██║     ██╔════╝██╔════╝    ██╔════╝██║  ██║██╔════╝██║     ██║       |$(DEF_COLOR)"
+	@echo "$(BLUE)|  ██║     █████╗  █████╗      ███████╗███████║█████╗  ██║     ██║       |$(DEF_COLOR)"
+	@echo "$(BLUE)|  ██║     ██╔══╝  ██╔══╝      ╚════██║██╔══██║██╔══╝  ██║     ██║       |$(DEF_COLOR)"
+	@echo "$(BLUE)|  ███████╗███████╗███████╗    ███████║██║  ██║███████╗███████╗███████╗  |$(DEF_COLOR)"
+	@echo "$(BLUE)|  ╚══════╝╚══════╝╚══════╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝  |$(DEF_COLOR)"                
+	@echo "$(BLUE)|                                                                        |$(DEF_COLOR)"
+	@echo "$(BLUE)--------------------------------------------------------------------------$(DEF_COLOR)"
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(LEXER_SRC_DIR) #| $(OBJ_MKDIR)
+$(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_MKDIR)
 	$(CC) $(CFLAGS) -I$(INCLUDE) -c $^ -o $@
 	@echo "$(YELLOW)Compiling... \t$< $(DEF_COLOR)"
 
-# $(OBJ_MKDIR):
-	# @mkdir -p $(OBJ_DIR)
+$(OBJ_MKDIR):
+	@mkdir -p $(OBJ_DIR)
 
 clean:
-	@$(RM) -rf libft.a
+	# @$(RM) -rf libft.a
 	@make fclean -C $(LIBFT)
+	@make fclean -C $(LEXER)
 	@$(RM) -rf $(OBJ_DIR)
 	@echo "$(BLUE)Minishell obj files has been deleted.$(DEF_COLOR)"
 

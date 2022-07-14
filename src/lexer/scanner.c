@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:03:41 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/14 00:17:34 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/14 14:23:39 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,22 +61,22 @@ void	scanner_skip_white_space(t_scanner *scan)
 void	get_pipe(t_token *tok, t_scanner *scan)
 {
 	/** consume one letter (|) */
-	tok->push_back(tok, scan->f_next(scan));
+	tok->f_push_back(tok, scan->f_next(scan));
 	tok->type = E_TYPE_PIPE;
 	if (scan->f_peek(scan) == '|')
 	{
-		tok->push_back(tok, scan->f_next(scan));
+		tok->f_push_back(tok, scan->f_next(scan));
 		tok->type = E_TYPE_DOUBLE_PIPE;
 	}
 }
 
 void	get_ampersand(t_token *tok, t_scanner *scan)
 {
-	tok->push_back(tok, scan->f_next(scan));
+	tok->f_push_back(tok, scan->f_next(scan));
 	tok->type = E_TYPE_AMPERSAND;
 	if (scan->f_peek(scan) == '&')
 	{
-		tok->push_back(tok, scan->f_next(scan));
+		tok->f_push_back(tok, scan->f_next(scan));
 		tok->type = E_TYPE_DOUBLE_AMPERSAND;
 	}
 }
@@ -85,14 +85,14 @@ void	get_redirection(t_token *tok, t_scanner *scan)
 {
 	char	c;
 
-	tok->push_back(tok, scan->f_next(scan));
+	tok->f_push_back(tok, scan->f_next(scan));
 	tok->type = E_TYPE_REDIRECT;
 
 	/** TODO : Error checking later!! */
 	c = scan->f_peek(scan);
 	if (c == '<' || c == '>')
 	{
-		tok->push_back(tok, scan->f_next(scan));
+		tok->f_push_back(tok, scan->f_next(scan));
 		tok->type = E_TYPE_DOUBLE_AMPERSAND;
 	}
 }
@@ -101,19 +101,19 @@ void	get_double_quote(t_token *tok, t_scanner *scan)
 {
 	char	c;
 
-	tok->push_back(tok, scan->f_next(scan));
+	tok->f_push_back(tok, scan->f_next(scan));
 	tok->type = E_TYPE_DOUBLE_QUOTE;
 	while (scan->f_has_next(scan))
 	{
 		c = scan->f_peek(scan);
 		if (c == '\"')
 		{
-			tok->push_back(tok, scan->f_next(scan));
+			tok->f_push_back(tok, scan->f_next(scan));
 			break ;
 		}
 		else
 		{
-			tok->push_back(tok, scan->f_next(scan));
+			tok->f_push_back(tok, scan->f_next(scan));
 		}
 	}
 }
@@ -122,32 +122,32 @@ void	get_single_quote(t_token *tok, t_scanner *scan)
 {
 	char	c;
 
-	tok->push_back(tok, scan->f_next(scan));
+	tok->f_push_back(tok, scan->f_next(scan));
 	tok->type = E_TYPE_SINGLE_QUOTE;
 	while (scan->f_has_next(scan))
 	{
 		c = scan->f_peek(scan);
 		if (c == '\'')
 		{
-			tok->push_back(tok, scan->f_next(scan));
+			tok->f_push_back(tok, scan->f_next(scan));
 			break ;
 		}
 		else
 		{
-			tok->push_back(tok, scan->f_next(scan));
+			tok->f_push_back(tok, scan->f_next(scan));
 		}
 	}
 }
 
 void	get_semicolon(t_token *tok, t_scanner *scan)
 {
-	tok->push_back(tok, scan->f_next(scan));
+	tok->f_push_back(tok, scan->f_next(scan));
 	tok->type = E_TYPE_SEMICOLON;
 }
 
 void	get_bracket(t_token *tok, t_scanner *scan)
 {
-	tok->push_back(tok, scan->f_next(scan));
+	tok->f_push_back(tok, scan->f_next(scan));
 	tok->type = E_TYPE_BRACKET;
 }
 
@@ -157,7 +157,7 @@ void	get_cmd_option(t_token *tok, t_scanner *scan)
 
 	/**  */
 	/** printf("option found\n"); */
-	tok->push_back(tok, scan->f_next(scan));
+	tok->f_push_back(tok, scan->f_next(scan));
 	tok->type = E_TYPE_CMD_OPTION;
 	while (scan->f_has_next(scan))
 	{
@@ -167,7 +167,7 @@ void	get_cmd_option(t_token *tok, t_scanner *scan)
 				&& c != '(' && c != ')' && c != ';' \
 				&& c != '\'' && c != '\"')
 		{
-			tok->push_back(tok, scan->f_next(scan));
+			tok->f_push_back(tok, scan->f_next(scan));
 		}
 		else
 			break ;
@@ -180,7 +180,7 @@ void	get_cmd_or_arg(t_token *tok, t_scanner *scan)
 	char	c;
 
 	char	tmp = scan->f_next(scan);
-	tok->push_back(tok, tmp);
+	tok->f_push_back(tok, tmp);
 	/** printf("first f_next : (%c)\n", tmp); */
 
 	/** tok->push_back(tok, scan->f_next(scan)); */
@@ -197,7 +197,7 @@ void	get_cmd_or_arg(t_token *tok, t_scanner *scan)
 				&& c != '(' && c != ')' && c != ';' \
 				&& c != '\'' && c != '\"')
 		{
-			tok->push_back(tok, scan->f_next(scan));
+			tok->f_push_back(tok, scan->f_next(scan));
 			/** printf("%s ->", tok->str->text); */
 		}
 		else

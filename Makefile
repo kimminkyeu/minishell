@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/12 14:06:52 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/14 20:19:11 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/14 21:36:11 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -83,6 +83,6 @@ fclean:		clean
 	@echo "$(BLUE)Minishell archive files has been deleted.$(DEF_COLOR)"
 
 re:			fclean all
-	@echo "$(GREEN)Cleaned and rebuilt Pipe-X.$(DEF_COLOR)"
+	@echo "$(GREEN)Cleaned and rebuilt LEE-SHELL.$(DEF_COLOR)"
 
 .PHONY:		all bonus clean fclean re

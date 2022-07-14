@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/14 14:21:56 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/14 20:29:40 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ typedef enum e_token_type {
 	E_TYPE_PIPE,				//	[|]
 	E_TYPE_REDIRECT,			//	[< << > >>]
 
-	E_TYPE_BRACKET,				//  [(] [)]
+	E_TYPE_BRACKET,				//  [(] [)] --> for subshell
 	E_TYPE_SEMICOLON,			//	[;]
 	E_TYPE_AMPERSAND,			//	[&]
 

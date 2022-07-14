@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/14 15:16:51 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/14 21:33:04 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,8 +39,6 @@ int main(void)
 		add_history(line);
 
 		tokens = tokenize(line);
-		printf("input : %s\n", line);
-		
 
 		t_list	*tmp;
 		tmp = tokens;
@@ -48,11 +46,10 @@ int main(void)
 		while (tmp != NULL)
 		{
 			t_token *tok = tmp->content;
-			printf("[%s] ", get_token_type(tok->type));
+			printf("\033[93m%20s $\033[0m", get_token_type(tok->type));
 			printf("%s\n", tok->str->text);
 			tmp = tmp->next;
 		}
-
 		/** (4) free token list */
 		ft_lstclear(&tokens, delete_token);
 		free(line);

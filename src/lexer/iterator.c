@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:23:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 23:58:16 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/14 20:53:26 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,7 @@ char iter_next(t_iterator *iter)
 		return (EOF);
 	}
 	c1 = iter->line[iter->curpos];
-
-	printf("iterator next :%c, curpos:%ld\n", c1, iter->curpos);
+	/** printf("iterator next :%c, curpos:%ld\n", c1, iter->curpos); */
 	return (c1);
 }
 

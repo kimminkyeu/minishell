@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/12 12:32:38 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/14 15:01:53 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/14 20:24:32 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,14 +22,14 @@
 #                                                                              #
 # **************************************************************************** #
 
-NAME 			= parser.a
+NAME 			= lexer.a
 CC				= cc
 CFLAGS			= -Werror -Wextra -Wall
 
 # NOTE: Add souce files here!
-# ==========================================
-SRC_FILES			= 
-# ==========================================
+# ============================================================================= #
+SRC_FILES			= string iterator token scanner
+# ============================================================================= #
 
 LIBFT		= ../libft
 RM			= rm -f
@@ -58,13 +58,13 @@ all: $(NAME)
 
 $(NAME): $(OBJ)
 	@make bonus -C $(LIBFT)
-	$(AR) $(NAME) $^ $(LIBFT)/libft.a
+	@$(AR) $(NAME) $^ $(LIBFT)/libft.a
 	@echo "$(YELLOW)--------------------------------------------$(DEF_COLOR)"
 	@echo "$(YELLOW)|         Lexer compile finished.          |$(DEF_COLOR)"
 	@echo "$(YELLOW)--------------------------------------------$(DEF_COLOR)"
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_MKDIR)
-	$(CC) $(CFLAGS) -c $^ -o $@
+	@$(CC) $(CFLAGS) -c $^ -o $@
 	@echo "$(YELLOW)Compiling... \t$< $(DEF_COLOR)"
 
 $(OBJ_MKDIR):

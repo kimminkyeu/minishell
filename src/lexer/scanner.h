@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:04:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 23:56:49 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/14 22:18:56 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,23 +15,9 @@
 
 # include "iterator.h"
 
-# define PARSE_ERROR (10)
-
-typedef enum e_state {
-	E_PARSE_START,		// default state
-	E_PARSE_OPTION,		// ls => -al
-	E_PARSE_ARG,		// double or signle quote + CMD_Argument
-	E_PARSE_CMD,
-	E_PARSE_META_CHAR,
-	// E_PARSE_WHITESPACE,
-	E_PARSE_ERROR,
-	// ... Add accordingly
-}	t_state;
-
 typedef struct s_scanner	t_scanner;
 
 typedef struct s_scanner {
-	t_state		state;
 	t_iterator	iter;
 
 	int		(*f_has_next)(t_scanner *scan);
@@ -52,5 +38,16 @@ char	scanner_next(t_scanner *scan);
 void	scanner_unget(t_scanner *scan);
 char	scanner_peek(t_scanner *scan);
 void	scanner_skip_white_space(t_scanner *scan);
+
+
+void	get_pipe(t_token *tok, t_scanner *scan);
+void	get_double_ampersand(t_token *tok, t_scanner *scan);
+void	get_redirection(t_token *tok, t_scanner *scan);
+void	get_double_quote(t_token *tok, t_scanner *scan);
+void	get_single_quote(t_token *tok, t_scanner *scan);
+void	get_semicolon(t_token *tok, t_scanner *scan);
+void	get_bracket(t_token *tok, t_scanner *scan);
+void	get_cmd_option(t_token *tok, t_scanner *scan);
+void	get_cmd_or_arg(t_token *tok, t_scanner *scan);
 
 #endif /* SCANNER_H */

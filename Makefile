@@ -3,86 +3,50 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+         #
+#    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2022/05/12 14:06:52 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/14 21:36:11 by minkyeki         ###   ########.fr        #
+#    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
+#    Updated: 2022/07/15 21:51:14 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME 			= minishell
-CC				= cc
-# CFLAGS			= -Werror -Wextra -Wall -lreadline
-CFLAGS			= -Werror -Wextra -Wall
+NAME		= minishell
+CC			= cc
+CFLAGS		= -Wall -Wextra -Werror
+INCLUDE		= include
+SRC_DIR		= src
 
-# NOTE: Add source files here!
-# ==========================================
-SRC_FILES       = minishell
-# ==========================================
+LIBFT_DIR	= $(SRC_DIR)/libft/
+MAIN_DIR	= $(SRC_DIR)/main/
+LEXER_DIR	= $(SRC_DIR)/lexer/
 
-LIBFT           = src/libft
-LEXER           = src/lexer
-INCLUDE         = include
-RM              = rm -f
+# NOTE : Add Source files here
+# ------------------------------------------------------ #
+MAIN_SRC	= minishell
+LEXER_SRC	= string iterator token scanner
+# ------------------------------------------------------ #
 
-SRC_DIR		    = src/
-OBJ_DIR		    = obj/
+SRC = $(addsuffix .c, $(addprefix $(LEXER_DIR), $(LEXER_SRC))) \
+	  $(addsuffix .c, $(addprefix $(MAIN_DIR), $(MAIN_SRC))) \
 
-
-SRC             = $(addprefix $(SRC_DIR), $(addsuffix .c, $(SRC_FILES)))
-LEXER_SRC		= $(addprefix $(LEXER_SRC_DIR), $(addsuffix .c, $(LEXER_SRC_FILES)))
-
-OBJ             = $(addprefix $(OBJ_DIR), $(addsuffix .o, $(SRC_FILES)))
-
-
-# Colors
-DEF_COLOR = \033[0;39m
-GRAY = \033[0;90m
-RED = \033[0;91m
-GREEN = \033[0;92m
-YELLOW = \033[0;93m
-BLUE = \033[0;94m
-MAGENTA = \033[0;95m
-CYAN = \033[0;96m
-WHITE = \033[0;97m
-
-OBJ_MKDIR		=	create_dir
+OBJ = $(SRC:c=o)
 
 all: $(NAME)
 
 $(NAME): $(OBJ)
-	make bonus -C $(LIBFT)
-	make -C $(LEXER)
-	$(CC) $(CFLAGS) $^ $(LIBFT)/libft.a $(LEXER)/lexer.a -lreadline -o $@
-	@echo "$(BLUE)--------------------------------------------------------------------------$(DEF_COLOR)"
-	@echo "$(BLUE)|                                                                        |$(DEF_COLOR)"
-	@echo "$(BLUE)|  ██╗     ███████╗███████╗    ███████╗██╗  ██╗███████╗██╗     ██╗       |$(DEF_COLOR)"
-	@echo "$(BLUE)|  ██║     ██╔════╝██╔════╝    ██╔════╝██║  ██║██╔════╝██║     ██║       |$(DEF_COLOR)"
-	@echo "$(BLUE)|  ██║     █████╗  █████╗      ███████╗███████║█████╗  ██║     ██║       |$(DEF_COLOR)"
-	@echo "$(BLUE)|  ██║     ██╔══╝  ██╔══╝      ╚════██║██╔══██║██╔══╝  ██║     ██║       |$(DEF_COLOR)"
-	@echo "$(BLUE)|  ███████╗███████╗███████╗    ███████║██║  ██║███████╗███████╗███████╗  |$(DEF_COLOR)"
-	@echo "$(BLUE)|  ╚══════╝╚══════╝╚══════╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝  |$(DEF_COLOR)"                
-	@echo "$(BLUE)|                                                                        |$(DEF_COLOR)"
-	@echo "$(BLUE)--------------------------------------------------------------------------$(DEF_COLOR)"
+	make bonus -C $(LIBFT_DIR)
+	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT_DIR)libft.a -lreadline
 
-$(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_MKDIR)
-	$(CC) $(CFLAGS) -I$(INCLUDE) -c $^ -o $@
-	@echo "$(YELLOW)Compiling... \t$< $(DEF_COLOR)"
-
-$(OBJ_MKDIR):
-	@mkdir -p $(OBJ_DIR)
+%.o: %.c
+	${CC} ${CFLAGS} -c $< -o $@
 
 clean:
-	@make fclean -C $(LIBFT)
-	@make fclean -C $(LEXER)
-	@$(RM) -rf $(OBJ_DIR)
-	@echo "$(BLUE)Minishell obj files has been deleted.$(DEF_COLOR)"
+	make clean -C $(LIBFT_DIR)
+	rm -f $(OBJ)
 
-fclean:		clean
-	@$(RM) -f $(NAME)
-	@echo "$(BLUE)Minishell archive files has been deleted.$(DEF_COLOR)"
+fclean:
+	make fclean -C $(LIBFT_DIR)
+	rm -f $(OBJ)
+	rm -f $(NAME)
 
-re:			fclean all
-	@echo "$(GREEN)Cleaned and rebuilt LEE-SHELL.$(DEF_COLOR)"
-
-.PHONY:		all bonus clean fclean re
+re: fclean all

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/15 21:37:34 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/15 23:06:10 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,70 +19,95 @@
 #include <readline/history.h>
 
 /** Our Source header */
-
 /* (1) Lexer header */
 #include "../../include/lexer.h"
 
 
-/** TODO : move <include> to minishell.h */
+/** (2) helper functions. delete later */
+#include "helper.h"
 
-const char	*get_token_type(t_token_type type);
+typedef enum e_cmd_type {
+	E_DEFAULT, /* NOTE : for recursive step */
+	E_SIMPLE_CMD,
+	E_SUB_SHELL,
+	E_PIPE,
+	E_REDIR,
+	/* ... add type here. */
+} t_cmd_type;
 
-int main(void)
+typedef struct s_tree	t_tree;
+
+typedef struct s_tree {
+	t_cmd_type	type;
+	t_list		*token;
+	t_tree		*left;
+	t_tree		*right;
+} t_tree;
+
+t_tree *parse(t_list *token_list)
 {
-	char	*line;
-	t_list	*tokens;
+	t_tree *tree;
 
-	while (true)
-	{
-		line = readline("> ");
-		add_history(line);
+	(void)token_list;
 
-		tokens = tokenize(line);
-
-		t_list	*tmp;
-		tmp = tokens;
-		/** (3) print token list */
-		while (tmp != NULL)
-		{
-			t_token *tok = tmp->content;
-			printf("\033[93m%20s $\033[0m", get_token_type(tok->type));
-			printf("%s\n", tok->str->text);
-			tmp = tmp->next;
-		}
-		/** (4) free token list */
-		ft_lstclear(&tokens, delete_token);
-		free(line);
-	}
-	return (EXIT_SUCCESS);
+	return (tree);
 }
 
-const char	*get_token_type(t_token_type type)
+int	execute(t_tree *syntax_tree)
 {
-	if (type == E_TYPE_DEFAULT)
-		return ("?");
-	else if (type == E_TYPE_CMD_OR_ARG)
-		return ("CMD_OR_ARG");
-	else if (type == E_TYPE_CMD_OPTION)
-		return ("CMD_OPTION");
-	else if (type == E_TYPE_SINGLE_QUOTE)
-		return ("SINGLE_QUOTE");
-	else if (type == E_TYPE_DOUBLE_QUOTE)
-		return ("DOUBLE_QUOTE");
-	else if (type == E_TYPE_PIPE)
-		return ("PIPE");
-	else if (type == E_TYPE_REDIRECT)
-		return ("REDIRECT");
-	else if (type == E_TYPE_BRACKET)
-		return ("BRACKET");
-	else if (type == E_TYPE_SEMICOLON)
-		return ("SEMICOLON");
-	else if (type == E_TYPE_AMPERSAND)
-		return ("AMPERSAND");
-	else if (type == E_TYPE_DOUBLE_AMPERSAND)
-		return ("DOUBLE_AMPERSAND");
-	else if (type == E_TYPE_DOUBLE_PIPE)
-		return ("DOUBLE_PIPE");
-	else
-		return ("\033[31mERROR\033[0m");
+	(void)syntax_tree;
+
+	return (1);
+}
+
+void	shell_loop(void)
+{
+	int		status;
+	char	*line;
+	t_list	*tokens;
+	t_tree	*syntax_tree;
+
+	status = 1;
+	while (status)
+	{
+		/* Readline library  */
+		line = readline("& ");
+		add_history(line);
+
+		/* (1) Lexer */
+		tokens = tokenize(line);
+		print_tokens(tokens);
+
+		/* (2) Parser */
+		syntax_tree = parse(tokens);
+
+		/* (3) Executer */
+		status = execute(syntax_tree);
+
+
+		/** (4) free token list and line... etc */
+		ft_lstclear(&tokens, delete_token); /* NOTE : delete this function!!! */
+		// TODO : 
+		// token_list를 편집해서 tree로 만들었기 때문에, 실행하는 executer에서 
+		// 실행 후 free해주는 (자원 정리) 과정을 책임져야 한다.
+		free(line);
+	}
+}
+
+/* NOTE : https://brennan.io/2015/01/16/write-a-shell-in-c/ */
+
+int main(int ac, char **av, char **env)
+{	
+	(void)ac;
+	(void)av;
+
+	/* (1) Load config files, Environ, set data etc... */
+	(void)env;
+
+	/* (2) Run command loop */
+	shell_loop();
+
+	/* (3) Perform any shutdown/cleanup  */
+
+	return (EXIT_SUCCESS);
 }

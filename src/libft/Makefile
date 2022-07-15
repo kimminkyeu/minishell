@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/16 15:31:26 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/10 18:02:56 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/15 22:08:40 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -82,13 +82,13 @@ all: $(NAME)
 
 $(NAME): $(OBJ_RESULT)
 	@$(AR) $(NAME) $^
-	@echo "$(BLUE)===========================$(DEF_COLOR)"
-	@echo "$(BLUE)| Libft compile finished. |$(DEF_COLOR)"
-	@echo "$(BLUE)===========================$(DEF_COLOR)"
+	@echo "$(RED)===========================$(DEF_COLOR)"
+	@echo "$(RED)| Libft compile finished. |$(DEF_COLOR)"
+	@echo "$(RED)===========================$(DEF_COLOR)"
 
 $(OBJ_DIR)%.o: $(SRC_DIR)%.c | $(OBJ_MKDIR)
 	@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
-	@echo "$(GREEN)Compiling... \t$< $(DEF_COLOR)"
+	@echo "$(RED)Compiling... \t$< $(DEF_COLOR)"
 
 $(OBJ_MKDIR):
 	@mkdir -p $(OBJ_DIR)
@@ -98,13 +98,13 @@ bonus:
 
 clean:
 	@${RM} -r ${OBJ_DIR}
-	@echo "$(CYAN)Libft obj files has been deleted.$(DEF_COLOR)"
+	@echo "$(RED)Libft obj files has been deleted.$(DEF_COLOR)"
 
 fclean: clean
 	@${RM} ${NAME}
-	@echo "$(CYAN)Libft archive files has been deleted.$(DEF_COLOR)"
+	@echo "$(RED)Libft archive files has been deleted.$(DEF_COLOR)"
 
 re: fclean all
-	@echo "$(BLUE)Cleaned and rebuilt everything.$(DEF_COLOR)"
+	@echo "$(RED)Cleaned and rebuilt everything.$(DEF_COLOR)"
 
 .PHONY: all clean fclean re bonus

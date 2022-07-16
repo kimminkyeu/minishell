@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/14 20:29:40 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/16 15:54:29 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,24 +18,21 @@
 # include "iterator.h"
 
 typedef enum e_token_type {
-	E_TYPE_DEFAULT, 			// No type
-	E_TYPE_CMD_OR_ARG,				// simple_command
-	E_TYPE_CMD_OPTION,		//  [-*]
-	E_TYPE_SINGLE_QUOTE, 	//  [']
-	E_TYPE_DOUBLE_QUOTE,		//  ["]
-
-	E_TYPE_PIPE,				//	[|]
-	E_TYPE_REDIRECT,			//	[< << > >>]
-
-	E_TYPE_BRACKET,				//  [(] [)] --> for subshell
-	E_TYPE_SEMICOLON,			//	[;]
-	E_TYPE_AMPERSAND,			//	[&]
-
+								//
 	E_TYPE_DOUBLE_AMPERSAND,	//	[&&]
 	E_TYPE_DOUBLE_PIPE, 		//  [||]
-					
-	// E_TYPE_EOF,					//  [ EOF special token like NULL ]
-
+	E_TYPE_PIPE,				//	[|]
+	E_TYPE_BRACKET,				//  [(] [)] --> for subshell
+	E_TYPE_CMD_OR_ARG,			// simple_command
+								//
+	E_TYPE_CMD_OPTION,			//  [-*]
+	E_TYPE_REDIRECT,			//	[< << > >>]
+	E_TYPE_SINGLE_QUOTE,		//  [']
+	E_TYPE_DOUBLE_QUOTE,		//  ["]
+								//
+	E_TYPE_DEFAULT, 			// No type
+	// E_TYPE_SEMICOLON,		//	[;]
+	// E_TYPE_EOF,				//  [ EOF special token like NULL ]
 	// E_TYPE_ERROR				//  [ Error token. ]
 }	t_token_type;
 

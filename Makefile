@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/15 22:14:11 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/16 17:07:18 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,7 +24,7 @@ EXECUTER_DIR	= $(SRC_DIR)/executer/
 
 # NOTE : Add Source files here
 # ------------------------------------------------------ #
-MAIN_SRC		= minishell
+MAIN_SRC		= minishell helper
 LEXER_SRC		= string iterator token scanner
 PARSER_SRC		=
 EXECUTER_SRC	=

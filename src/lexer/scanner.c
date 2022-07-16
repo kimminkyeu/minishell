@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:03:41 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/14 22:18:34 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/16 15:39:07 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ void	get_double_ampersand(t_token *tok, t_scanner *scan)
 	{
 		tok->f_push_back(tok, c1);
 		tok->f_push_back(tok, c2);
-		tok->type = E_TYPE_AMPERSAND;
+		tok->type = E_TYPE_DOUBLE_AMPERSAND;
 	}
 	else
 	{
@@ -151,11 +151,11 @@ void	get_single_quote(t_token *tok, t_scanner *scan)
 	}
 }
 
-void	get_semicolon(t_token *tok, t_scanner *scan)
-{
-	tok->f_push_back(tok, scan->f_next(scan));
-	tok->type = E_TYPE_SEMICOLON;
-}
+/** void	get_semicolon(t_token *tok, t_scanner *scan)
+  * {
+  *     tok->f_push_back(tok, scan->f_next(scan));
+  *     tok->type = E_TYPE_SEMICOLON;
+  * } */
 
 void	get_bracket(t_token *tok, t_scanner *scan)
 {
@@ -236,8 +236,8 @@ t_list	*tokenize(char *line)
 			get_pipe(token, &scanner);
 		else if (c == '&')
 			get_double_ampersand(token, &scanner);
-		else if (c == ';')
-			get_semicolon(token, &scanner);
+		/** else if (c == ';') */
+			/** get_semicolon(token, &scanner); */
 		else if (c == '<' || c == '>')
 			get_redirection(token, &scanner);
 		else if (c == '\"')

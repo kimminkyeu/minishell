@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/16 21:33:52 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/16 22:12:16 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -252,13 +252,13 @@ void	print_tree_node(t_list *token)
 	t_list	*tmp;
 
 	if (token == NULL)
-		printf("[null]");
+		printf("\033[90m[null]\033[0m");
 	tmp = token;
 	/** printf("[%s]", get_token_type(tok->type)); */
 	while (tmp != NULL)
 	{
 		t_token *tok = tmp->content;
-		printf("[%s]", tok->str->text);
+		printf("\033[92m[%s]\033[0m", tok->str->text);
 		tmp = tmp->next;
 	}
 }
@@ -266,7 +266,7 @@ void	print_tree_node(t_list *token)
 /** tree print utils (for checking) */
 void	print_tree_2d(t_tree *root, int space)
 {
-	const int COUNT = 10;
+	const int COUNT = 15;
 	
 
 	if (root == NULL)
@@ -284,12 +284,19 @@ void	print_tree_2d(t_tree *root, int space)
 		i++;
 	}
 
-	printf("token:");
+	printf("\033[92mtoken:\033[0m");
 	print_tree_node(root->token);
-	printf("+redir:");
+
+	printf("\n");
+	i = COUNT;
+	while (i < space)
+	{
+		printf(" ");
+		i++;
+	}
+	printf("\033[92mredir:\033[0m");
 	print_tree_node(root->redirection);
 	printf("\n");
-
 	print_tree_2d(root->left, space);
 }
 
@@ -317,10 +324,16 @@ void	shell_loop(void)
 
 		/* (1) Lexer */
 		tokens = tokenize(line);
-		printf("Tokenize result ---------------------\n");
+		printf("\n");
+		printf("--------------------------------\n");
+		printf("|     Tokenizer Result         |\n");
+		printf("--------------------------------\n");
 		print_tokens(tokens);
 		printf("\n");
-		printf("Parsing result (AST) ---------------------\n");
+		printf("--------------------------------\n");
+		printf("|     Abstract Syntax Tree     |\n");
+		printf("--------------------------------\n");
+
 
 		/* (2) Parser */
 		syntax_tree = parse_to_tree_recur(tokens);

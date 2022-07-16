@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:03:41 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/16 15:39:07 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/16 20:08:56 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -236,8 +236,6 @@ t_list	*tokenize(char *line)
 			get_pipe(token, &scanner);
 		else if (c == '&')
 			get_double_ampersand(token, &scanner);
-		/** else if (c == ';') */
-			/** get_semicolon(token, &scanner); */
 		else if (c == '<' || c == '>')
 			get_redirection(token, &scanner);
 		else if (c == '\"')
@@ -252,5 +250,22 @@ t_list	*tokenize(char *line)
 			get_cmd_or_arg(token, &scanner);
 		ft_lstadd_back(&token_list, ft_lstnew(token));
 	}
+
+	/** 완성된 리스트를 돌면서 1차 검토, redir 옆은 redir_arg로 처리함. */
+	/** t_list	*tmp;
+	  * t_token	*tok;
+	  * tmp = token_list;
+	  * while (tmp->next != NULL)
+	  * {
+	  *     tok = tmp->content;
+	  *     if (tok->type == E_TYPE_REDIRECT)
+	  *     {
+	  *         tmp = tmp->next;
+	  *         tok = tmp->content;
+	  *         tok->type = E_TYPE_REDIR_ARG;
+	  *         continue ;
+	  *     }
+	  *     tmp = tmp->next;
+	  * } */
 	return (token_list);
 }

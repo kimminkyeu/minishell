@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/16 22:12:16 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/16 22:22:41 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -275,7 +275,7 @@ void	print_tree_2d(t_tree *root, int space)
 	space += COUNT;
 
 	print_tree_2d(root->right, space);
-	
+
 	printf("\n");
 	int i = COUNT;
 	while (i < space)
@@ -283,10 +283,8 @@ void	print_tree_2d(t_tree *root, int space)
 		printf(" ");
 		i++;
 	}
-
 	printf("\033[92mtoken:\033[0m");
 	print_tree_node(root->token);
-
 	printf("\n");
 	i = COUNT;
 	while (i < space)
@@ -297,6 +295,7 @@ void	print_tree_2d(t_tree *root, int space)
 	printf("\033[92mredir:\033[0m");
 	print_tree_node(root->redirection);
 	printf("\n");
+
 	print_tree_2d(root->left, space);
 }
 

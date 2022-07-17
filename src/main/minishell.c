@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 20:26:13 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/17 20:29:00 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,14 +46,14 @@ int	execute_node(t_tree *node)
 
 
 
-	return (0);
+	return (1);
 }
 
 
 void	inorder_recur(t_tree *node, int *status)
 {
 	/** status가 몇일 때 어떤 행동을 할지는 구현할 때 정하기 */
-	if (node == NULL || *status == 1)
+	if (node == NULL || *status == 0)
 		return ;
 	inorder_recur(node->left, status);
 	*status = execute_node(node);
@@ -65,8 +65,16 @@ int	execute(t_tree *syntax_tree)
 {
 	int	status;
 
+
+	printf("\n");
+	printf("--------------------------------\n");
+	printf("|     Tokenizer Result         |\n");
+	printf("--------------------------------\n");
+
 	status = 1;
 	inorder_recur(syntax_tree, &status);
+
+	return (status);
 }
 
 void	shell_loop(void)

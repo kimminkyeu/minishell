@@ -1,25 +1,27 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   helper.h                                           :+:      :+:    :+:   */
+/*   executer.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/15 22:22:10 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 22:21:59 by minkyeki         ###   ########.fr       */
+/*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
+/*   Updated: 2022/07/17 22:23:05 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef HELPER_H
-# define HELPER_H
+#ifndef EXECUTER_H
+# define EXECUTER_H
 
-# include <stdio.h>
-# include "../../include/lexer.h"
-# include "../../include/parse.h"
+# include "../main/helper.h"
+# include "../parser/parse_tree.h"
 
-const char	*get_token_type(t_token_type type);
-void		print_tokens(t_list *tokens);
-void		print_tree(t_tree *root);
-void		print_tree_node(t_list *token);
+# define CMD_FAILURE		(0)
+# define CMD_SUCCEESS		(1)
 
-#endif /* HELPER_H */
+void	delete_tree_node(t_tree **node);
+int		execute_node(t_tree *node);
+void	inorder_recur(t_tree *node, int *status);
+int		execute(t_tree *syntax_tree);
+
+#endif /* EXECUTER_H */

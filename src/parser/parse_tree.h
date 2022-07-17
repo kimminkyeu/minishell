@@ -6,12 +6,15 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:22:29 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 16:02:33 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/17 22:17:05 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSE_TREE_H
 # define PARSE_TREE_H
+
+# include "../libft/include/libft.h"
+# include "../lexer/token.h"
 
 typedef struct s_tree	t_tree;
 
@@ -30,6 +33,5 @@ t_list	*ft_lst_get_prev_node(t_list *node, t_list *target);
 t_list	*find_top_priority_token(t_list *tokens);
 t_list	*find_target_token(t_list *tokens, t_token_type _type);
 t_tree	*new_tree_node(void);
-void	delete_tree_node(t_tree *node);
 
 #endif /* PARSE_H */

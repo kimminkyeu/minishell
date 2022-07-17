@@ -6,25 +6,13 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 19:57:22 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/17 22:15:37 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
 #include "../../include/lexer.h"
 #include "parse_tree.h"
-
-/** TODO : move this function to executer */
-void	delete_tree_node(t_tree *node)
-{
-	if (node != NULL)
-	{
-		if (node->redirection != NULL)
-			ft_lstclear(&node->redirection, delete_token);
-		if (node->token != NULL)
-			ft_lstclear(&node->token, delete_token);
-	}
-}
 
 t_tree	*new_tree_node(void)
 {

@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/17 14:45:17 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/17 22:32:41 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,11 +27,12 @@ EXECUTER_DIR	= $(SRC_DIR)/executer/
 MAIN_SRC		= minishell helper
 LEXER_SRC		= string iterator token scanner
 PARSER_SRC		= parse_tree
-EXECUTER_SRC	=
+EXECUTER_SRC	= executer
 # ------------------------------------------------------ #
 
 SRC = $(addsuffix .c, $(addprefix $(LEXER_DIR), $(LEXER_SRC))) \
 	  $(addsuffix .c, $(addprefix $(PARSER_DIR), $(PARSER_SRC))) \
+	  $(addsuffix .c, $(addprefix $(EXECUTER_DIR), $(EXECUTER_SRC))) \
 	  $(addsuffix .c, $(addprefix $(MAIN_DIR), $(MAIN_SRC)))
 
 OBJ = $(SRC:c=o)

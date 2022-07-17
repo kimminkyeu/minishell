@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 16:57:17 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/17 19:06:07 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,7 +197,6 @@ t_tree *parse_to_tree_recur(t_list *tokens)
 	target_token = find_top_priority_token(tokens); // 잘라낼 타겟 찾기
 	
 	/** pop target token from original tokens */
-
 	/** 찾은 타겟의 주소를 노드에 복사(NULL이면 NULL이 복사됨) */
 	parent->token = target_token;
 

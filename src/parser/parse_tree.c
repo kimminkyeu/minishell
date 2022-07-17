@@ -6,34 +6,9 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 19:06:07 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/17 19:57:22 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-/** typedef enum e_token_type {
-  *                                 //
-  *     E_TYPE_DOUBLE_AMPERSAND,	//	[&&]
-  *     E_TYPE_DOUBLE_PIPE, 		//  [||]
-  *     E_TYPE_PIPE,				//	[|]
-  *     E_TYPE_BRACKET,				//  [(] [)] --> for subshell
-  *     E_TYPE_CMD_OR_ARG,			// simple_command
-  *                                 //
-  *     E_TYPE_CMD_OPTION,			//  [-*]
-  *     E_TYPE_REDIRECT,			//	[< << > >>]
-  *     E_TYPE_SINGLE_QUOTE,		//  [']
-  *     E_TYPE_DOUBLE_QUOTE,		//  ["]
-  *                                 //
-  *     E_TYPE_DEFAULT, 			// No type
-  *     // E_TYPE_SEMICOLON,		//	[;]
-  *     // E_TYPE_EOF,				//  [ EOF special token like NULL ]
-  *     // E_TYPE_ERROR				//  [ Error token. ]
-  * }	t_token_type; */
-
-/** 
- * NOTE : simple_cmd의 형식은 항상 [cmd]-[option]-[arg]-[arg...]
- *
- *
- * */
 
 #include <stdio.h>
 #include "../../include/lexer.h"
@@ -149,9 +124,7 @@ void	ft_lst_pop_one(t_list **node, t_list *pop_target)
 t_list	*collect_redirection_node(t_list *tokens)
 {
 	/** 주어진 토큰 리스트를 순회하면서, redirection을 (모두) 찾아 하나의 리스트로 갱신 및  반환한다.
-	 *
 	 * NOTE : 이때, 토큰 리스트의 왼쪽부터 순회하면서 발견시 redirection list의 뒤에 순서대로 추가한다.
-	 * 
 	 * 이렇게 순서대로 추가해줘야 나중에 적용시 가장 마지막 애가 적용되도록 편하게 로직 작성가능하다.
 	 * */
 	t_list	*target; // redirection
@@ -196,18 +169,13 @@ t_tree *parse_to_tree_recur(t_list *tokens)
 	parent = new_tree_node();
 	target_token = find_top_priority_token(tokens); // 잘라낼 타겟 찾기
 	
-	/** pop target token from original tokens */
-	/** 찾은 타겟의 주소를 노드에 복사(NULL이면 NULL이 복사됨) */
-	parent->token = target_token;
-
-	/** 캐스팅 귀찮음 해결을 위한 변수 사용. */
+	parent->token = target_token; /** 찾은 타겟의 주소를 노드에 복사(NULL이면 NULL이 복사됨) */
 	if (target_token != NULL)
 		target_token_ptr = target_token->content;
 
-	// set redirection list. cmd일때만 redirection list가 존재함.
+	/* Set redirection list */
 	if (target_token == NULL || target_token_ptr->type == E_TYPE_SIMPLE_CMD \
-			|| target_token_ptr->type == E_TYPE_BRACKET \
-			/*|| target_token_ptr->type == E_TYPE_REDIRECT*/)
+			|| target_token_ptr->type == E_TYPE_BRACKET)
 	{
 		parent->redirection = collect_redirection_node(tokens);
 	}
@@ -216,20 +184,17 @@ t_tree *parse_to_tree_recur(t_list *tokens)
 		t_list *left_tokens = tokens;
 		t_list *right_tokens = target_token->next;
 
-		/** Target_token의 왼쪽 노드와 연결 해제 */
+		/** Target_token의 왼쪽 노드와 연결 끊기 */
 		t_list	*target_prev = ft_lst_get_prev_node(tokens, target_token);
 		if (target_prev != NULL)
 			target_prev->next = NULL;
 
-		/** Target_token의 오른쪽 노드와 연결 해제 */
-		target_token->next = NULL; // 오른쪽 노드와 연결 끊기
+		target_token->next = NULL; /* 오른쪽 노드와 연결 끊기 */
 
-		/** ft_lst_pop_one(tokens, target_token); */
-
+		/** 재귀 들어가기 */
 		parent->left = parse_to_tree_recur(left_tokens);
 		parent->right = parse_to_tree_recur(right_tokens);
 	}	
-	/** 재귀적으로 들어가기 */
 	return (parent);
 }
 

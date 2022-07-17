@@ -1,24 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   helper.h                                           :+:      :+:    :+:   */
+/*   parse.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/15 22:22:10 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 14:41:50 by minkyeki         ###   ########.fr       */
+/*   Created: 2022/07/17 14:22:29 by minkyeki          #+#    #+#             */
+/*   Updated: 2022/07/17 14:40:16 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef HELPER_H
-# define HELPER_H
+#ifndef PARSE_H
+# define PARSE_H
 
-# include <stdio.h>
-# include "../../include/lexer.h"
-# include "../../include/parse.h"
+# include "../src/parser/parse_tree.h"
 
-const char	*get_token_type(t_token_type type);
-void		print_tokens(t_list *tokens);
-void		print_tree(t_tree *root);
+/* @ Convert tokens lists to Abstract Syntax tree 
+ *
+ * NOTE : must use 'delete_tree_node()' while traversing each node!
+ *
+ * */
+extern t_tree *parse(t_list *tokens);
 
-#endif /* HELPER_H */
+#endif /* PARSE_H */

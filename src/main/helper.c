@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 22:20:22 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 15:28:05 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/17 16:57:09 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@ const char	*get_token_type(t_token_type type)
 {
 	if (type == E_TYPE_DEFAULT)
 		return ("?");
-	else if (type == E_TYPE_CMD_OR_ARG)
+	else if (type == E_TYPE_SIMPLE_CMD)
 		return ("CMD_OR_ARG");
-	else if (type == E_TYPE_CMD_OPTION)
-		return ("CMD_OPTION");
+	/** else if (type == E_TYPE_CMD_OPTION) */
+		/** return ("CMD_OPTION"); */
 	else if (type == E_TYPE_SINGLE_QUOTE)
 		return ("SINGLE_QUOTE");
 	else if (type == E_TYPE_DOUBLE_QUOTE)
@@ -106,7 +106,10 @@ void	print_tree_recur(t_tree *root, int space)
 	print_tree_recur(root->right, space);
 
 	print_whitespace(COUNT, space);
-	printf("type : %s\n", get_token_type(((t_token *)root->token->content)->type));
+	if (root->token != NULL)
+		printf("type : %s\n", get_token_type(((t_token *)root->token->content)->type));
+	else
+		printf("type : E_TYPE_DEFAULT\n");
 	print_each_attr(root->token, space, "token: ");
 	print_each_attr(root->redirection, space, "redir: ");
 	printf("\n\n");

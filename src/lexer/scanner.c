@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:03:41 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/16 20:08:56 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/17 16:56:59 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,6 @@ bool	is_meta_char(char c)
 		return (false);
 	else
 		return (true);
-
 }
 
 void	get_pipe(t_token *tok, t_scanner *scan)
@@ -177,30 +176,30 @@ void	get_bracket(t_token *tok, t_scanner *scan)
 	}
 }
 
-void	get_cmd_option(t_token *tok, t_scanner *scan)
-{
-	char	c;
-
-	tok->f_push_back(tok, scan->f_next(scan));
-	tok->type = E_TYPE_CMD_OPTION;
-	while (scan->f_has_next(scan))
-	{
-		c = scan->f_peek(scan);
-		if (!ft_isspace(c) && !is_meta_char(c) && c != '\'' && c != '\"' \
-				&& c != '(' && c != ')')
-			tok->f_push_back(tok, scan->f_next(scan));
-		else
-			break ;
-	}
-
-}
+/** void	get_cmd_option(t_token *tok, t_scanner *scan)
+  * {
+  *     char	c;
+  *
+  *     tok->f_push_back(tok, scan->f_next(scan));
+  *     tok->type = E_TYPE_CMD_OPTION;
+  *     while (scan->f_has_next(scan))
+  *     {
+  *         c = scan->f_peek(scan);
+  *         if (!ft_isspace(c) && !is_meta_char(c) && c != '\'' && c != '\"' \
+  *                 && c != '(' && c != ')')
+  *             tok->f_push_back(tok, scan->f_next(scan));
+  *         else
+  *             break ;
+  *     }
+  *
+  * } */
 
 void	get_cmd_or_arg(t_token *tok, t_scanner *scan)
 {
 	char	c;
 
 	tok->f_push_back(tok, scan->f_next(scan));
-	tok->type = E_TYPE_CMD_OR_ARG;
+	tok->type = E_TYPE_SIMPLE_CMD;
 	while (scan->f_has_next(scan))
 	{
 		c = scan->f_peek(scan);
@@ -244,28 +243,28 @@ t_list	*tokenize(char *line)
 			get_single_quote(token, &scanner);
 		else if (c == '(')
 			get_bracket(token, &scanner);
-		else if (c == '-')
-			get_cmd_option(token, &scanner);
+		/** else if (c == '-') */
+			/** get_cmd_option(token, &scanner); */
 		else
 			get_cmd_or_arg(token, &scanner);
 		ft_lstadd_back(&token_list, ft_lstnew(token));
 	}
 
 	/** 완성된 리스트를 돌면서 1차 검토, redir 옆은 redir_arg로 처리함. */
-	/** t_list	*tmp;
-	  * t_token	*tok;
-	  * tmp = token_list;
-	  * while (tmp->next != NULL)
-	  * {
-	  *     tok = tmp->content;
-	  *     if (tok->type == E_TYPE_REDIRECT)
-	  *     {
-	  *         tmp = tmp->next;
-	  *         tok = tmp->content;
-	  *         tok->type = E_TYPE_REDIR_ARG;
-	  *         continue ;
-	  *     }
-	  *     tmp = tmp->next;
-	  * } */
+	t_list	*tmp;
+	t_token	*tok;
+	tmp = token_list;
+	while (tmp->next != NULL)
+	{
+		tok = tmp->content;
+		if (tok->type == E_TYPE_REDIRECT)
+		{
+			tmp = tmp->next;
+			tok = tmp->content;
+			tok->type = E_TYPE_REDIR_ARG;
+			continue ;
+		}
+		tmp = tmp->next;
+	}
 	return (token_list);
 }

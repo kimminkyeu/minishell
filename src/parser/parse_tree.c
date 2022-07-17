@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 15:35:18 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/17 16:57:17 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@
  *
  * */
 
+#include <stdio.h>
 #include "../../include/lexer.h"
 #include "parse_tree.h"
 
@@ -73,10 +74,10 @@ t_list	*find_target_token(t_list *tokens, t_token_type _type)
 	{
 		token = cur->content;
 		if (token->type == _type)
-			break ;
+			return (cur);
 		cur = cur->next;
 	}
-	return (cur);
+	return (NULL);
 }
 
 /** 우선순위가 가장 높은 토큰을 찾아서 그 주소를 반환 */
@@ -89,7 +90,7 @@ t_list	*find_top_priority_token(t_list *tokens)
 	/* (1) find && || DOUBLE_AMPERSAND DOUBLE_PIPE */
 	i = 0;
 	target = NULL;
-	while (i < 5) // 총 5개의 타입( 1.[&&] 2.[||] 3.[|] 4.[()] 5.[cmd_or_arg] )을 찾는다. 
+	while (i < 5) // 총 5개의 타입( 1.[&&] 2.[||] 3.[|] 4.[()] 5.[cmd_or_arg])을 찾는다. 
 	{
 		target = find_target_token(tokens, i); // enum이라 index 넣어줘도 됨.
 		if (target != NULL) // 만약 찾았다면 return
@@ -120,20 +121,26 @@ t_list	*ft_lst_get_prev_node(t_list *node, t_list *target)
 }
 
 /** 노드를 제거하지는 않고, 그냥 리스트에서 뽑아내기만 함. */
-void	ft_lst_pop_one(t_list *node, t_list *pop_target)
+void	ft_lst_pop_one(t_list **node, t_list *pop_target)
 {
 	t_list	*cur;
 
-	if (node == NULL || pop_target == NULL)
+	if (node == NULL || *node == NULL || pop_target == NULL)
 		return ;
-	cur = node;
+	if (*node == pop_target)
+	{
+		*node = (*node)->next;
+		return ;
+	}
+	cur = *node;
+
 	while (cur != NULL)
 	{
 		if (cur->next == pop_target)
 		{
 			/** 이전 노드의 next를 pop_target의 다음노드로 바꿔서, pop_target이 리스트에서 빠진다. */
 			cur->next = pop_target->next;
-			break ;
+			return ;
 		}
 		cur = cur->next; // 이제 cur은 target의 이전 노드가 됨.
 	}
@@ -156,20 +163,20 @@ t_list	*collect_redirection_node(t_list *tokens)
 	target = find_target_token(tokens, E_TYPE_REDIRECT); // redirecion 기호(ex. < )
 	redir_list = target;
 	cur = redir_list; /* 만약 redir이 없으면 null이 들어올 거임.*/
-	ft_lst_pop_one(tokens, target);
+	ft_lst_pop_one(&tokens, target);
 	while (target != NULL && target->next != NULL)
 	{
 		if (target != NULL && target->next != NULL \
-				&& ((t_token*)target->next->content)->type == E_TYPE_CMD_OR_ARG)
+				&& ((t_token *)target->next->content)->type == E_TYPE_REDIR_ARG)
 		{
 			target_arg = target->next;
 			cur->next = target_arg;
-			ft_lst_pop_one(tokens, target_arg);
+			ft_lst_pop_one(&tokens, target_arg);
 			cur = cur->next;
 		}
 		target = find_target_token(tokens, E_TYPE_REDIRECT); // redirecion 기호(ex. < )
 		cur->next = target; /* 만약 redir이 없으면 null이 들어올 거임.*/
-		ft_lst_pop_one(tokens, target);
+		ft_lst_pop_one(&tokens, target);
 		cur = cur->next;
 	}
   	return (redir_list);
@@ -186,32 +193,30 @@ t_tree *parse_to_tree_recur(t_list *tokens)
 	if (tokens == NULL)
 		return (NULL);
 
-	/** printf("here1\n"); */
 	parent = new_tree_node();
-	/** printf("here2\n"); */
-
-	/** 잘라낼 높은 우선순위 연산자 찾기 (&& || | ...) */
-	/** null이 나올 때 까지 token 리스트를 순회  */
-	target_token = find_top_priority_token(tokens);
-
-	t_list *left_tokens = tokens;
-	t_list *right_tokens = target_token->next;
-
+	target_token = find_top_priority_token(tokens); // 잘라낼 타겟 찾기
+	
 	/** pop target token from original tokens */
 
-	/** 찾은 타겟의 주소를 노드에 복사 */
+	/** 찾은 타겟의 주소를 노드에 복사(NULL이면 NULL이 복사됨) */
 	parent->token = target_token;
 
 	/** 캐스팅 귀찮음 해결을 위한 변수 사용. */
-	target_token_ptr = target_token->content;
+	if (target_token != NULL)
+		target_token_ptr = target_token->content;
 
 	// set redirection list. cmd일때만 redirection list가 존재함.
-	if (target_token_ptr->type == E_TYPE_CMD_OR_ARG || target_token_ptr->type == E_TYPE_BRACKET)
+	if (target_token == NULL || target_token_ptr->type == E_TYPE_SIMPLE_CMD \
+			|| target_token_ptr->type == E_TYPE_BRACKET \
+			/*|| target_token_ptr->type == E_TYPE_REDIRECT*/)
 	{
 		parent->redirection = collect_redirection_node(tokens);
 	}
-	else // if [|] [&&] [||] [( )]
+	else // if [|] [&&] [||] [( )] ...
 	{
+		t_list *left_tokens = tokens;
+		t_list *right_tokens = target_token->next;
+
 		/** Target_token의 왼쪽 노드와 연결 해제 */
 		t_list	*target_prev = ft_lst_get_prev_node(tokens, target_token);
 		if (target_prev != NULL)
@@ -219,7 +224,7 @@ t_tree *parse_to_tree_recur(t_list *tokens)
 
 		/** Target_token의 오른쪽 노드와 연결 해제 */
 		target_token->next = NULL; // 오른쪽 노드와 연결 끊기
-								   
+
 		/** ft_lst_pop_one(tokens, target_token); */
 
 		parent->left = parse_to_tree_recur(left_tokens);

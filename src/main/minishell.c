@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 14:42:24 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/17 17:41:34 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,24 +48,44 @@ void	shell_loop(void)
 		line = readline("& ");
 		add_history(line);
 
+
+		/* (0) Check input. 쉘 입력값 검사(공백만 입력, 아무것도 없는 입력)
+		 * ctrl+c : ^C가 메시지에 출력 + 프롬프트 새로 띄우기 
+		 * ctrl+d : exit이 메시지에 출력 + 종료
+		 * */
+		// ...
+
+
 		/* (1) Lexer (Token list) */
 		tokens = tokenize(line);
 		print_tokens(tokens);	
+		free(line);
 
-		/* (2) Parser (AST) */
+		/* (2) Token을 한번 쭉 돌면서 1차 에러 체킹 (혹은 토큰 만들때 부터 검사 진행)
+		 * ex. echo hello | grep hello >out | (a (c)b) 는 커맨드 파싱전에 끝난다.
+		 * 검사 내용
+		 * 1. 괄호안에 괄호가 있는가? --> 있다면 에러 처리. 트리를 만들지 않는다.
+		 * 2. 
+		 * */
+
+
+		/* (3) Parser (AST) */
 		syntax_tree = parse(tokens);
 		print_tree(syntax_tree);
 
 
-		/* (3) Executer */
+
+		/* (4) Executer + Check syntax of each node 
+		 * NOTE : 모든 문법 검사는 각 토큰 실행 직전에 한다.
+		 * */
 		/** status = execute(syntax_tree); */
 
-		/** (4) free token list and line... etc */
-		/** ft_lstclear(&tokens, delete_token); */
-		// TODO : 
-		// token_list를 편집해서 tree로 만들었기 때문에, 실행하는 executer에서 
-		// 실행 후 free해주는 (자원 정리) 과정을 책임져야 한다.
-		free(line);
+
+		/** NOTE : 
+		  * token_list를 편집해서 tree로 만들었기 때문에, 실행하는 executer에서
+		  * 실행 후 free해주는 (자원 정리) 과정을 책임져야 한다. */
+
+
 	}
 }
 

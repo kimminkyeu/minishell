@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/16 19:05:49 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/17 16:56:43 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,10 @@ typedef enum e_token_type {
 	E_TYPE_DOUBLE_PIPE, 		//  [||]
 	E_TYPE_PIPE,				//	[|]
 	E_TYPE_BRACKET,				//  [(] [)] --> for subshell
-	E_TYPE_CMD_OR_ARG,			// simple_command
-								//
-	E_TYPE_CMD_OPTION,			//  [-*]
+	E_TYPE_SIMPLE_CMD,			// simple_command
 	E_TYPE_REDIRECT,			//	[< << > >>]
+								//
+	// E_TYPE_CMD_OPTION,			//  [-*]
 	E_TYPE_REDIR_ARG,			//	[infile outfile]
 	E_TYPE_SINGLE_QUOTE,		//  [']
 	E_TYPE_DOUBLE_QUOTE,		//  ["]

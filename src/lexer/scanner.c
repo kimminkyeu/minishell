@@ -1,8 +1,7 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   scanner.c                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
+/*   scanner.c                                          :+:      :+:    :+:   */ /*                                                    +:+ +:+         +:+     */
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 16:03:41 by minkyeki          #+#    #+#             */
@@ -213,7 +212,7 @@ void	get_cmd_or_arg(t_token *tok, t_scanner *scan)
 	}
 }
 
-t_list	*tokenize(char *line)
+t_list	*create_initial_tokens(char *line)
 {
 	t_scanner	scanner;
 	t_list		*token_list;
@@ -244,15 +243,20 @@ t_list	*tokenize(char *line)
 		else if (c == '(')
 			get_bracket(token, &scanner);
 		/** else if (c == '-') */
-			/** get_cmd_option(token, &scanner); */
+		/** get_cmd_option(token, &scanner); */
 		else
 			get_cmd_or_arg(token, &scanner);
 		ft_lstadd_back(&token_list, ft_lstnew(token));
 	}
+	return (token_list);
+}
 
 	/** 완성된 리스트를 돌면서 1차 검토, redir 옆은 redir_arg로 처리함. */
+void	set_redirection_arg(t_list *token_list)
+{
 	t_list	*tmp;
 	t_token	*tok;
+
 	tmp = token_list;
 	while (tmp->next != NULL)
 	{
@@ -265,6 +269,34 @@ t_list	*tokenize(char *line)
 			continue ;
 		}
 		tmp = tmp->next;
+	}
+}
+
+/** TODO : 아래 신택스 체킹 진행하기 */
+int	is_syntax_error(t_list *token_list)
+{
+
+	(void)token_list;
+	/** TODO : 만약 에러가 발생하면, 해당 메시지를 출력하기 */
+
+	return (0);
+}
+
+t_list	*tokenize(char *line)
+{
+	t_list		*token_list;
+
+	/** (0) 초기 토큰 리스트 생성. */
+	token_list = create_initial_tokens(line);
+
+	/** (1) redirection argument 세팅. --> 트리 만들때 필요 */
+	set_redirection_arg(token_list);
+
+	/** (2) 에러 신택스 검사. 만약 에러가 발생하면 token 전부 free하고 null 반환*/
+	if (is_syntax_error(token_list))
+	{
+		ft_lstclear(&token_list, delete_token);
+		return (NULL);
 	}
 	return (token_list);
 }

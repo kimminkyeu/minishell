@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 20:23:21 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/17 20:26:13 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,18 @@ extern void	print_tree_node(t_list *token);
 
 int	execute_node(t_tree *node)
 {
-	/** NOTE : write execution code here */
+	/** 아래 코드는 방문 순서를 확인하기 위한 코드일 뿐, 구현시엔 제거할 것. */
 	print_tree_node(node->token);
+	printf("\n");
 	print_tree_node(node->redirection);
+	printf("\n");
+	printf("-------------------");
+	printf("\n\n");
+
+
+	/** NOTE : write execution code here */
+
+
 
 
 	return (0);

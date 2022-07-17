@@ -275,9 +275,8 @@ void	set_redirection_arg(t_list *token_list)
 /** TODO : 아래 신택스 체킹 진행하기 */
 int	is_syntax_error(t_list *token_list)
 {
-
 	(void)token_list;
-	/** TODO : 만약 에러가 발생하면, 해당 메시지를 출력하기 */
+	/** TODO :신택스 에러 체킹 */
 
 	return (0);
 }
@@ -292,7 +291,9 @@ t_list	*tokenize(char *line)
 	/** (1) redirection argument 세팅. --> 트리 만들때 필요 */
 	set_redirection_arg(token_list);
 
-	/** (2) 에러 신택스 검사. 만약 에러가 발생하면 token 전부 free하고 null 반환*/
+	/** (2) 에러 신택스 검사. 만약 에러가 발생하면 token 전부 free하고 null 반환
+	 * NOTE : 오류 메시지는 is_syntax_error 함수 내부에서 출력해줌.
+	 * */
 	if (is_syntax_error(token_list))
 	{
 		ft_lstclear(&token_list, delete_token);

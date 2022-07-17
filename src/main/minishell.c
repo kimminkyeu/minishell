@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 19:53:07 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/17 20:23:21 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,12 +27,38 @@
 /** (2) helper functions. delete later */
 #include "helper.h"
 
-/** int	execute(t_tree *syntax_tree)
-  * {
-  *     (void)syntax_tree;
-  *
-  *     return (1);
-  * } */
+
+extern void	print_tree_node(t_list *token);
+
+int	execute_node(t_tree *node)
+{
+	/** NOTE : write execution code here */
+	print_tree_node(node->token);
+	print_tree_node(node->redirection);
+
+
+	return (0);
+}
+
+
+void	inorder_recur(t_tree *node, int *status)
+{
+	/** status가 몇일 때 어떤 행동을 할지는 구현할 때 정하기 */
+	if (node == NULL || *status == 1)
+		return ;
+	inorder_recur(node->left, status);
+	*status = execute_node(node);
+	inorder_recur(node->right, status);
+}
+
+/** Executer function. make traversing */
+int	execute(t_tree *syntax_tree)
+{
+	int	status;
+
+	status = 1;
+	inorder_recur(syntax_tree, &status);
+}
 
 void	shell_loop(void)
 {
@@ -75,16 +101,14 @@ void	shell_loop(void)
 		print_tree(syntax_tree);
 
 
+		/* (3) -------------------------------------- 
+		 *     | Executer (inorder traverse)        | 
+		 *     --------------------------------------*/
+		status = execute(syntax_tree);
 
-		/* (3) Executer + execution error checking
-		 *
-		 * NOTE : 모든 문법 검사는 각 토큰 실행 직전에 한다.
-		 * */
-		/** status = execute(syntax_tree); */
 		/** NOTE : 
-		  * token_list를 편집해서 tree로 만들었기 때문에, 실행하는 executer에서
-		  * 실행 후 free해주는 (자원 정리) 과정을 책임져야 한다. */
-
+		 * token_list를 편집해서 tree로 만들었기 때문에, 실행하는 executer에서
+		 * 실행 후 free해주는 (자원 정리) 과정을 책임져야 한다. */
 
 
 		free(line);

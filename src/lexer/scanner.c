@@ -116,13 +116,23 @@ void	get_double_quote(t_token *tok, t_scanner *scan)
 	while (scan->f_has_next(scan))
 	{
 		c = scan->f_peek(scan);
-		if (ft_isspace(c))
+		/** if (ft_isspace(c)) */
+		/** { */
+			/** tok->f_push_back(tok, scan->f_next(scan)); */
+			/** scan->f_skip_white_space(scan); */
+		/** } */
+		/** else if (c == '\"') */
+		/**     break ; */
+		if (c == '\"')
 		{
 			tok->f_push_back(tok, scan->f_next(scan));
-			scan->f_skip_white_space(scan);
-		}
-		else if (is_meta_char(c))
+			c = scan->f_peek(scan);
+			if (ft_isspace(c))
+				tok->f_push_back(tok, scan->f_next(scan));
+			if (ft_isspace(c) && is_meta_char(scan->f_peek(scan)))
+				tok->f_pop_back(tok);
 			break ;
+		}
 		else
 			tok->f_push_back(tok, scan->f_next(scan));
 	}
@@ -137,13 +147,16 @@ void	get_single_quote(t_token *tok, t_scanner *scan)
 	while (scan->f_has_next(scan))
 	{
 		c = scan->f_peek(scan);
-		if (ft_isspace(c))
+		if (c == '\'')
 		{
 			tok->f_push_back(tok, scan->f_next(scan));
-			scan->f_skip_white_space(scan);
-		}
-		else if (is_meta_char(c))
+			c = scan->f_peek(scan);
+			if (ft_isspace(c))
+				tok->f_push_back(tok, scan->f_next(scan));
+			if (ft_isspace(c) && is_meta_char(scan->f_peek(scan)))
+				tok->f_pop_back(tok);
 			break ;
+		}
 		else
 			tok->f_push_back(tok, scan->f_next(scan));
 	}
@@ -206,11 +219,27 @@ void	get_cmd_or_arg(t_token *tok, t_scanner *scan)
 				&& c != '|'  /* && c != '&' */ && c != '<' && c != '>' \
 				&& c != '(' && c != ')' && c != ';' \
 				&& c != '\'' && c != '\"')
+		{
 			tok->f_push_back(tok, scan->f_next(scan));
+		}
 		else
+		{
+			if (ft_isspace(c))
+				tok->f_push_back(tok, scan->f_next(scan));
+			if (ft_isspace(c) \
+					&& (is_meta_char(scan->f_peek(scan)) || scan->f_peek(scan) == '-'))
+				tok->f_pop_back(tok);
 			break ;
+		}
 	}
 }
+
+/** void	get_whitespace(t_token *tok, t_scanner *scan)
+  * {
+  *     tok->f_push_back(tok, scan->f_next(scan));
+  *     tok->type = E_TYPE_WHITESPACE;
+  *     scanner_skip_white_space(scan);
+  * } */
 
 t_list	*create_initial_tokens(char *line)
 {
@@ -242,8 +271,8 @@ t_list	*create_initial_tokens(char *line)
 			get_single_quote(token, &scanner);
 		else if (c == '(')
 			get_bracket(token, &scanner);
-		/** else if (c == '-') */
-		/** get_cmd_option(token, &scanner); */
+		/** else if (ft_isspace(c)) */
+			/** get_whitespace(token, &scanner); */
 		else
 			get_cmd_or_arg(token, &scanner);
 		ft_lstadd_back(&token_list, ft_lstnew(token));
@@ -272,13 +301,93 @@ void	set_redirection_arg(t_list *token_list)
 	}
 }
 
+bool	is_meta_token_type(t_token_type type)
+{
+	if (type != E_TYPE_PIPE && type != E_TYPE_DOUBLE_PIPE && \
+			type != E_TYPE_REDIRECT && type != E_TYPE_DOUBLE_AMPERSAND)
+		return (false);
+	else
+		return (true);
+}
+
 /** TODO : 아래 신택스 체킹 진행하기 */
 int	is_syntax_error(t_list *token_list)
 {
-	(void)token_list;
 	/** TODO :신택스 에러 체킹 */
+/**   done  (1) >이후 토큰이 끝나고 파일이 없을 경우 bash와 같은 신택스 에러 출력
+  *   done (2) echo ||| 이렇게 될 경우 |문자에 대한 신택스 에러 출력.
+  *         즉 파이프 다음에 파이프가 또 나올 경우,
+  *         즉 메타 캐릭터(&& || |)토큰 이후 바로 또 다른 메타캐릭터 토큰이 나온 경우
+  *    done (3) 괄호가 안닫힌 경우 (a
+  *     (3) ( ) 괄호 안에 괄호가 하나라도 있을 경우 신택스 에러 출력
+  *     (4) (a)(b)는 )에 대한 신택스 에러 출력
+  *     (5) (a) | (b) 는 신택스 에러 없음. 실행부로 넘어감.
+  *     (6) (a)는 신택스 에러 없음. 실행부로 넘어감.
+  *  */
 
-	return (0);
+	t_list	*cur;
+	t_token	*tok_1;
+	t_token	*tok_2;
+	char	c;
+
+	cur = token_list;
+
+	while (cur->next != NULL)
+	{
+		tok_1 = cur->content;
+		tok_2 = cur->next->content;
+		c = tok_2->str->text[0];
+
+		/** 만약 && || | > 이 서로 연속된다면 */
+		if (is_meta_token_type(tok_1->type) && is_meta_token_type(tok_2->type))
+		{
+			printf("lee-shell: syntax error near unexpected token '%c'\n", c);
+			return (true);
+		}
+
+		cur = cur->next;
+	}
+
+	/** 여기를 빠져나온 노드는 마지막 노드 */
+	tok_1 = cur->content;
+	if (tok_1->type == E_TYPE_REDIRECT)
+	{
+		printf("lee-shell: syntax error near unexpected token `newline'\n");
+		return (true);
+	}
+	else if (tok_1->type == E_TYPE_BRACKET)
+	{
+		c = tok_1->str->text[tok_1->str->text_len - 1];
+		if (c != ')') // 만약 괄호가 안닫힌 경우
+		{
+			printf("lee-shell: syntax error near unexpected token `%c'\n", c);
+			return (true);
+		}
+		else // 괄호 안에 괄호가 또 있는지 체크
+		{
+			char	*tmp;
+
+			/** FIXME : 여기서 세그폴드가 뜰수 도 있다. */
+			tmp = &(tok_1->str->text[1]); // 두번째 문자부터 확인 시작
+			while (*tmp != '\0')
+			{
+				if (*tmp == '(')
+				{
+					tmp++;
+					printf("lee-shell: syntax error near unexpected token '");
+					while (*tmp != ')' && *tmp != '\0')
+					{
+						printf("%c", *tmp);
+						tmp++;
+					}
+					printf("'\n");
+					return (true);
+				}
+				tmp++;
+			}
+		}
+	}
+	return (false);
 }
 
 t_list	*tokenize(char *line)
@@ -288,9 +397,6 @@ t_list	*tokenize(char *line)
 	/** (0) 초기 토큰 리스트 생성. */
 	token_list = create_initial_tokens(line);
 
-	/** (1) redirection argument 세팅. --> 트리 만들때 필요 */
-	set_redirection_arg(token_list);
-
 	/** (2) 에러 신택스 검사. 만약 에러가 발생하면 token 전부 free하고 null 반환
 	 * NOTE : 오류 메시지는 is_syntax_error 함수 내부에서 출력해줌.
 	 * */
@@ -299,5 +405,9 @@ t_list	*tokenize(char *line)
 		ft_lstclear(&token_list, delete_token);
 		return (NULL);
 	}
+
+	/** (1) redirection argument 세팅. --> 트리 만들때 필요 */
+	set_redirection_arg(token_list);
+
 	return (token_list);
 }

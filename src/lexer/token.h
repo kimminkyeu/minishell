@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 16:56:43 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/18 11:19:01 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ typedef enum e_token_type {
 	E_TYPE_SINGLE_QUOTE,		//  [']
 	E_TYPE_DOUBLE_QUOTE,		//  ["]
 								//
+	E_TYPE_WHITESPACE, 			// 공백 토큰
 	E_TYPE_DEFAULT, 			// No type
 	// E_TYPE_SEMICOLON,		//	[;]
 	// E_TYPE_EOF,				//  [ EOF special token like NULL ]

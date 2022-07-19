@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/19 15:55:10 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/20 00:25:57 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	shell_loop(void) /* TODO : change void type to t_minishell */
 	t_tree	*syntax_tree;
 
 	status = CMD_SUCCEESS;
-	while (status == CMD_SUCCEESS)
+	while (status != CMD_STOP_SHELL)
 	{
 		/* Readline library  */
 		line = readline("& ");

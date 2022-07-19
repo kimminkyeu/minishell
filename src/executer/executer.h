@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 22:23:05 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/19 23:39:35 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # define CMD_FAILURE		(0)
 # define CMD_SUCCEESS		(1)
 
-void	delete_tree_node(t_tree **node);
+void	delete_tree_node(t_tree *node);
 int		execute_node(t_tree *node);
 void	inorder_recur(t_tree *node, int *status);
 int		execute(t_tree *syntax_tree);

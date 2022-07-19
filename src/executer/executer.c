@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/19 14:55:40 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/19 23:51:36 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,29 +14,21 @@
 #include "../parser/parse_tree.h"
 #include "executer.h"
 
-void	delete_tree_node(t_tree **node)
+void	delete_tree_node(t_tree *node)
 {
-	if (*node != NULL)
+	if (node != NULL)
 	{
-		if ((*node)->redirection != NULL)
-		{
-			ft_lstclear(&((*node)->redirection), delete_token);
-			printf("Deleting node's redir...\n");
-		}
-		if ((*node)->token != NULL)
-		{
-			ft_lstclear(&((*node)->token), delete_token);
-			printf("Deleting node's token...\n");
-		}
-		free(*node);
-		*node = NULL;
+		if ((node)->redirection != NULL)
+			ft_lstclear(&node->redirection, delete_token);
+		if ((node)->token != NULL)
+			ft_lstclear(&node->token, delete_token);
+		free(node);
 	}
 }
 
 int	execute_node(t_tree *node)
 {
 	/** 아래 코드는 방문 순서를 확인하기 위한 코드일 뿐, 구현시엔 제거할 것. */
-	printf("\n");
 	print_tree_node(node->token);
 	printf("\n");
 	print_tree_node(node->redirection);
@@ -50,26 +42,32 @@ int	execute_node(t_tree *node)
 
 
 
-	/** NOTE : 만약 해당 노드를 실행했다면, node 자원 해제하기 */
-	delete_tree_node(&node);
+
+	printf("-------------------\n");
 
 
-	printf("-------------------");
-	printf("\n");
-
-
-	return (1);
+	/** NOTE : if success, then return CMD_SUCCESS
+	 *         else, return CMD_FAILURE */
+	return (CMD_SUCCEESS);
 }
 
 
 void	inorder_recur(t_tree *node, int *status)
 {
 	/** status가 몇일 때 어떤 행동을 할지는 구현할 때 정하기 */
-	if (node == NULL || *status == CMD_FAILURE)
+	if (node == NULL)
 		return ;
-	inorder_recur(node->left, status);
-	*status = execute_node(node);
-	inorder_recur(node->right, status);
+	if (*status != CMD_FAILURE)
+	{
+		inorder_recur(node->left, status);
+		*status = execute_node(node);
+		inorder_recur(node->right, status);
+
+
+		/** FIXME : 만약 해당 노드를 실행했다면
+		 * node 자원 해제하기. 근데 여기서 하는게 맞을까?  */
+		delete_tree_node(node);
+	}
 }
 
 /** Executer function. make traversing */

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/19 14:51:47 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/19 15:55:10 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,18 +57,26 @@ void	shell_loop(void) /* TODO : change void type to t_minishell */
 		if (tokens == NULL) /* NULL if syntax error occurs */
 		{
 			free(line);
+			status = CMD_FAILURE;
 			continue ;
 		}
-		/** Visualize token_list */
-		print_tokens(tokens);		
-
+		else /* Visualize tokens */
+			print_tokens(tokens);		
 
 
 		/* (2) ------------------------ 
 		 *     |  Parser (AST)        | 
 		 *     ------------------------*/
 		syntax_tree = parse(tokens);
-		print_tree(syntax_tree);
+		if (syntax_tree == NULL)
+		{
+			free(line);
+			free(tokens);
+			status = CMD_FAILURE;
+			continue ;
+		}
+		else
+			print_tree(syntax_tree);
 
 
 		/* (3) ------------------------------------------ 
@@ -79,10 +87,8 @@ void	shell_loop(void) /* TODO : change void type to t_minishell */
 		 *     |  (2) NOTE : 노드 방문중 에러 발생시    |
 		 *     |	  모든 노드를 해제해야 한다.        | 
 		 *     -----------------------------------------*/
+
 		status = execute(syntax_tree);
-
-
-
 		free(line);
 		/** system("leaks minishell > leaks_result_temp; cat leaks_result_temp | grep leaked && rm -rf leaks_result_temp"); */
 	}

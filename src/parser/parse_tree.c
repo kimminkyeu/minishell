@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 22:15:37 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/19 15:42:01 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ t_tree	*new_tree_node(void)
 	node = ft_calloc(1, sizeof(*node));
 	node->left = NULL;
 	node->right = NULL;
-	/** node->redirection = NULL; */
+	node->redirection = NULL;
 	node->token = NULL;
 	return (node);
 }

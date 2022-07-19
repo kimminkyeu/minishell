@@ -1,4 +1,8 @@
+#include "../lexer/scanner.h"
 #include "../parser/parse_tree.h"
+
+# define TRUE 1;
+# define FALSE 0;
 
 /*
 ** example: [echo] [-nnn] [a] [b] [-n] [c]
@@ -8,36 +12,45 @@
 ** 2) print from 3th to last
 */
 
-int	is_n_option(char *text)
+static int	is_n_option(char *str)
 {
-	else if (ft_strncmp(cur->content->str->text, "-n", 2))
-	while ()
+	size_t	i;
+
+	i = 0;
+	if (ft_strncmp(str, "-n", 2))
+	{
+		i = i + 2;
+		while (str[i] == 'n')
+			i++;
+		if (str[i] == '\0')
+				return (TRUE);
+	}
+	else
+		return (FALSE);
 }
 
-void	builtin_echo(t_list *token_list)
+static void	write_arguments(char **arglist, size_t i)
 {
-	t_list	*cur;
+	while (arglist[i])
+	{
+		ft_putstr_fd(cur->content->string->str, FILENO_STDOUT);
+		if (arglist[i + 1])
+			ft_putchar_fd(' ', FILENO_STDOUT);
+		i++;
+	}
+}
+
+void	exec_echo(char **arglist)
+{
 	int		n_option;
 
-	cur = token_list;
-	cur = cur->next;
-	if (cur == NULL)
-		return ;
 	n_option = FALSE;
-	if (is_n_option(cur->next->content->str->text) == TRUE)
-		n_option = TRUE;
-
-}
-
-void	set_redirection(t_list *redir_list)
-{
-	t_list	*cur;
-
-	close(/*원래 in*/);
-	close(/*원래 out*/);
-	cur = redir_list;
-	while (cur)
+	if (arglist[1] != NULL)
 	{
-		//
+		if (is_n_option(arglist[1]) == TRUE)
+			n_option = TRUE;
+		write_arguments(arglist, 1 + n_option);
 	}
+	if (n_option == FALSE)
+		ft_putchar_fd('\n', FILENO_STDOUT);
 }

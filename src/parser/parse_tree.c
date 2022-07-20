@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/19 15:42:01 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/20 18:02:44 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ t_tree	*new_tree_node(void)
 
 	node = ft_calloc(1, sizeof(*node));
 	node->left = NULL;
+	node->need_fork = 0;
 	node->right = NULL;
 	node->redirection = NULL;
 	node->token = NULL;
@@ -144,7 +145,7 @@ t_list	*collect_redirection_node(t_list *tokens)
 }
 
 /** TODO : free tree node while execution! */
-t_tree *parse_to_tree_recur(t_list *tokens)
+t_tree *parse_to_tree_recur(t_list *tokens, int need_fork, int is_last_pipe_cmd)
 {
 	t_tree	*parent;
 	t_list	*target_token;
@@ -160,6 +161,14 @@ t_tree *parse_to_tree_recur(t_list *tokens)
 	parent->token = target_token; /** 찾은 타겟의 주소를 노드에 복사(NULL이면 NULL이 복사됨) */
 	if (target_token != NULL)
 		target_token_ptr = target_token->content;
+
+
+	if (need_fork == 1 && target_token_ptr->type == E_TYPE_SIMPLE_CMD)
+	{
+		parent->need_fork = 1;
+		if (is_last_pipe_cmd == 1)
+			parent->is_last_pipe_cmd = 1;
+	}
 
 	/* Set redirection list */
 	if (target_token == NULL || target_token_ptr->type == E_TYPE_SIMPLE_CMD \
@@ -179,14 +188,21 @@ t_tree *parse_to_tree_recur(t_list *tokens)
 
 		target_token->next = NULL; /* 오른쪽 노드와 연결 끊기 */
 
+		if (target_token_ptr->type == E_TYPE_PIPE)
+		{
+			need_fork = 1;
+			is_last_pipe_cmd = 1;
+		}
+
+		
 		/** 재귀 들어가기 */
-		parent->left = parse_to_tree_recur(left_tokens);
-		parent->right = parse_to_tree_recur(right_tokens);
+		parent->left = parse_to_tree_recur(left_tokens, need_fork, 0);
+		parent->right = parse_to_tree_recur(right_tokens, need_fork, is_last_pipe_cmd);
 	}	
 	return (parent);
 }
 
 t_tree *parse(t_list *tokens)
 {
-	return (parse_to_tree_recur(tokens));
+	return (parse_to_tree_recur(tokens, 0, 0));
 }

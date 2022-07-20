@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 00:47:40 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/20 18:03:58 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,8 @@ void	execute_node(t_tree *node, int *status)
 	printf("\n");
 	print_tree_node(node->redirection);
 	printf("\n");
+	printf("fork: %d\n", node->need_fork);
+	printf("last_pipe_cmd : %d\n", node->is_last_pipe_cmd);
 	
 
 	/** NOTE : write execution code here */
@@ -47,7 +49,6 @@ void	execute_node(t_tree *node, int *status)
 	
 	// Write code here ...
 	printf("-------------------\n");
-
 	/** TODO : if execution is exit, then set state to CMD_STOP_SHELL */
 
 	/** NOTE : if success, then set status to ... CMD_SUCCESS
@@ -57,8 +58,8 @@ void	execute_node(t_tree *node, int *status)
 
 	/** *status = CMD_SUCCEESS; */
 	/** *status = CMD_STOP_SHELL; */
-	*status = CMD_FAILURE;
-	printf("\033[31mCMD_FAILURE set, stopping execution...\033[0m\n");
+	/** *status = CMD_FAILURE; */
+	/** printf("\033[31mCMD_FAILURE set, stopping execution...\033[0m\n"); */
 	/** NOTE : 위 코드는 확인용이니 꼭 지울 것. */
 }
 

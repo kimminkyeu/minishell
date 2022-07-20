@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:22:29 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/17 22:17:05 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/20 18:00:32 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,12 +21,19 @@ typedef struct s_tree	t_tree;
 typedef struct s_tree {
 	t_list		*token; // list of tokens
 	t_list		*redirection;
+
+	/* if need_fork is true, then do fork() */
+	int			need_fork;
+
+	/* if pipe's last cmd, then do special handling */
+	int			is_last_pipe_cmd;
+
 	t_tree		*left;
 	t_tree		*right;
 }	t_tree;
 
 t_tree *parse(t_list *tokens);
-t_tree *parse_to_tree_recur(t_list *tokens);
+t_tree *parse_to_tree_recur(t_list *tokens, int need_fork, int is_last_pipe_cmd);
 t_list	*collect_redirection_node(t_list *tokens);
 void	ft_lst_pop_one(t_list **node, t_list *pop_target);
 t_list	*ft_lst_get_prev_node(t_list *node, t_list *target);

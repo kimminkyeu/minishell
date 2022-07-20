@@ -111,54 +111,45 @@ void	get_double_quote(t_token *tok, t_scanner *scan)
 {
 	char	c;
 
+	// tok->type = E_TYPE_DOU_QUOTE;
 	tok->f_push_back(tok, scan->f_next(scan));
-	tok->type = E_TYPE_DOUBLE_QUOTE;
 	while (scan->f_has_next(scan))
 	{
 		c = scan->f_peek(scan);
-		/** if (ft_isspace(c)) */
-		/** { */
-			/** tok->f_push_back(tok, scan->f_next(scan)); */
-			/** scan->f_skip_white_space(scan); */
-		/** } */
-		/** else if (c == '\"') */
-		/**     break ; */
 		if (c == '\"')
-		{
-			tok->f_push_back(tok, scan->f_next(scan));
-			c = scan->f_peek(scan);
-			if (ft_isspace(c))
-				tok->f_push_back(tok, scan->f_next(scan));
-			if (ft_isspace(c) && is_meta_char(scan->f_peek(scan)))
-				tok->f_pop_back(tok);
 			break ;
-		}
-		else
-			tok->f_push_back(tok, scan->f_next(scan));
+		tok->f_push_back(tok, scan->f_next(scan));
 	}
+	tok->f_push_back(tok, scan->f_next(scan));
 }
 
 void	get_single_quote(t_token *tok, t_scanner *scan)
 {
 	char	c;
 
+	// tok->type = E_TYPE_SINGLE_QUOTE;
 	tok->f_push_back(tok, scan->f_next(scan));
-	tok->type = E_TYPE_SINGLE_QUOTE;
 	while (scan->f_has_next(scan))
 	{
 		c = scan->f_peek(scan);
 		if (c == '\'')
-		{
-			tok->f_push_back(tok, scan->f_next(scan));
-			c = scan->f_peek(scan);
-			if (ft_isspace(c))
-				tok->f_push_back(tok, scan->f_next(scan));
-			if (ft_isspace(c) && is_meta_char(scan->f_peek(scan)))
-				tok->f_pop_back(tok);
 			break ;
-		}
-		else
-			tok->f_push_back(tok, scan->f_next(scan));
+		tok->f_push_back(tok, scan->f_next(scan));
+	}
+	tok->f_push_back(tok, scan->f_next(scan));
+}
+
+void	get_dollar_sign(t_token *tok, t_scanner *scan)
+{
+	char	c;
+
+	tok->f_push_back(tok, scan->f_next(scan));
+	while (scan->f_has_next(scan))
+	{
+		c = scan->f_peek(scan);
+		if (ft_isspace(c) || is_meta_char(c) || c == '\"' || c == '\'')
+			break ;
+		tok->f_push_back(tok, scan->f_next(scan));
 	}
 }
 
@@ -206,33 +197,58 @@ void	get_bracket(t_token *tok, t_scanner *scan)
   *
   * } */
 
+
+
+
 void	get_cmd_or_arg(t_token *tok, t_scanner *scan)
 {
-	char	c;
+	char	c; 
 
-	tok->f_push_back(tok, scan->f_next(scan));
 	tok->type = E_TYPE_SIMPLE_CMD;
 	while (scan->f_has_next(scan))
 	{
 		c = scan->f_peek(scan);
-		if (!ft_isspace(c) \
-				&& c != '|'  /* && c != '&' */ && c != '<' && c != '>' \
-				&& c != '(' && c != ')' && c != ';' \
-				&& c != '\'' && c != '\"')
-		{
+
+		if (c == '\'')
+			get_single_quote(tok, scan);
+		else if (c == '\"')
+			get_double_quote(tok, scan);
+		else if (c == '$')
+			get_dollar_sign(tok, scan);
+		else if (ft_isspace(c) == false && is_meta_char(c) == false)
 			tok->f_push_back(tok, scan->f_next(scan));
-		}
 		else
-		{
-			if (ft_isspace(c))
-				tok->f_push_back(tok, scan->f_next(scan));
-			if (ft_isspace(c) \
-					&& (is_meta_char(scan->f_peek(scan)) || scan->f_peek(scan) == '-'))
-				tok->f_pop_back(tok);
 			break ;
-		}
 	}
 }
+
+// void	get_cmd_or_arg(t_token *tok, t_scanner *scan)
+// {
+// 	char	c;
+
+// 	tok->f_push_back(tok, scan->f_next(scan));
+// 	tok->type = E_TYPE_SIMPLE_CMD;
+// 	while (scan->f_has_next(scan))
+// 	{
+// 		c = scan->f_peek(scan);
+// 		if (!ft_isspace(c) \
+// 				&& c != '|'  /* && c != '&' */ && c != '<' && c != '>' \
+// 				&& c != '(' && c != ')' && c != ';' \
+// 				&& c != '\'' && c != '\"')
+// 		{
+// 			tok->f_push_back(tok, scan->f_next(scan));
+// 		}
+// 		// else
+// 		// {
+// 		// 	if (ft_isspace(c))
+// 		// 		tok->f_push_back(tok, scan->f_next(scan));
+// 		// 	if (ft_isspace(c) \
+// 		// 			&& (is_meta_char(scan->f_peek(scan)) || scan->f_peek(scan) == '-'))
+// 		// 		tok->f_pop_back(tok);
+// 		// 	break ;
+// 		// }
+// 	}
+// }
 
 /** void	get_whitespace(t_token *tok, t_scanner *scan)
   * {
@@ -265,10 +281,10 @@ t_list	*create_initial_tokens(char *line)
 			get_double_ampersand(token, &scanner);
 		else if (c == '<' || c == '>')
 			get_redirection(token, &scanner);
-		else if (c == '\"')
-			get_double_quote(token, &scanner);
-		else if (c == '\'')
-			get_single_quote(token, &scanner);
+		// else if (c == '\"')
+		// 	get_double_quote(token, &scanner);
+		// else if (c == '\'')
+		// 	get_single_quote(token, &scanner);
 		else if (c == '(')
 			get_bracket(token, &scanner);
 		/** else if (ft_isspace(c)) */

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 22:20:22 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 18:03:19 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/20 19:46:05 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,6 @@ const char	*get_token_type(t_token_type type)
 		return ("SIMPLE_CMD");
 	else if (type == E_TYPE_WHITESPACE)
 		return ("WHITESPACE");
-	else if (type == E_TYPE_SINGLE_QUOTE)
-		return ("SINGLE_QUOTE");
-	else if (type == E_TYPE_DOUBLE_QUOTE)
-		return ("DOUBLE_QUOTE");
 	else if (type == E_TYPE_PIPE)
 		return ("PIPE");
 	else if (type == E_TYPE_REDIRECT)

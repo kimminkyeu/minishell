@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 18:03:58 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/20 22:28:58 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,13 +42,28 @@ void	execute_node(t_tree *node, int *status)
 	printf("\n");
 	printf("fork: %d\n", node->need_fork);
 	printf("last_pipe_cmd : %d\n", node->is_last_pipe_cmd);
+	printf("\n\033[93mExecuting command...\033[0m\n");
 	
 
-	/** NOTE : write execution code here */
+	/* ------------------------------------- 
+	 * | NOTE : write execution code here  |
+	 * ------------------------------------*/
+
+	/** (1) 확장- 시작과 끝이 같은 쿼트("") ('')일 경우에만 쿼트 제거. 왜냐면 export로 넘길때 문제 생김.*/
+
+	/** (2) 확장- $가 있을 경우, 환경변수를 순회하면서 해당 환경 변수를 찾아 치환 실행. */
+
+	/** (3) 모든 토큰 리스트를 strjoin으로 사이사이 공백을 넣어 합친다.
+	 *      ex. [echo][-n][hello] 는 "echo -n hello" 이렇게 합쳐진다.
+	 *      ex. [ec$ECHO!][hi] -> "echo hello! hi" 이렇게 합쳐진다.
+	 **/
+
+	/** (4) join된 문자열을 공백 기준으로 split하면 char **arglist가 한번에 구해진다. */
+
+	/** (4) */
 
 	
 	// Write code here ...
-	printf("-------------------\n");
 	/** TODO : if execution is exit, then set state to CMD_STOP_SHELL */
 
 	/** NOTE : if success, then set status to ... CMD_SUCCESS
@@ -61,6 +76,7 @@ void	execute_node(t_tree *node, int *status)
 	/** *status = CMD_FAILURE; */
 	/** printf("\033[31mCMD_FAILURE set, stopping execution...\033[0m\n"); */
 	/** NOTE : 위 코드는 확인용이니 꼭 지울 것. */
+	printf("-------------------\n");
 }
 
 

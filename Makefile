@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/17 22:32:41 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/20 22:04:57 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,6 +21,7 @@ MAIN_DIR		= $(SRC_DIR)/main/
 LEXER_DIR		= $(SRC_DIR)/lexer/
 PARSER_DIR		= $(SRC_DIR)/parser/
 EXECUTER_DIR	= $(SRC_DIR)/executer/
+BUILTIN_DIR		= $(SRC_DIR)/builtin/
 
 # NOTE : Add Source files here
 # ------------------------------------------------------ #
@@ -28,11 +29,13 @@ MAIN_SRC		= minishell helper
 LEXER_SRC		= string iterator token scanner
 PARSER_SRC		= parse_tree
 EXECUTER_SRC	= executer
+BUILTIN_SRC		= environ cd echo exit pwd
 # ------------------------------------------------------ #
 
 SRC = $(addsuffix .c, $(addprefix $(LEXER_DIR), $(LEXER_SRC))) \
 	  $(addsuffix .c, $(addprefix $(PARSER_DIR), $(PARSER_SRC))) \
 	  $(addsuffix .c, $(addprefix $(EXECUTER_DIR), $(EXECUTER_SRC))) \
+	  $(addsuffix .c, $(addprefix $(BUILTIN_DIR), $(BUILTIN_SRC))) \
 	  $(addsuffix .c, $(addprefix $(MAIN_DIR), $(MAIN_SRC)))
 
 OBJ = $(SRC:c=o)

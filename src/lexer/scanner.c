@@ -357,7 +357,7 @@ int	is_syntax_error(t_list *token_list)
 		/** 만약 && || | > 이 서로 연속된다면 */
 		if (is_meta_token_type(tok_1->type) && is_meta_token_type(tok_2->type))
 		{
-			printf("lee-shell: syntax error near unexpected token '%c'\n", c);
+			printf("lesh: syntax error near unexpected token '%c'\n", c);
 			return (true);
 		}
 
@@ -368,7 +368,7 @@ int	is_syntax_error(t_list *token_list)
 	tok_1 = cur->content;
 	if (tok_1->type == E_TYPE_REDIRECT)
 	{
-		printf("lee-shell: syntax error near unexpected token `newline'\n");
+		printf("lesh: syntax error near unexpected token `newline'\n");
 		return (true);
 	}
 	else if (tok_1->type == E_TYPE_BRACKET)
@@ -376,7 +376,7 @@ int	is_syntax_error(t_list *token_list)
 		c = tok_1->str->text[tok_1->str->text_len - 1];
 		if (c != ')') // 만약 괄호가 안닫힌 경우
 		{
-			printf("lee-shell: syntax error near unexpected token `%c'\n", c);
+			printf("lesh: syntax error near unexpected token `%c'\n", c);
 			return (true);
 		}
 		else // 괄호 안에 괄호가 또 있는지 체크
@@ -390,7 +390,7 @@ int	is_syntax_error(t_list *token_list)
 				if (*tmp == '(')
 				{
 					tmp++;
-					printf("lee-shell: syntax error near unexpected token '");
+					printf("lesh: syntax error near unexpected token '");
 					while (*tmp != ')' && *tmp != '\0')
 					{
 						printf("%c", *tmp);

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 00:25:57 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/20 19:36:01 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	shell_loop(void) /* TODO : change void type to t_minishell */
 	while (status != CMD_STOP_SHELL)
 	{
 		/* Readline library  */
-		line = readline("& ");
+		line = readline("\033[31mlesh& \033[0m");
 		add_history(line);
 
 		/* (0) Check input. 쉘 입력값 검사(공백만 입력, 아무것도 없는 입력)

@@ -41,10 +41,11 @@ static void	write_arguments(char **arglist, size_t i)
 	}
 }
 
-void	exec_echo(char **arglist)
+void	exec_echo(char **arglist, char **our_envp)
 {
 	int		n_option;
 
+	(void)our_envp;
 	n_option = FALSE;
 	if (arglist[1] != NULL)
 	{
@@ -57,13 +58,13 @@ void	exec_echo(char **arglist)
 }
 
 //gcc -g echo.c ../libft/src/ft_putstr_fd.c ../libft/src/ft_putchar_fd.c ../libft/src/ft_strncmp.c ../libft/src/ft_strlen.c
-int main()
-{
-	char **arglist = calloc(8, sizeof(char *));
-	arglist[0] = "echo";
-	arglist[1] = "-nnn";
-	arglist[2] = "a  dd";
-	arglist[3] = "b";
-
-	exec_echo(arglist);
-}
+/** int main() */
+/** { */
+/**     char **arglist = calloc(8, sizeof(char *)); */
+/**     arglist[0] = "echo"; */
+/**     arglist[1] = "-nnn"; */
+/**     arglist[2] = "a  dd"; */
+/**     arglist[3] = "b"; */
+/**  */
+/**     exec_echo(arglist); */
+/** } */

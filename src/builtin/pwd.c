@@ -8,10 +8,12 @@
 ** NOTE2: All arguments are ignored.
 */
 
-void	exec_pwd(char **arglist/* 인자는 사용되지 않는다. */)
+void	exec_pwd(char **arglist, char **our_envp)
 {
 	char	*buf;
 
+	(void)arglist;
+	(void)our_envp;
 	buf = ft_calloc(1, MAXPATHLEN);
 	if (getcwd(buf, MAXPATHLEN) == NULL)
 		perror("lesh: pwd");
@@ -20,13 +22,13 @@ void	exec_pwd(char **arglist/* 인자는 사용되지 않는다. */)
 }
 
 //gcc -g pwd.c ../libft/src/ft_calloc.c ../libft/src/ft_putstr_fd.c ../libft/src/ft_bzero.c ../libft/src/ft_strlen.c
-int main()
-{
-	char **arglist = calloc(8, sizeof(char *));
-	arglist[0] = "pwd";
-	arglist[1] = "a";
-	arglist[2] = "c";
-	arglist[3] = "b";
-
-	exec_pwd(arglist);
-}
+/** int main() */
+/** { */
+/**     char **arglist = calloc(8, sizeof(char *)); */
+/**     arglist[0] = "pwd"; */
+/**     arglist[1] = "a"; */
+/**     arglist[2] = "c"; */
+/**     arglist[3] = "b"; */
+/**  */
+/**     exec_pwd(arglist); */
+/** } */

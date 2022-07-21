@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 15:10:15 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 23:06:46 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 
 # include "../main/helper.h"
 # include "../parser/parse_tree.h"
+# include "../../include/builtin.h"
 
 /* only for cmd_execution */
 # define CMD_FAILURE		(0)

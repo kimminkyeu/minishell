@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 12:46:16 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 21:22:01 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 23:05:25 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,4 +243,22 @@ void	exec_unset(char **arglist, char ***our_envp_ptr)
 		free(*our_envp_ptr);
 		*our_envp_ptr = new_envp;
 	}
+}
+
+char	*get_environ_value(const char *env_key, char **envp)
+{
+	size_t	i;
+	char	*target;
+
+	i = 0;
+	if (env_key == NULL || envp == NULL)
+		return (NULL);
+	target = NULL;
+	while (envp[i] != NULL)
+	{
+		if (ft_strncmp(envp[i], env_key, ft_strlen(env_key)) == 0)
+			return (ft_strchr(envp[i], '=') + 1);
+		i++;
+	}
+	return (target);
 }

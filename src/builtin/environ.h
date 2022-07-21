@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 21:52:20 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 21:02:37 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 22:59:56 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,10 @@
 
 /** deep copy system envp content */
 char	**new_environ(char **system_envp);
+
+/** find Key in envp list, then return pointer to Value. 
+ * NOTE : if no Key exists, then function returns NULL */
+char	*get_environ_value(const char *env_key, char **envp);
 
 /** free every environs */
 void	delete_environ(char ***our_envp);

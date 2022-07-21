@@ -56,6 +56,9 @@ int main(int ac, char **av, char **sys_envp)
 	arglist[1] = NULL;
 	exec_env(arglist, envp);
 
+	printf("\n\n");
+
+	printf("$HOME : %s\n", get_environ_value("HOME", envp));
 
 	free(arglist);
 	delete_environ(&envp);

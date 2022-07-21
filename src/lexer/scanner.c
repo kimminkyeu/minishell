@@ -222,41 +222,6 @@ void	get_cmd_or_arg(t_token *tok, t_scanner *scan)
 	}
 }
 
-// void	get_cmd_or_arg(t_token *tok, t_scanner *scan)
-// {
-// 	char	c;
-
-// 	tok->f_push_back(tok, scan->f_next(scan));
-// 	tok->type = E_TYPE_SIMPLE_CMD;
-// 	while (scan->f_has_next(scan))
-// 	{
-// 		c = scan->f_peek(scan);
-// 		if (!ft_isspace(c) \
-// 				&& c != '|'  /* && c != '&' */ && c != '<' && c != '>' \
-// 				&& c != '(' && c != ')' && c != ';' \
-// 				&& c != '\'' && c != '\"')
-// 		{
-// 			tok->f_push_back(tok, scan->f_next(scan));
-// 		}
-// 		// else
-// 		// {
-// 		// 	if (ft_isspace(c))
-// 		// 		tok->f_push_back(tok, scan->f_next(scan));
-// 		// 	if (ft_isspace(c) \
-// 		// 			&& (is_meta_char(scan->f_peek(scan)) || scan->f_peek(scan) == '-'))
-// 		// 		tok->f_pop_back(tok);
-// 		// 	break ;
-// 		// }
-// 	}
-// }
-
-/** void	get_whitespace(t_token *tok, t_scanner *scan)
-  * {
-  *     tok->f_push_back(tok, scan->f_next(scan));
-  *     tok->type = E_TYPE_WHITESPACE;
-  *     scanner_skip_white_space(scan);
-  * } */
-
 t_list	*create_initial_tokens(char *line)
 {
 	t_scanner	scanner;

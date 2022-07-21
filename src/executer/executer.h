@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 14:42:46 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 15:10:15 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,16 +33,15 @@
 
 typedef struct s_shell_config {
 	char	**envp;
-
-	int		stdin;
-	int		stdout;
+	int		stdin_backup;
+	int		stdout_backup;
 	
 
 } t_shell_config;
 
-void	delete_tree_node(t_tree *node, int *status);
-void	execute_node(t_tree *node, int *status);
-void	inorder_recur(t_tree *node, int *status, void (*f)(t_tree *node, int *status));
+void	delete_tree_node(t_tree *node, int *status, t_shell_config *config);
+void	execute_node(t_tree *node, int *status, t_shell_config *config);
+void	inorder_recur(t_tree *node, int *status, void (*f)(t_tree *node, int *status, t_shell_config *config), t_shell_config *config);
 
 int	execute(t_tree *syntax_tree, t_shell_config *config);
 

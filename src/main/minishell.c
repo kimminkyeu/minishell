@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 14:43:53 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 15:10:29 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,8 +103,8 @@ int main(int ac, char **av, char **env)
 
 	/* (1) Load config files, Environ, set data etc... */
 	shell_config.envp = new_environ(env); // load envp
-	shell_config.stdin = dup(STDIN_FILENO); // save STDIN
-	shell_config.stdout = dup(STDOUT_FILENO); // save STDOUT
+	shell_config.stdin_backup = dup(STDIN_FILENO); // save STDIN
+	shell_config.stdout_backup = dup(STDOUT_FILENO); // save STDOUT
 
 
 

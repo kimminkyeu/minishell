@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 12:30:54 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 17:38:43 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 17:50:11 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ t_string	*new_string(size_t init_capacity)
 	str->f_reserve = str_reserve;
 	str->f_shrink_to_fit = str_shrink_to_fit;
 	str->f_replace = str_replace;
+	str->f_replace_all = str_replace_all;
 
 	return (str);
 }
@@ -162,4 +163,23 @@ int	str_replace(t_string *str, size_t pos, size_t len, const char *str_to_replac
 	str_append(str, backup);
 	if (backup != NULL)
 		free(backup);
+}
+
+/** Edit string with all matches of a pattern replaced by a replacement 
+ *  (ex. INPUT ["hi kyeu. hi again!"] 
+ *  --> str_replace_all(str, "hi", "hello")
+ *  --> OUTPUT["hello kyeu. hello again!")]
+ * */
+int	str_replace_all(t_string *str, const char *substr_old, const char *substr_new)
+{
+	// (1) 앞에서 부터 계속해서 찾는다. 
+	
+
+
+	// 만약 찾았다면, 그걸을 치환한다.
+	
+
+
+	// 만약 못찾았다면, 반복문을 종료한다.
+
 }

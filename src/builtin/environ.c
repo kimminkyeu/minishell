@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 12:46:16 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 21:57:42 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 21:22:01 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,19 +125,34 @@ void	print_in_order(char **our_envp)
 	delete_strs(&ordered_envp);
 }
 
-void	add_to_envp(char *str, char **our_envp)
+#include <stdio.h>
+
+void	add_to_envp(char *str, char ***our_envp_ptr)
 {
 	size_t	strs_count;
 	char	**new_envp;
 
-	strs_count = get_strs_count(our_envp);
+	printf("adding to envp... [%s]\n", str);
+	strs_count = get_strs_count(*our_envp_ptr);
 	new_envp = ft_calloc(strs_count + 2, sizeof(*new_envp));
-	copy_strs(new_envp, our_envp, strs_count);
+	copy_strs(new_envp, *our_envp_ptr, strs_count);
+
+	/** size_t	i = 0;
+	  * while (i < strs_count)
+	  * {
+	  *     free((*our_envp_ptr)[i]);
+	  *     i++;
+	  * }
+	  * free(*our_envp_ptr); */
+	delete_environ(our_envp_ptr);
+
 	new_envp[strs_count] = str;
 	new_envp[strs_count + 1] = NULL;
+	*our_envp_ptr = new_envp;
 }
 
-void	exec_export(char **arglist, char **our_envp)
+
+void	exec_export(char **arglist, char ***our_envp_ptr)
 {
 	// if (arglist is 'export' with no argument)
 	// arglist[0] == export
@@ -145,8 +160,8 @@ void	exec_export(char **arglist, char **our_envp)
 	char	*str_quote_removed;
 	size_t	str_len;
 
-	if (arglist[1] != NULL) // 인자가 없는 경우.
-		print_in_order(our_envp);
+	if (arglist[1] == NULL) // 인자가 없는 경우.
+		print_in_order(*our_envp_ptr);
 	else
 	{
 		str_quote_split = NULL;
@@ -170,22 +185,14 @@ void	exec_export(char **arglist, char **our_envp)
 		/** (2) check string and add to envp */
 		if (ft_isdigit(str_quote_removed[0]))
 		{
-			free(str_quote_removed);
 			ft_putstr_fd("export: ", STDERR_FILENO);
-			ft_putstr_fd(arglist[1], STDERR_FILENO);
+			ft_putstr_fd(str_quote_removed, STDERR_FILENO);
 			ft_putstr_fd(": not a valid identifier\n", STDERR_FILENO);
+			free(str_quote_removed);
 		}
 		else
-			add_to_envp(str_quote_removed, our_envp);
+			add_to_envp(str_quote_removed, our_envp_ptr);
 	}
-
-	/** arglist[1] would be 
-	 *  (1) HELLO="welcome"
-	 *  (2) HELLO=welcome
-	 *
-	 *  --> remove quote
-	 * */
-
 }
 
 /** 정렬 없이 출력 진행. 그렇다고 삽입한 대로 출력되는건 아닌듯... */
@@ -201,7 +208,7 @@ void	exec_env(char **arglist, char **our_envp)
 }
 
 /** 환경 변수 리스트에서 제거 */
-void	exec_unset(char **arglist, char **our_envp)
+void	exec_unset(char **arglist, char ***our_envp_ptr)
 {
 	char	**str_split;
 	char	**new_envp;
@@ -216,23 +223,24 @@ void	exec_unset(char **arglist, char **our_envp)
 	}
 	else if (arglist[1] != NULL)
 	{
-		// copy to new_envp
 		i = 0;
 		j = i;
-		strs_count = get_strs_count(our_envp);
+		strs_count = get_strs_count(*our_envp_ptr);
 		new_envp = ft_calloc(strs_count + 1, sizeof(*new_envp));
 		while (i < strs_count)
 		{
-			str_split = ft_split(our_envp[i], '=');
-			if (str_split != NULL \
-					&& ft_strncmp(str_split[0], arglist[1], ft_strlen(arglist[1]) + 1) != 0)
+			str_split = ft_split((*our_envp_ptr)[i], '=');
+			if (ft_strncmp(str_split[0], arglist[1], ft_strlen(arglist[1]) + 1) != 0)
 			{
-				// if not target, copy to new_envp
-				new_envp[j] = our_envp[i];
+				new_envp[j] = (*our_envp_ptr)[i];
 				j++;
 			}
+			else
+				free((*our_envp_ptr)[i]);
 			delete_strs(&str_split);
 			i++;
 		}
+		free(*our_envp_ptr);
+		*our_envp_ptr = new_envp;
 	}
 }

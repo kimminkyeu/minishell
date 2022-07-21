@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 12:26:31 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 17:50:31 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 20:08:52 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,11 @@ int	str_pop_back(t_string *str);
  * (or the part of the string in the range between [i1,i2)) by new contents: */
 int	str_replace(t_string *str, size_t pos, size_t len, const char *str_to_replace);
 
+/** Edit string with all matches of a pattern replaced by a replacement 
+ *  (ex. INPUT ["hi kyeu. hi again!"] 
+ *  --> str_replace_all(str, "hi", "hello")
+ *  --> OUTPUT["hello kyeu. hello again!")]
+ * */
 int	str_replace_all(t_string *str, const char *substr_old, const char *substr_new);
 
 #endif /* STRING_H */

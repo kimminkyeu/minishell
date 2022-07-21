@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 12:30:54 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 17:50:11 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 20:00:30 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -148,10 +148,8 @@ int	str_replace(t_string *str, size_t pos, size_t len, const char *str_to_replac
 		return (NO_ACTION);
 	replace_len = ft_strlen(str_to_replace);
 	if (str->text_len + replace_len > str->capacity - 1 + len)
-	{
 		if (str_reserve(str, (str->capacity * 2) + replace_len) != SUCCESS)
 			return (ERROR);
-	}
 	backup = NULL;
 	if (pos <= str->text_len)
 		backup = ft_strdup(&(str->text[pos + len]));
@@ -163,6 +161,7 @@ int	str_replace(t_string *str, size_t pos, size_t len, const char *str_to_replac
 	str_append(str, backup);
 	if (backup != NULL)
 		free(backup);
+	return (SUCCESS);
 }
 
 /** Edit string with all matches of a pattern replaced by a replacement 
@@ -172,14 +171,18 @@ int	str_replace(t_string *str, size_t pos, size_t len, const char *str_to_replac
  * */
 int	str_replace_all(t_string *str, const char *substr_old, const char *substr_new)
 {
-	// (1) 앞에서 부터 계속해서 찾는다. 
+	char	*replace_location;
+	size_t	replace_idx;
+	size_t	replace_len;
 	
-
-
-	// 만약 찾았다면, 그걸을 치환한다.
-	
-
-
-	// 만약 못찾았다면, 반복문을 종료한다.
-
+	if (substr_old == NULL || substr_new == NULL)
+		return (NO_ACTION);
+	replace_len = ft_strlen(substr_old);
+	while ((replace_location = ft_strnstr(str->text, substr_old, str->text_len)))
+	{
+		replace_idx = replace_location - str->text;
+		if (str_replace(str, replace_idx, replace_len, substr_new) == ERROR)
+			return (ERROR);
+	}
+	return (SUCCESS);
 }

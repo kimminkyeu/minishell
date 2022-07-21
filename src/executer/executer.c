@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 14:15:56 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 14:54:16 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,9 +144,11 @@ void	inorder_recur(t_tree *node, int *status, void (*callback)(t_tree *node, int
 }
 
 /** Executer function. make traversing */
-int	execute(t_tree *syntax_tree)
+int	execute(t_tree *syntax_tree, t_shell_config *config)
 {
 	int	status;
+
+	(void)config;
 
 	status = CMD_SUCCEESS;
 

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 19:36:01 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 14:43:53 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,13 @@
 #include "../../include/lexer.h"
 #include "../../include/parse.h"
 #include "../../include/execute.h"
+#include "../../include/builtin.h"
 
 /** (2) helper functions for Visualization. 
  * TODO : Delete helper files later! */
 #include "helper.h"
 
-void	shell_loop(void) /* TODO : change void type to t_minishell */
+void	shell_loop(t_shell_config *shell_config)
 {
 	int		status;
 	char	*line;
@@ -88,7 +89,7 @@ void	shell_loop(void) /* TODO : change void type to t_minishell */
 		 *     |	  모든 노드를 해제해야 한다.        | 
 		 *     -----------------------------------------*/
 
-		status = execute(syntax_tree);
+		status = execute(syntax_tree, shell_config);
 		free(line);
 		/** system("leaks minishell > leaks_result_temp; cat leaks_result_temp | grep leaked && rm -rf leaks_result_temp"); */
 	}
@@ -98,14 +99,22 @@ int main(int ac, char **av, char **env)
 {	
 	(void)ac;
 	(void)av;
+	t_shell_config	shell_config;
 
 	/* (1) Load config files, Environ, set data etc... */
-	(void)env;
+	shell_config.envp = new_environ(env); // load envp
+	shell_config.stdin = dup(STDIN_FILENO); // save STDIN
+	shell_config.stdout = dup(STDOUT_FILENO); // save STDOUT
+
+
 
 	/* (2) Run command loop */
-	shell_loop( /*  TODO : pass shell data here... */ );
+	shell_loop(&shell_config);
+
+
 
 	/* (3) Perform any shutdown/cleanup  */
-	// ...
+	delete_environ(&shell_config.envp);
+
 	return (EXIT_SUCCESS);
 }

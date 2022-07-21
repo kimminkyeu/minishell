@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 21:59:30 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 22:10:25 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 14:27:12 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # include <stdio.h>
 
 # include "../src/builtin/environ.h"
-# include "../libft/include/libft.h"
+# include "libft.h"
 
 /* --------------------------------------------
  * |  NOTE : Environment variable functions   |

@@ -1,4 +1,4 @@
-# include <unistd.h>//isatty()
+# include <unistd.h>
 # include <stdlib.h>
 # include <stdbool.h>
 # include <limits.h>
@@ -48,16 +48,15 @@ static bool	get_status(char *str, unsigned char *status)
 		return (false);
 }
 
-int	exec_exit(char **arglist, char **our_envp/*, pipeline command?, 마지막 exit status */)
+int	exec_exit(char **arglist/*, char **our_envp*/)
 {
 	unsigned char	status;
 
-	(void)our_envp;
+	// (void)our_envp;
 
-	// if (파이프라인 커맨드가 아닐 때만)
-		ft_putstr_fd("exit\n", STDOUT_FILENO);
+	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	if (arglist[1] == NULL)
-		status = 0/* TODO: 마지막으로 실행된 명령어의 exit status로 변경*/;
+		status = 0/*마지막으로 실행된 명령어의 exit status*/;
 	else if (get_status(arglist[1], &status) == false)
 	{
 		status = 255/*DISCUSS: 255는 의미 없는 에러메시지다. jkong님은 EXIT_BADUSAGE(2)를 출력함.*/;
@@ -68,14 +67,14 @@ int	exec_exit(char **arglist, char **our_envp/*, pipeline command?, 마지막 ex
 	else if (arglist[2] != NULL)
 	{
 		ft_putstr_fd("lesh: exit: too many arguments\n", STDERR_FILENO);
-		return (EXIT_FAILURE);
+		return (EXIT_FAILURE);/*DISCUSS: 명령어 자체의 종료코드는 return으로 돌려주면 될까?*/
 	}
 	exit(status);/*부모에게 전달하고 종료.*/
 }
 
 //gcc exit.c ../libft/src/ft_putstr_fd.c ../libft/src/ft_strlen.c
 
-int main(int argc, char **argv, char **envp)
+int main(int argc, char **argv)
 {
-	exec_exit(argv + 1, envp);
+	exec_exit(argv + 1);
 }

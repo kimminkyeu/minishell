@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 00:53:56 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 01:27:36 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ int	expand_token(t_list *tokens, t_shell_config *config)
 			is_double_quote = 0;
 			i = 0;
 			cnt = 0; // 달러싸인이 나오기 전까지 기호가 몇개인지 알아낸다. 만약 달러싸인 이전에 기호가 홀수개라면 달러를 해석하지 않는다.
-			while (tok->str->text[i] != '$' && tok->str->text[i] != '\0')
+			while (/*tok->str->text[i] != '$' && */tok->str->text[i] != '\0')
 			{
 				if (cnt == 0 && is_double_quote == 0 && tok->str->text[i] == '\"')
 					is_double_quote = 1;
@@ -133,7 +133,10 @@ int	expand_token(t_list *tokens, t_shell_config *config)
 			if (is_double_quote == 0)
 				tok->str->f_replace_all(tok->str, "\'", "");
 			if (is_double_quote == 1)
+			{
+				printf("check\n");
 				tok->str->f_replace_all(tok->str, "\"", "");
+			}
 		}
 		cur = cur->next;
 	}

@@ -6,14 +6,14 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:04:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/14 22:18:56 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 23:02:26 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SCANNER_H
 # define SCANNER_H
 
-# include "iterator.h"
+# include "../iterator/iterator.h"
 
 typedef struct s_scanner	t_scanner;
 

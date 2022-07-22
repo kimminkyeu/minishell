@@ -6,12 +6,10 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:23:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/14 20:53:26 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 23:14:18 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <errno.h>
-#include "libft.h"
 #include "iterator.h"
 
 void	init_iterator(t_iterator *iter, char *line)
@@ -37,8 +35,6 @@ int	iter_has_next(t_iterator *iter)
 	else
 		return (0);
 }
-
-#include <stdio.h>
 
 /* move iterator to point next character */
 char iter_next(t_iterator *iter)

@@ -10,8 +10,8 @@
 /* ************************************************************************** */
 
 #include <stdio.h>
-#include "libft.h"
-#include "iterator.h"
+#include "../../include/libft.h"
+#include "../iterator/iterator.h"
 #include "token.h"
 #include "scanner.h"
 

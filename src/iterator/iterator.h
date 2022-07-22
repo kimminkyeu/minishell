@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:24:31 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/13 23:57:31 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 23:14:23 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,9 @@
 # define ERRCHAR		(0)
 
 # define INIT_SRC_POS	(-2)
+
+# include <errno.h>
+# include "../../include/libft.h"
 
 typedef struct s_iterator t_iterator;
 

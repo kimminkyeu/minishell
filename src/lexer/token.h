@@ -6,16 +6,16 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 19:45:33 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 23:02:16 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TOKEN_H
 # define TOKEN_H
 
-# include "libft.h"
-# include "string.h"
-# include "iterator.h"
+# include "../../include/libft.h"
+# include "../string/string.h"
+# include "../iterator/iterator.h"
 
 typedef enum e_token_type {
 								//

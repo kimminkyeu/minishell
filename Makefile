@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/22 16:09:35 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/22 23:18:23 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,28 +15,43 @@ CC				= cc
 CFLAGS			= -Wall -Wextra -Werror
 INCLUDE			= include
 
+# NOTE : Add Source directory here
+# ------------------------------------------------------ #
 SRC_DIR			= src
-LIBFT_DIR		= $(SRC_DIR)/libft/
+
 MAIN_DIR		= $(SRC_DIR)/main/
 LEXER_DIR		= $(SRC_DIR)/lexer/
 PARSER_DIR		= $(SRC_DIR)/parser/
 EXECUTER_DIR	= $(SRC_DIR)/executer/
 BUILTIN_DIR		= $(SRC_DIR)/builtin/
 
+LIBFT_DIR		= $(SRC_DIR)/libft/
+STRING_DIR		= $(SRC_DIR)/string/
+ITERATOR_DIR	= $(SRC_DIR)/iterator/
+
 # NOTE : Add Source files here
 # ------------------------------------------------------ #
 MAIN_SRC		= minishell helper
-LEXER_SRC		= string iterator token scanner
+
+LEXER_SRC		= token scanner
 PARSER_SRC		= parse_tree
 EXECUTER_SRC	= executer token_expand
 BUILTIN_SRC		= environ cd echo pwd exit
-# ------------------------------------------------------ #
 
-SRC = $(addsuffix .c, $(addprefix $(LEXER_DIR), $(LEXER_SRC))) \
+STRING_SRC		= string
+ITERATOR_SRC	= iterator
+
+# NOTE : Add to SRC here
+# ------------------------------------------------------ #
+SRC = $(addsuffix .c, $(addprefix $(MAIN_DIR), $(MAIN_SRC))) \
+	  $(addsuffix .c, $(addprefix $(LEXER_DIR), $(LEXER_SRC))) \
 	  $(addsuffix .c, $(addprefix $(PARSER_DIR), $(PARSER_SRC))) \
 	  $(addsuffix .c, $(addprefix $(EXECUTER_DIR), $(EXECUTER_SRC))) \
 	  $(addsuffix .c, $(addprefix $(BUILTIN_DIR), $(BUILTIN_SRC))) \
-	  $(addsuffix .c, $(addprefix $(MAIN_DIR), $(MAIN_SRC)))
+	  $(addsuffix .c, $(addprefix $(STRING_DIR), $(STRING_SRC))) \
+	  $(addsuffix .c, $(addprefix $(ITERATOR_DIR), $(ITERATOR_SRC)))
+
+# ------------------------------------------------------ #
 
 OBJ = $(SRC:c=o)
 

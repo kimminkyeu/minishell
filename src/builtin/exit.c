@@ -35,7 +35,8 @@ static bool	get_status(char *str, unsigned char *status)
 	while ('0' <= str[i] && str[i] <= '9')
 	{
 		num = num * 10 + (str[i] - '0');
-		if (neg == -1 && num > LLONG_MIN || neg == 1 && num > LLONG_MAX)
+		if ((neg == -1 && num > (unsigned long long)LLONG_MIN)
+			|| (neg == 1 && num > (unsigned long long)LLONG_MAX))
 			return (false);
 		i++;
 	}
@@ -75,7 +76,7 @@ int	exec_exit(char **arglist, char **our_envp/*, pipeline command?, 마지막 ex
 
 //gcc exit.c ../libft/src/ft_putstr_fd.c ../libft/src/ft_strlen.c
 
-int main(int argc, char **argv, char **envp)
-{
-	exec_exit(argv + 1, envp);
-}
+// int main(int argc, char **argv, char **envp)
+// {
+// 	exec_exit(argv + 1, envp);
+// }

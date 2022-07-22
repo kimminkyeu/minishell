@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:44:57 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 16:03:08 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 16:13:04 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,5 +166,10 @@ int	expand_token(t_list *tokens, t_shell_config *config)
 		}
 		cur = cur->next;
 	}
+
+	printf("\n\033[93m#After Word Expansion...\033[0m\n");
+	print_tree_node(tokens);
+	printf("\n");
+
 	return (SUCCESS);
 }

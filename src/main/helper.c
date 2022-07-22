@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 22:20:22 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 19:46:05 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 16:08:38 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ void	print_tree_recur(t_tree *root, int space)
 	print_each_attr(root->redirection, space, "redir: ");
 
 	print_whitespace(COUNT, space);
-	printf("fork : %d\n", root->need_fork);
+	printf("fork : %d\n", root->is_pipeline);
 	print_whitespace(COUNT, space);
 	printf("last_pipe_cmd : %d\n", root->is_last_pipe_cmd);
 

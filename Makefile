@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/22 15:56:01 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/22 16:09:35 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -29,7 +29,7 @@ MAIN_SRC		= minishell helper
 LEXER_SRC		= string iterator token scanner
 PARSER_SRC		= parse_tree
 EXECUTER_SRC	= executer token_expand
-BUILTIN_SRC		= environ cd echo exit pwd
+BUILTIN_SRC		= environ cd echo pwd exit
 # ------------------------------------------------------ #
 
 SRC = $(addsuffix .c, $(addprefix $(LEXER_DIR), $(LEXER_SRC))) \

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 21:52:20 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 21:58:40 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 22:59:56 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,17 +20,21 @@
 /** deep copy system envp content */
 char	**new_environ(char **system_envp);
 
+/** find Key in envp list, then return pointer to Value. 
+ * NOTE : if no Key exists, then function returns NULL */
+char	*get_environ_value(const char *env_key, char **envp);
+
 /** free every environs */
 void	delete_environ(char ***our_envp);
 
 /** export builtin function. */
-void	exec_export(char **arglist, char **our_envp);
+void	exec_export(char **arglist, char ***our_envp_ptr);
 
 /** env builtin function. */
 void	exec_env(char **arglist, char **our_envp);
 
 /** unset builtin function. */
-void	exec_unset(char **arglist, char **our_envp); 
+void	exec_unset(char **arglist, char ***our_envp_ptr); 
 
 /* --------------------------------------------------- */
 
@@ -41,6 +45,6 @@ void	sort_ascii(int len, char **argv);
 void	delete_strs(char ***strs);
 void	print_strs(char **strs);
 void	print_in_order(char **our_envp);
-void	add_to_envp(char *str, char **our_envp);
+void	add_to_envp(char *str, char ***our_envp_ptr);
 
 #endif /* ENVIRON_H */

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 12:30:54 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/14 14:22:39 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/21 20:00:30 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ t_string	*new_string(size_t init_capacity)
 	str->f_push_back = str_push_back;
 	str->f_reserve = str_reserve;
 	str->f_shrink_to_fit = str_shrink_to_fit;
+	str->f_replace = str_replace;
+	str->f_replace_all = str_replace_all;
 
 	return (str);
 }
@@ -119,6 +121,8 @@ int	str_append(t_string *str, const char *str2)
 {
 	size_t	str2_len;
 
+	if (str2 == NULL)
+		return (NO_ACTION);
 	str2_len = ft_strlen(str2);
 	if (str2_len == 0)
 		return (NO_ACTION);
@@ -129,5 +133,56 @@ int	str_append(t_string *str, const char *str2)
 	}
 	ft_memmove(&(str->text[str->text_len]), str2, str2_len);
 	str->text_len += str2_len;
+	return (SUCCESS);
+}
+
+/** Replaces the portion of the string that begins at character pos and spans len characters 
+ * (or the part of the string in the range between [i1,i2)) by new contents: */
+int	str_replace(t_string *str, size_t pos, size_t len, const char *str_to_replace)
+{
+	size_t	replace_len;
+	char	*backup;
+	size_t	i;
+
+	if ((str_to_replace == NULL) || (pos > str->text_len - 1) || len == 0)
+		return (NO_ACTION);
+	replace_len = ft_strlen(str_to_replace);
+	if (str->text_len + replace_len > str->capacity - 1 + len)
+		if (str_reserve(str, (str->capacity * 2) + replace_len) != SUCCESS)
+			return (ERROR);
+	backup = NULL;
+	if (pos <= str->text_len)
+		backup = ft_strdup(&(str->text[pos + len]));
+	i = str->text_len;
+	while (i-- > pos)
+		str_pop_back(str);
+	if (pos <= str->text_len)
+		str_append(str, str_to_replace);
+	str_append(str, backup);
+	if (backup != NULL)
+		free(backup);
+	return (SUCCESS);
+}
+
+/** Edit string with all matches of a pattern replaced by a replacement 
+ *  (ex. INPUT ["hi kyeu. hi again!"] 
+ *  --> str_replace_all(str, "hi", "hello")
+ *  --> OUTPUT["hello kyeu. hello again!")]
+ * */
+int	str_replace_all(t_string *str, const char *substr_old, const char *substr_new)
+{
+	char	*replace_location;
+	size_t	replace_idx;
+	size_t	replace_len;
+	
+	if (substr_old == NULL || substr_new == NULL)
+		return (NO_ACTION);
+	replace_len = ft_strlen(substr_old);
+	while ((replace_location = ft_strnstr(str->text, substr_old, str->text_len)))
+	{
+		replace_idx = replace_location - str->text;
+		if (str_replace(str, replace_idx, replace_len, substr_new) == ERROR)
+			return (ERROR);
+	}
 	return (SUCCESS);
 }

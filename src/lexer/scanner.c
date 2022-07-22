@@ -198,8 +198,6 @@ void	get_bracket(t_token *tok, t_scanner *scan)
   * } */
 
 
-
-
 void	get_cmd_or_arg(t_token *tok, t_scanner *scan)
 {
 	char	c; 

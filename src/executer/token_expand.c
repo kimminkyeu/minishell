@@ -6,12 +6,46 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:44:57 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 15:51:24 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 16:03:08 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "token_expand.h"
 #include "executer.h"
+
+char	**get_arglist(t_list *token)
+{
+	t_string	*joined_str;
+	t_list		*cur;
+	char		**arglist;
+
+	/** (3) 모든 토큰 리스트를 strjoin으로 사이사이 공백을 넣어 합친다.
+	 *      ex. [echo][-n][hello] 는 "echo -n hello" 이렇게 합쳐진다.
+	 *      ex. [ec$ECHO!][hi] -> "echo hello! hi" 이렇게 합쳐진다.
+	 **/
+	printf("\n\033[93m#Making char **arglist...\033[0m\n");
+
+	joined_str = new_string(50);
+	cur = token;
+	while (cur != NULL)
+	{
+		t_token *tok = cur->content;
+		joined_str->f_append(joined_str, tok->str->text); // 토큰 삽입
+		joined_str->f_push_back(joined_str, ' '); // 공백 삽입
+		cur = cur->next;
+	}
+	/** (4) join된 문자열을 공백 기준으로 split하면 char **arglist가 한번에 구해진다. */
+	arglist = ft_split(joined_str->text, ' ');
+	delete_string(&joined_str);
+
+	/**TODO : delete later!! 
+	 * printing arglist (print_strs is at in environ.c) */
+	print_strs(arglist);
+	printf("\n");
+
+	return (arglist);
+}
+
 
 void	expand_dollar_sign(t_token *tok, t_shell_config *config)
 {

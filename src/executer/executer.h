@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 15:50:27 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 16:03:39 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,11 @@ typedef struct s_shell_config {
 
 /* Word Expand function */
 int		expand_token(t_list *tokens, t_shell_config *config);
+
+/* Token to arglist function */
+char	**get_arglist(t_list *token);
+
+
 
 
 void	delete_tree_node(t_tree *node, int *status, t_shell_config *config);

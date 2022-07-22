@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 22:35:47 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 23:49:50 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/22 13:20:52 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -57,24 +57,34 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	** 3. filesystem에서 실행하는 cmd: (pipe) - fork - redirection set - execute(status 자동)
 	*/
 
+	t_token *tok = node->token->content;
 
-	/** (1) 토큰 확장 */
+	/** if | or && or || or ( ), do not expand tokens. */
+	if (tok->type != E_TYPE_SIMPLE_CMD)
+	{
+		/* handle_operation(t_shell_config *config)  */
+
+		/** if [|] */
+
+		/** if [&&] */
+
+		/** if [||] */
+
+		return ;
+	}
+	/** if E_TYPE_SIMPLE_CMD, then expand tokens */
 	if (expand_tokens(node->token, config) == ERROR \
 			|| expand_tokens(node->redirection, config) == ERROR)
 	{
-		printf("\n\033[91mError while parsing! Skipping Command...\033[0m\n");
-		return ; // expand error
+		// show error messege ...
+		return ;
 	}
 	char	**cmd_argv = get_cmd_argv(node->token);
-
-
-
 	printf("\n\033[93m#Making char **arglist...\033[0m\n");
 	print_strs(cmd_argv);
 	printf("\n");
+
 	(void)cmd_argv;
-
-
 	/** char **cmd_argv; */
 	/** if (is_builtin() == true)
 	 * {
@@ -96,11 +106,7 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	/** *status = CMD_SUCCEESS; */
 	/** *status = CMD_STOP_SHELL; */
 	/** *status = CMD_FAILURE; */
-	/** printf("\033[31mCMD_FAILURE set, stopping execution...\033[0m\n"); */
-	/** NOTE : 위 코드는 확인용이니 꼭 지울 것. */
 	delete_strs(&cmd_argv);
-
-
 	printf("-------------------\n");
 }
 /** 함수 포인터 글자수 줄이는 용도 */

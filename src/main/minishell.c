@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 15:10:29 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 23:54:07 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,12 +105,11 @@ int main(int ac, char **av, char **env)
 	shell_config.envp = new_environ(env); // load envp
 	shell_config.stdin_backup = dup(STDIN_FILENO); // save STDIN
 	shell_config.stdout_backup = dup(STDOUT_FILENO); // save STDOUT
-
+	shell_config.last_cmd_pid = 0;
 
 
 	/* (2) Run command loop */
 	shell_loop(&shell_config);
-
 
 
 	/* (3) Perform any shutdown/cleanup  */

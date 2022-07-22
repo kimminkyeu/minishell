@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 21:11:26 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 23:52:55 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,19 +24,24 @@
 /* only for stopping minishell loop */
 # define CMD_STOP_SHELL		(-1)
 
-/* typedef union u_pipe {
- *     struct {
- *         int	read;
- *         int	write;
- *     };
- *     int	fd[2];
- * }	t_pipe; */
+typedef union u_pipe {
+	struct {
+		int	read;
+		int	write;
+	};
+	int	fd[2];
+}	t_pipe;
 
 typedef struct s_shell_config {
-	char	**envp;
+
+	char	**envp; // for environ functions
+
 	int		stdin_backup;
 	int		stdout_backup;
 	
+	pid_t	last_cmd_pid; // for waitpid()
+
+	t_pipe	pipe;  // for pipe()
 
 } t_shell_config;
 

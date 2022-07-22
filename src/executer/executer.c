@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 13:16:02 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 15:09:28 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -152,6 +152,39 @@ int	expand_token(t_list *tokens, t_shell_config *config)
 	return (SUCCESS);
 }
 
+char	**get_arglist(t_list *token)
+{
+	t_string	*joined_str;
+	t_list		*cur;
+	char		**arglist;
+
+	/** (3) 모든 토큰 리스트를 strjoin으로 사이사이 공백을 넣어 합친다.
+	 *      ex. [echo][-n][hello] 는 "echo -n hello" 이렇게 합쳐진다.
+	 *      ex. [ec$ECHO!][hi] -> "echo hello! hi" 이렇게 합쳐진다.
+	 **/
+	printf("\n\033[93m#Making char **arglist...\033[0m\n");
+
+	joined_str = new_string(50);
+	cur = token;
+	while (cur != NULL)
+	{
+		t_token *tok = cur->content;
+		joined_str->f_append(joined_str, tok->str->text); // 토큰 삽입
+		joined_str->f_push_back(joined_str, ' '); // 공백 삽입
+		cur = cur->next;
+	}
+	/** (4) join된 문자열을 공백 기준으로 split하면 char **arglist가 한번에 구해진다. */
+	arglist = ft_split(joined_str->text, ' ');
+	delete_string(&joined_str);
+
+	/**TODO : delete later!! 
+	 * printing arglist (print_strs is at in environ.c) */
+	print_strs(arglist);
+	printf("\n");
+
+	return (arglist);
+}
+
 void	execute_node(t_tree *node, int *status, t_shell_config *config)
 {
 	/** 아래 코드는 방문 순서를 확인하기 위한 코드일 뿐, 구현시엔 제거할 것. */
@@ -159,108 +192,19 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	if (*status != CMD_SUCCEESS)
 		return ;
 
+	/** Print initial token data */
 	printf("\n\033[93m#Initial tokens\033[0m\n");
 	print_tree_node(node->token);
 	printf("\n");
 	print_tree_node(node->redirection);
 	printf("\n");
-	printf("fork: %d\n", node->need_fork);
+	printf("fork() : %d\n", node->is_pipeline);
 	printf("last_pipe_cmd : %d\n", node->is_last_pipe_cmd);
 	
-
-	/* ------------------------------------- 
-	 * | NOTE : write execution code here  |
-	 * ------------------------------------*/
-
-
-	/** (0) fork flag가 1이면 fork를 떠서 실행한다. 
-	 *      fork flag가 0이면 fork를 뜨지 않는다. */
+	(void)config;
 
 
 
-
-
-	/** (0) last_pipe_cmd가 1이면 실행 후 dup2를 원상복구한다. */
-
-
-
-
-	//2. 나중에 추가 -> exec_env에서 쿼트에러 따로 처리해야 한다.! (FIXME!!)
-
-	/** (1) token 노드 단일 확장- Quote Removal
-	 *      시작과 끝이 같은 쿼트("") ('')일 경우에만 쿼트 제거. 
-	 *      이때 주의사항: export로 넘기는 쿼트 ARG="something"은 쿼트제거하면 안됨.
-	 *      + export로 넘긴 쿼트가 서로 쌍을 이루고 있는지 ("" / '') 인지도 검사해야 함.
-	 *      안그러면 export로 split 할 때 문제 생김.*/
-
-	/** (2) token 노드 단일 확장- Dollar sign expension
-	 *      $가 있을 경우, 환경변수를 순회하면서 해당 환경 변수를 찾아 치환 실행. */
-	t_token *tok2 = node->token->content;
-	if (tok2->type == E_TYPE_SIMPLE_CMD)
-	{
-
-		if (expand_token(node->token, config) == ERROR \
-				|| expand_token(node->redirection, config) == ERROR)
-		{
-			printf("\n\033[91mError while parsing! Skipping Command...\033[0m\n");
-			return ; // expand error
-		}
-
-		printf("\n\033[93m#After Word Expansion...\033[0m\n");
-		print_tree_node(node->token);
-		printf("\n");
-		print_tree_node(node->redirection);
-		printf("\n");
-
-
-		/** (3) 모든 토큰 리스트를 strjoin으로 사이사이 공백을 넣어 합친다.
-		 *      ex. [echo][-n][hello] 는 "echo -n hello" 이렇게 합쳐진다.
-		 *      ex. [ec$ECHO!][hi] -> "echo hello! hi" 이렇게 합쳐진다.
-		 **/
-		printf("\n\033[93m#Making char **arglist...\033[0m\n");
-		t_string *joined_str = new_string(50);
-		t_list *cur = node->token;
-		while (cur != NULL)
-		{
-			t_token *tok = cur->content;
-			joined_str->f_append(joined_str, tok->str->text); // 토큰 삽입
-			joined_str->f_push_back(joined_str, ' '); // 공백 삽입
-			cur = cur->next;
-		}
-
-		/** (4) join된 문자열을 공백 기준으로 split하면 char **arglist가 한번에 구해진다. */
-		char **arglist = ft_split(joined_str->text, ' ');
-		delete_string(&joined_str);
-
-
-		/** printing arglist (print_strs is at in environ.c) */
-		print_strs(arglist);
-		printf("\n");
-
-
-		/** Execute command...  */
-		/** (5) arglist[0]이 is_builtin()에 걸리면 builtin으로, 
-		 *      안걸리면 execve 함수로 생성된 arglist 를 넘겨준다. */
-		printf("\n\033[94m#Executing command...\033[0m\n");
-		// ...
-
-
-
-		/** after running command, delete arglist */
-		delete_strs(&arglist);
-	}
-	
-	/** NOTE : if success, then set status to ... CMD_SUCCESS
-	 *         else, set status to ...            CMD_FAILURE 
-	 *         if exit, then set status to ...    CMD_STOP_SHELL 
-	 * */
-
-	/** *status = CMD_SUCCEESS; */
-	/** *status = CMD_STOP_SHELL; */
-	/** *status = CMD_FAILURE; */
-	/** printf("\033[31mCMD_FAILURE set, stopping execution...\033[0m\n"); */
-	/** NOTE : 위 코드는 확인용이니 꼭 지울 것. */
-	printf("-------------------\n");
 }
 
 /** 함수 포인터 글자수 줄이는 용도 */

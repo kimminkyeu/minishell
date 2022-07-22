@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 18:02:44 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 14:33:48 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ t_tree	*new_tree_node(void)
 
 	node = ft_calloc(1, sizeof(*node));
 	node->left = NULL;
-	node->need_fork = 0;
+	node->is_pipeline = 0;
 	node->right = NULL;
 	node->redirection = NULL;
 	node->token = NULL;
@@ -165,7 +165,7 @@ t_tree *parse_to_tree_recur(t_list *tokens, int need_fork, int is_last_pipe_cmd)
 
 	if (need_fork == 1 && target_token_ptr->type == E_TYPE_SIMPLE_CMD)
 	{
-		parent->need_fork = 1;
+		parent->is_pipeline = 1;
 		if (is_last_pipe_cmd == 1)
 			parent->is_last_pipe_cmd = 1;
 	}

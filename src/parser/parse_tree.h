@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:22:29 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 18:00:32 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 14:33:33 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,8 +22,8 @@ typedef struct s_tree {
 	t_list		*token; // list of tokens
 	t_list		*redirection;
 
-	/* if need_fork is true, then do fork() */
-	int			need_fork;
+	/* if is_pipeline is true, then do fork() */
+	int			is_pipeline;
 
 	/* if pipe's last cmd, then do special handling */
 	int			is_last_pipe_cmd;

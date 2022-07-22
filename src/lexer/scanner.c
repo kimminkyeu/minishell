@@ -10,8 +10,8 @@
 /* ************************************************************************** */
 
 #include <stdio.h>
-#include "libft.h"
-#include "iterator.h"
+#include "../../include/libft.h"
+#include "../iterator/iterator.h"
 #include "token.h"
 #include "scanner.h"
 
@@ -196,8 +196,6 @@ void	get_bracket(t_token *tok, t_scanner *scan)
   *     }
   *
   * } */
-
-
 
 
 void	get_cmd_or_arg(t_token *tok, t_scanner *scan)

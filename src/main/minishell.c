@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 23:54:07 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 23:58:52 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@
 #include "../../include/parse.h"
 #include "../../include/execute.h"
 #include "../../include/builtin.h"
+#include "minishell.h"
 
 /** (2) helper functions for Visualization. 
  * TODO : Delete helper files later! */

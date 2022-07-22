@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 01:27:36 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/22 13:16:02 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,13 +116,15 @@ int	expand_token(t_list *tokens, t_shell_config *config)
 		else if (tok->str->text[0] == '\'' && tok->str->text[tok->str->text_len - 1] != '\'')
 			return (ERROR);
 		else
+			// NOTE : 여기부터는 토큰의 양끝으로 쿼트가 묶이지 않았을때, 특히 export를 위한 부분이다.
 		{
 			is_double_quote = 0;
 			i = 0;
 			cnt = 0; // 달러싸인이 나오기 전까지 기호가 몇개인지 알아낸다. 만약 달러싸인 이전에 기호가 홀수개라면 달러를 해석하지 않는다.
-			while (/*tok->str->text[i] != '$' && */tok->str->text[i] != '\0')
+			while (tok->str->text[i] != '$' && tok->str->text[i] != '\0')
 			{
-				if (cnt == 0 && is_double_quote == 0 && tok->str->text[i] == '\"')
+				/** export T=''$HOME'' 은 확장 되어야 한다.  */
+				if ( cnt == 0 && is_double_quote == 0 && tok->str->text[i] == '\"')
 					is_double_quote = 1;
 				if (tok->str->text[i] == '\'')
 					cnt++;
@@ -131,12 +133,19 @@ int	expand_token(t_list *tokens, t_shell_config *config)
 			if (is_double_quote == 1 || cnt % 2 == 0) // 달러 이전에 등장하는 쿼트 개수가 홀수라면 달러싸인 확장을 하지 않는다. 
 				expand_dollar_sign(tok, config);
 			if (is_double_quote == 0)
+			{
+				/** export에서 싱글쿼트에 쌍이 안맞는 경우 */
 				tok->str->f_replace_all(tok->str, "\'", "");
+				// 쿼트 제거 후 항상 마지막 문자는 isalnum에 걸릴 것이다.
+			}
 			if (is_double_quote == 1)
 			{
-				printf("check\n");
+				/** 만약 export에서 쿼트를 지우는데 그 쌍이 안맞을 경우 */
 				tok->str->f_replace_all(tok->str, "\"", "");
 			}
+			// 만약 모든 과정이 끝난 뒤 마지막 문자가 al_num이 아니라면, 에러처리.
+			if (!ft_isalnum(tok->str->text[tok->str->text_len - 1]))
+				return (ERROR);
 		}
 		cur = cur->next;
 	}

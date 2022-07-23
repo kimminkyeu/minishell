@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 13:40:51 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 14:28:41 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 14:34:37 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,6 +99,7 @@ char	*get_full_path(char *name, char **envp)
 		buffer->f_append(buffer, env_path[i]);
 		if (is_valid_path(buffer->text, name))
 		{
+			buffer->f_push_back(buffer, '/');
 			buffer->f_append(buffer, name);
 			cmd_full_path = ft_strdup(buffer->text);
 			delete_string(&buffer);

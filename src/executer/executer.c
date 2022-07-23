@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 23:49:50 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 14:33:08 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/22 13:20:52 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -42,7 +42,6 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	printf("\n");
 	printf("fork: %d\n", node->is_pipeline);
 	printf("last_pipe_cmd : %d\n", node->is_last_pipe_cmd);
-	printf("\n\033[93mExecuting command...\033[0m\n\n");
 
 
 	/* -------------------------------------
@@ -83,8 +82,12 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	printf("\n\033[93m#Making char **arglist...\033[0m\n");
 	print_strs(cmd_argv);
 	printf("\n");
-
 	(void)cmd_argv;
+
+	printf("\n\033[93mExecuting command...\033[0m\n\n");
+
+	printf("program path: %s\n", get_full_path(cmd_argv[0], config->envp));
+
 	/** char **cmd_argv; */
 	/** if (is_builtin() == true)
 	 * {

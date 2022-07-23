@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 23:56:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 23:57:19 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 17:13:47 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ typedef union u_pipe {
 		int	read;
 		int	write;
 	};
-	int	fd[2];
+	int	data[2];
 }	t_pipe;
 
 typedef struct s_shell_config {

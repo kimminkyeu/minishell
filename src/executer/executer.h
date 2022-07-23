@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 14:32:33 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 18:27:19 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ int		expand_tokens(t_list *tokens, t_shell_config *config);
 /* Token to arglist function */
 char	*get_full_path(char *name, char **envp);
 char	**get_cmd_argv(t_list *token);
-
+void	set_redirection(char *new_io, t_list *redir_list, t_shell_config *shell);
 
 
 

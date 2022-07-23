@@ -6,16 +6,21 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 15:33:46 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 18:26:55 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/23 14:33:08 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/22 13:20:52 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 
+#include <unistd.h>
 #include "executer.h"
 #include "../main/minishell.h"
 #include "../lexer/token.h"
+
+# define PIPE_ERROR		(1)
+# define FORK_ERROR		(-1)
+# define CHILD			(0)
 
 void	delete_tree_node(t_tree *node, int *status, t_shell_config *config)
 {
@@ -33,10 +38,67 @@ void	delete_tree_node(t_tree *node, int *status, t_shell_config *config)
 	}
 }
 
+int	is_cd_or_exit_or_export(char *cmd)
+{
+	// 뒤에서 부터 검사 진행 ---> 경로가 포함될 수도 있기 때문.
+	size_t	len;
+
+	len = ft_strlen(cmd);
+	if (ft_strncmp("cd", cmd, len + 1) \
+			&& ft_strncmp("exit", cmd, len + 1) \
+			&& ft_strncmp("export", cmd, len + 1))
+		return (true);
+	else
+		return (false);
+}
+
+int	is_builtin_func()
+{
+
+}
+
+int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무조건 fork를 하는 애들.
+{
+	pid_t	pid;
+	t_pipe	pipe_fd2;
+
+	/** if not last pipe cmd, run pipe() function. #PERROR is 1 */
+	if (!node->is_last_pipe_cmd && pipe(pipe_fd2.data) == PIPE_ERROR)
+		return (ERROR);// pipe function error...
+
+	/** set_redirection은 어디로 가야 하나?  */
+	if (!node->is_last_pipe_cmd) // 들어가기 전에 미리 파이프 설정.
+		set_redirection(&pipe_fd2, node->redirection, config);
+
+	pid = fork();
+	if (pid == FORK_ERROR)
+		return (ERROR);// fork() function error...
+
+
+
+	if (pid != CHILD)
+	{
+		if (node->is_last_pipe_cmd)
+			config->last_cmd_pid = pid; // save last_cmd's pid
+		dup2(pipe_fd2.read, STDIN_FILENO);
+		close(pipe_fd2.read);
+		close(pipe_fd2.write);
+	}
+	else if (pid == CHILD) // if parent
+	{
+		
+		if (is_builtin_func() == true)
+			return (exec_builin()); //exit()
+		if (ft_strchr(cmd_argv[0], '/') == NULL)
+			cmd_argv[0] = get_full_path(cmd_argv[0]);
+		if (cmd_argv[0] == NULL)
+			//error
+	 	execve(cmd_argv[0], cmd_argv, our_envp);
+	}
+}
+
 void	execute_node(t_tree *node, int *status, t_shell_config *config)
 {
-	/** 아래 코드는 방문 순서를 확인하기 위한 코드일 뿐, 구현시엔 제거할 것. */
-
 	if (*status != CMD_SUCCEESS)
 		return ;
 
@@ -47,67 +109,33 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	printf("fork: %d\n", node->is_pipeline);
 	printf("last_pipe_cmd : %d\n", node->is_last_pipe_cmd);
 
-
 	/* -------------------------------------
 	 * | NOTE : write execution code here  |
 	 * ------------------------------------*/
-
-	/** (0) 명령어에 따라 분기하여 실행 */
-	/* 전 과정: (pipe) - (fork) - redirection set - execute - (redirection restore)
-	** 분기:
-	** 1. 파이프라인이 아님 && cd나 exit: redir set - execute - redir restore
-	** 2. 나머지 builtin: (pipe) - fork - redirection set - execute(status 수동)
-	** 3. filesystem에서 실행하는 cmd: (pipe) - fork - redirection set - execute(status 자동)
-	*/
-
 	t_token *tok = node->token->content;
-
-	/** if | or && or || or ( ), do not expand tokens. */
+	/** (1) if | or && or || or ( ), do not expand tokens. */
 	if (tok->type != E_TYPE_SIMPLE_CMD)
 	{
 		/* handle_operation(t_shell_config *config)  */
-
-		/** if [|] */
-
-		/** if [&&] */
-
-		/** if [||] */
-
+		/** (1-1) if [() : subshell] */
+		/** (1-2) if [| : pipe, do nothing] */
+		/** (1-3) if [&& : waitpid] */
+		/** (1-4) if [|| : waitpid] */
 		return ;
 	}
-	/** if E_TYPE_SIMPLE_CMD, then expand tokens */
+	/** (2) if simple command, expand tokens */
 	if (expand_tokens(node->token, config) == ERROR \
 			|| expand_tokens(node->redirection, config) == ERROR)
 	{
 		// show error messege ...
 		return ;
 	}
+	/** (3) make token to char **cmd_argv */
 	char	**cmd_argv = get_cmd_argv(node->token);
-	printf("\n\033[93m#Making char **arglist...\033[0m\n");
-	print_strs(cmd_argv);
-	printf("\n");
-	(void)cmd_argv;
-
-/************************** set redir ******************************/
-
-
-/********************************************************/
-
-	printf("\n\033[93mExecuting command...\033[0m\n\n");
-
-	printf("program path: %s\n", get_full_path(cmd_argv[0], config->envp));
-
-	/** char **cmd_argv; */
-	/** if (is_builtin() == true)
-	 * {
-	  *     if (node->is_pipeline == false &&
-	  *     (ft_strncmp(cmd_argv[0], "cd", 3) || ft_strncmp(cmd_argv[0], "exit", 5)))
-	  *         exec_builtin_exception(cmd_argv);
-	  *     else
-	  *         exec_builtin_general(cmd_argv);
-	  * }
-	  * else
-	  *     exec_general(cmd_argv); */
+	if (!(node->is_pipeline) && is_cd_or_exit_or_export(cmd_argv[0]))
+		/** status = exec_exceptions(cmd_argv, node->redirection, config); // fork없이 실행 */
+	else
+		status = exec_general(node->redirection, cmd_argv, config); //  무조건 fork를 하는 애들.
 
 
 	/** NOTE : if success, then set status to ... CMD_SUCCESS
@@ -119,7 +147,6 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	/** *status = CMD_STOP_SHELL; */
 	/** *status = CMD_FAILURE; */
 	delete_strs(&cmd_argv);
-	printf("-------------------\n");
 }
 /** 함수 포인터 글자수 줄이는 용도 */
 typedef void(*t_callback_func)(t_tree *, int *, t_shell_config *);

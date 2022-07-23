@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 13:40:51 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 14:34:37 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 14:47:33 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,6 @@ char	*get_full_path(char *name, char **envp)
 	cmd_full_path = NULL;
 	env_path = get_environ_path(envp);
 	buffer = new_string(20);
-
 	i = -1;
 	while (env_path[++i])
 	{
@@ -102,10 +101,11 @@ char	*get_full_path(char *name, char **envp)
 			buffer->f_push_back(buffer, '/');
 			buffer->f_append(buffer, name);
 			cmd_full_path = ft_strdup(buffer->text);
-			delete_string(&buffer);
 			break ;
 		}
 		buffer->f_clear(buffer);
 	}
+	free(env_path);
+	delete_string(&buffer);
 	return (cmd_full_path);
 }

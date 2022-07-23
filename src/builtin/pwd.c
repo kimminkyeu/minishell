@@ -18,6 +18,7 @@ void	exec_pwd(char **arglist, char **our_envp)
 	if (getcwd(buf, MAXPATHLEN) == NULL)
 		perror("lesh: pwd");
 	ft_putstr_fd(buf, STDOUT_FILENO);
+	ft_putstr_fd("\n", STDOUT_FILENO);
 	free(buf);
 }
 

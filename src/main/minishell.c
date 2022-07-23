@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 23:58:52 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 22:58:04 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,50 @@
  * TODO : Delete helper files later! */
 #include "helper.h"
 
+void handler(int signum)
+{
+    if (signum != SIGINT)
+        return;
+    printf("ctrl + c\n");
+    rl_on_new_line();
+    /** rl_replace_line("", 1); */
+    rl_redisplay();
+}
+
+/** NOTE : 참고 https://velog.io/@sham/minishell%EA%B3%BC-readline */
+
 void	shell_loop(t_shell_config *shell_config)
 {
 	int		status;
-	char	*line;
 	t_list	*tokens;
 	t_tree	*syntax_tree;
+	static char	*line;
 
+	signal(SIGINT, handler);
 	status = CMD_SUCCEESS;
 	while (status != CMD_STOP_SHELL)
 	{
+		printf("=============== reading next =============\n");
+
+
 		/* Readline library  */
 		line = readline("\033[31mlesh& \033[0m");
-		add_history(line);
+
+		/** FIXME : 오류. readline에서 자꾸 null을 반환해서 프로그램이 끝남... */
+		if (line == NULL)
+		{
+			printf(" exit\n");
+			exit(-1);
+		}
+		else if (line != NULL && *line != '\0')
+			add_history(line);
+		else
+		{
+			free(line);
+			line = NULL;
+			continue ;
+		}
+		
 
 		/* (0) Check input. 쉘 입력값 검사(공백만 입력, 아무것도 없는 입력)
 		 * ctrl+c : ^C가 메시지에 출력 + 프롬프트 새로 띄우기 
@@ -91,7 +122,11 @@ void	shell_loop(t_shell_config *shell_config)
 		 *     -----------------------------------------*/
 
 		status = execute(syntax_tree, shell_config);
-		free(line);
+		if (line != NULL)
+		{
+			free(line);
+			line = NULL;
+		}
 		/** system("leaks minishell > leaks_result_temp; cat leaks_result_temp | grep leaked && rm -rf leaks_result_temp"); */
 	}
 }

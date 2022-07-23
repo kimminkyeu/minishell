@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:23:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 23:14:18 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 22:34:15 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 void	init_iterator(t_iterator *iter, char *line)
 {
+	/** if (line == NULL) */
+		/** return ; */
 	iter->line = line;
 	iter->line_len = ft_strlen(line);
 	iter->curpos = INIT_SRC_POS;

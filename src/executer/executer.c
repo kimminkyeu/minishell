@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 21:31:50 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 22:31:53 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/23 14:33:08 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/22 13:20:52 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
@@ -120,21 +120,23 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 	printf("EXECUTE_GENERAL() : %s\n", cmd_argv[0]);
 
 	/** if not last pipe cmd, run pipe() function. #PERROR is 1 */
-	if (!node->is_last_pipe_cmd && pipe(pipe_fd2.data) == PIPE_ERROR)
+	if (pipe(pipe_fd2.data) == PIPE_ERROR)
 		return (ERROR);// pipe function error...
 
 	/** pipe_fd2에 set_redirection을 덮어쓰면, Stdin Stdout이 자동으로 세팅.  */
+
+	/** FIXME : 여기서 에러가 발생함 ! */
 	set_redirection(&pipe_fd2, node->redirection, config);
 
-	printf("Check 1 : %s\n", cmd_argv[0]);
+	/** printf("Check 1 : %s\n", cmd_argv[0]); */
 
 	pid = fork();
 	if (pid == FORK_ERROR)
 		return (ERROR);// fork() function error...
 
-	if (pid != CHILD)
+	if (pid != CHILD) // if parent
 	{
-		printf("Check 2 : %s\n", cmd_argv[0]);
+		/** printf("Check 2 : %s\n", cmd_argv[0]); */
 		if (node->is_last_pipe_cmd)
 			config->last_cmd_pid = pid; // save last_cmd's pid
 		dup2(pipe_fd2.read, STDIN_FILENO);
@@ -143,21 +145,21 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 	}
 	else if (pid == CHILD) // if parent
 	{
-		printf("Check 3 : %s\n", cmd_argv[0]);
+		/** printf("Check 3 : %s\n", cmd_argv[0]); */
 
 		dup2(pipe_fd2.write, STDOUT_FILENO);
-		printf("Check 3-1 : %s\n", cmd_argv[0]);
+		/** printf("Check 3-1 : %s\n", cmd_argv[0]); */
 		close(pipe_fd2.read);
-		printf("Check 3-2 : %s\n", cmd_argv[0]);
+		/** printf("Check 3-2 : %s\n", cmd_argv[0]); */
 		close(pipe_fd2.write);
 
-		printf("Check 4 : %s\n", cmd_argv[0]);
+		/** printf("Check 4 : %s\n", cmd_argv[0]); */
 		if (is_builtin_func(cmd_argv[0]) == true)
 		{
-			int status = exec_builtin(cmd_argv, config->envp);
-			return (status);
+			return (exec_builtin(cmd_argv, config->envp));
 		}
-		printf("Check 5 : %s\n", cmd_argv[0]);
+
+		/** printf("Check 5 : %s\n", cmd_argv[0]); */
 		if (cmd_argv[0] != NULL && ft_strchr(cmd_argv[0], '/') == NULL)
 		{
 			char *tmp = get_full_path(cmd_argv[0], config->envp);
@@ -165,7 +167,7 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 			cmd_argv[0] = tmp;
 		}
 
-		printf("cmd: %s\n", cmd_argv[0]);
+		/** printf("cmd: %s\n", cmd_argv[0]); */
 
 		if (cmd_argv[0] == NULL)
 			;//error
@@ -176,7 +178,7 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 
 void	execute_node(t_tree *node, int *status, t_shell_config *config)
 {
-	if (*status != CMD_SUCCEESS)
+	if (*status != CMD_SUCCEESS || node == NULL)
 		return ;
 
 	print_tree_node(node->token);
@@ -220,14 +222,18 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	else
 		*status = exec_general(node, cmd_argv, config); //  무조건 fork를 하는 애들.
 
-	/** [> 마지막 커맨드의 실행 후 파일 디스크립터 복원 <] */
-	if (node->is_last_pipe_cmd)
-	{
-		dup2(config->stdin_backup, STDIN_FILENO);
-		dup2(config->stdout_backup, STDOUT_FILENO);
-	}
+	printf("EXECUTION finished... : %s\n", cmd_argv[0]);
 
+	/** [> 마지막 커맨드의 실행 후 파일 디스크립터 복원 <] */
+	/** if (node->is_last_pipe_cmd) */
+	/** { */
+		/** dup2(config->stdin_backup, STDIN_FILENO); */
+		/** dup2(config->stdout_backup, STDOUT_FILENO); */
+	/** } */
+
+	printf("Delete cmd_argv... : %s\n", cmd_argv[0]);
 	delete_strs(&cmd_argv);
+
 	/** NOTE : if success, then set status to ... CMD_SUCCESS
 	 *         else, set status to ...            CMD_FAILURE
 	 *         if exit, then set status to ...    CMD_STOP_SHELL
@@ -282,10 +288,10 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 	inorder_recur(syntax_tree, &status, execute_node, config);
 
 	// 여기서 마지막 pid_t를 기다린다.
-	printf("execute() : waiting...\n");
+	printf("execute() : waiting pid %d\n", config->last_cmd_pid);
 	waitpid(config->last_cmd_pid, &wait_status, 0);
 	printf("execute() : wstatus = %d\n", wait_status);
-	// ...
+	printf("execute() : child's exit code = %d\n", (wait_status >> 8 & 0xff));
 
 	/** 모든 노드 삭제 */
 	inorder_recur(syntax_tree, &status, delete_tree_node, config);

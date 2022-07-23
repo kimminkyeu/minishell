@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 23:15:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/20 22:10:56 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 22:15:59 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,8 @@ void	exec_cd(char **arglist, char **our_envp)
 	char	*message;
 
 	(void)our_envp;
+	if (arglist[1] == NULL)
+		return ;
 	if (chdir(arglist[1]) == -1)
 	{
 		message = ft_strjoin("lesh: cd: ", arglist[1]);

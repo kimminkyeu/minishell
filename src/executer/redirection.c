@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 20:28:37 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 22:19:24 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int	open_heredoc(const char *limiter)
 		close(pipe_fd[READ]);
 		while (true)
 		{
-			write(2, "> ", 2);
+			write(2, "& ", 2);
 			line = readline("\033[31mheredoc> \033[0m");
 			if (is_limiter(line, limiter))
 			{
@@ -80,40 +80,54 @@ int	set_redirection(t_pipe *new_io, t_list *redir_list, t_shell_config *shell)//
 	new_io->read = shell->stdin_backup;
 	new_io->write = shell->stdout_backup;
 	error_no = 0;
+	if (redir_list == NULL)
+		return (error_no);
 	cur = redir_list;
-	while (cur != NULL)
+	while (cur->next != NULL)
 	{
 		tok = cur->content;
-		if (tok->type == E_TYPE_REDIR_LESS)
+		printf("redir tok:%s\n", tok->str->text);
+		if (tok->type == E_TYPE_REDIR_LESS) // < in
 		{
 			cur = cur->next;
 			tok = cur->content;
+			printf("redir tok:%s\n", tok->str->text);
 			new_io->read = open(tok->str->text, O_RDONLY);
 			if (new_io->read == -1)
 				break ;
 		}
-		else if (tok->type == E_TYPE_REDIR_HEREDOC)
+		else if (tok->type == E_TYPE_REDIR_HEREDOC) // << heredoc
 		{
 			cur = cur->next;
 			tok = cur->content;
+			printf("redir tok:%s\n", tok->str->text);
 			open_heredoc(tok->str->text);
 		}
-		else if (tok->type == E_TYPE_REDIR_GREATER)
+		else if (tok->type == E_TYPE_REDIR_GREATER) // > out
 		{
+			cur = cur->next;
+			tok = cur->content;
+			printf("redir tok:%s\n", tok->str->text);
 			new_io->write = open(tok->str->text, O_WRONLY | O_TRUNC | O_CREAT, 0644);
 			if (new_io->write == -1)
 				break ;
 		}
-		else if (tok->type == E_TYPE_REDIR_APPEND)
+		else if (tok->type == E_TYPE_REDIR_APPEND) // >> out
 		{
+			cur = cur->next;
+			tok = cur->content;
+			printf("redir tok:%s\n", tok->str->text);
 			new_io->write = open(tok->str->text, O_WRONLY | O_APPEND | O_CREAT, 0644);
 			if (new_io->write == -1)
 				break ;
 		}
-		cur = cur->next;
 	}
+	printf("redir set complete\n");
+
+	/** FIXME : 여기 설명 한번 더 듣기. */
 	if (cur == NULL)
 	{
+		printf("redir heredoc other\n");
 		//break로 나오면 open()이 실패해서 errno이 설정되었을 테고,
 		//여기서 중단되고 에러메시지가 뜹니다.
 		//다만, 뒤에 heredoc이 남아있을 경우에 모든 heredoc에 대한 입력을 받습니다.

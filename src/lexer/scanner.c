@@ -153,12 +153,6 @@ void	get_dollar_sign(t_token *tok, t_scanner *scan)
 	}
 }
 
-/** void	get_semicolon(t_token *tok, t_scanner *scan)
-  * {
-  *     tok->f_push_back(tok, scan->f_next(scan));
-  *     tok->type = E_TYPE_SEMICOLON;
-  * } */
-
 void	get_bracket(t_token *tok, t_scanner *scan)
 {
 	int	count;
@@ -178,25 +172,6 @@ void	get_bracket(t_token *tok, t_scanner *scan)
 			break ;
 	}
 }
-
-/** void	get_cmd_option(t_token *tok, t_scanner *scan)
-  * {
-  *     char	c;
-  *
-  *     tok->f_push_back(tok, scan->f_next(scan));
-  *     tok->type = E_TYPE_CMD_OPTION;
-  *     while (scan->f_has_next(scan))
-  *     {
-  *         c = scan->f_peek(scan);
-  *         if (!ft_isspace(c) && !is_meta_char(c) && c != '\'' && c != '\"' \
-  *                 && c != '(' && c != ')')
-  *             tok->f_push_back(tok, scan->f_next(scan));
-  *         else
-  *             break ;
-  *     }
-  *
-  * } */
-
 
 void	get_cmd_or_arg(t_token *tok, t_scanner *scan)
 {
@@ -244,14 +219,8 @@ t_list	*create_initial_tokens(char *line)
 			get_double_ampersand(token, &scanner);
 		else if (c == '<' || c == '>')
 			get_redirection(token, &scanner);
-		// else if (c == '\"')
-		// 	get_double_quote(token, &scanner);
-		// else if (c == '\'')
-		// 	get_single_quote(token, &scanner);
 		else if (c == '(')
 			get_bracket(token, &scanner);
-		/** else if (ft_isspace(c)) */
-			/** get_whitespace(token, &scanner); */
 		else
 			get_cmd_or_arg(token, &scanner);
 		ft_lstadd_back(&token_list, ft_lstnew(token));
@@ -259,8 +228,8 @@ t_list	*create_initial_tokens(char *line)
 	return (token_list);
 }
 
-	/** 완성된 리스트를 돌면서 1차 검토, redir 옆은 redir_arg로 처리함. */
-void	set_redirection_arg(t_list *token_list)
+/** 완성된 리스트를 돌면서 1차 검토, redir 옆은 redir_arg로 처리함. */
+void	set_redirection_type(t_list *token_list)
 {
 	t_list	*tmp;
 	t_token	*tok;
@@ -271,6 +240,14 @@ void	set_redirection_arg(t_list *token_list)
 		tok = tmp->content;
 		if (tok->type == E_TYPE_REDIRECT)
 		{
+			if (ft_strncmp(tok->str->text, "<", 2) == 0)
+				tok->type = E_TYPE_REDIR_LESS;
+			else if (ft_strncmp(tok->str->text, ">", 2) == 0)
+				tok->type = E_TYPE_REDIR_GREATER;
+			else if (ft_strncmp(tok->str->text, "<<", 3) == 0)
+				tok->type = E_TYPE_REDIR_HEREDOC;
+			else if (ft_strncmp(tok->str->text, ">>", 3) == 0)
+				tok->type = E_TYPE_REDIR_APPEND;
 			tmp = tmp->next;
 			tok = tmp->content;
 			tok->type = E_TYPE_REDIR_ARG;
@@ -359,8 +336,7 @@ int	is_syntax_error(t_list *token_list)
 						printf("%c", *tmp);
 						tmp++;
 					}
-					printf("'\n");
-					return (true);
+					printf("'\n"); return (true);
 				}
 				tmp++;
 			}
@@ -385,8 +361,8 @@ t_list	*tokenize(char *line)
 		return (NULL);
 	}
 
-	/** (1) redirection argument 세팅. --> 트리 만들때 필요 */
-	set_redirection_arg(token_list);
+	/** (1) redirection 타입 세분화. --> 트리 만들때 필요 */
+	set_redirection_type(token_list);
 
 	return (token_list);
 }

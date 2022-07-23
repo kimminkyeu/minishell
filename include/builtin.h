@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 21:59:30 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 22:59:47 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 20:03:33 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,18 +36,12 @@ char	*get_environ_value(const char *env_key, char **envp);
  * |  NOTE : Builtin functions                |
  * -------------------------------------------*/
 
-void	exec_export(char **arglist, char ***our_envp_ptr);
-
-void	exec_env(char **arglist, char **our_envp);
-
-void	exec_unset(char **arglist, char ***our_envp_ptr); 
-
-void	exec_cd(char **arglist, char **our_envp);
-
-void	exec_echo(char **arglist, char **our_envp);
-
-void	exec_pwd(char **arglist, char **our_envp);
-
-void	exec_exit(char **arglist, char **our_envp);
+int		exec_export(char **arglist, char ***our_envp_ptr);
+int		exec_env(char **arglist, char **our_envp);
+int		exec_unset(char **arglist, char ***our_envp_ptr); 
+int		exec_cd(char **arglist, char **our_envp);
+int		exec_echo(char **arglist, char **our_envp);
+int		exec_pwd(char **arglist, char **our_envp);
+int		exec_exit(char **arglist, char **our_envp);
 
 #endif /* BUILTIN_H */

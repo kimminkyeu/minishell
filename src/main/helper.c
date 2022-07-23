@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 22:20:22 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 16:14:39 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 20:58:35 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/22 16:08:57 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -27,8 +27,14 @@ const char	*get_token_type(t_token_type type)
 		return ("WHITESPACE");
 	else if (type == E_TYPE_PIPE)
 		return ("PIPE");
-	else if (type == E_TYPE_REDIRECT)
-		return ("REDIRECT");
+	else if (type == E_TYPE_REDIR_GREATER)
+		return ("REDIR_GREATER");
+	else if (type == E_TYPE_REDIR_LESS)
+		return ("REDIR_LESS");
+	else if (type == E_TYPE_REDIR_APPEND)
+		return ("REDIR_APPEND");
+	else if (type == E_TYPE_REDIR_HEREDOC)
+		return ("REDIR_HEREDOC");
 	else if (type == E_TYPE_REDIR_ARG)
 		return ("REDIR_ARG");
 	else if (type == E_TYPE_BRACKET)

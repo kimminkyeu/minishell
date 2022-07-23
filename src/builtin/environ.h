@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 21:52:20 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 22:59:56 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 20:55:13 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,9 @@
 # include <unistd.h>
 # include <stdio.h>
 # include "../../include/libft.h"
+
+# define SUCCESS	(0)
+# define ERROR		(1)
 
 /** deep copy system envp content */
 char	**new_environ(char **system_envp);
@@ -28,13 +31,13 @@ char	*get_environ_value(const char *env_key, char **envp);
 void	delete_environ(char ***our_envp);
 
 /** export builtin function. */
-void	exec_export(char **arglist, char ***our_envp_ptr);
+int		exec_export(char **arglist, char ***our_envp_ptr);
 
 /** env builtin function. */
-void	exec_env(char **arglist, char **our_envp);
+int		exec_env(char **arglist, char **our_envp);
 
 /** unset builtin function. */
-void	exec_unset(char **arglist, char ***our_envp_ptr); 
+int		exec_unset(char **arglist, char ***our_envp_ptr); 
 
 /* --------------------------------------------------- */
 

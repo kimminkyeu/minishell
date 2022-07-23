@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 13:51:16 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/23 20:58:55 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,21 +24,16 @@ typedef enum e_token_type {
 	E_TYPE_PIPE,				//	[|]
 	E_TYPE_BRACKET,				//  [(] [)] --> for subshell
 	E_TYPE_SIMPLE_CMD,			// simple_command
+								//
 	E_TYPE_REDIR_GREATER,		//	[>]
 	E_TYPE_REDIR_LESS,			//	[<]
 	E_TYPE_REDIR_APPEND,		//	[>>]
 	E_TYPE_REDIR_HEREDOC,		//	[<<]
-								//
-	// E_TYPE_CMD_OPTION,			//  [-*]
 	E_TYPE_REDIR_ARG,			//	[infile outfile]
-	// E_TYPE_SINGLE_QUOTE,		//  [']
-	// E_TYPE_DOUBLE_QUOTE,		//  ["]
 								//
 	E_TYPE_WHITESPACE, 			// 공백 토큰
 	E_TYPE_DEFAULT, 			// No type
-	// E_TYPE_SEMICOLON,		//	[;]
-	// E_TYPE_EOF,				//  [ EOF special token like NULL ]
-	// E_TYPE_ERROR				//  [ Error token. ]
+	E_TYPE_REDIRECT
 }	t_token_type;
 
 typedef struct s_token	t_token;

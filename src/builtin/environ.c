@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 12:46:16 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 23:05:25 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 20:55:54 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -125,14 +125,11 @@ void	print_in_order(char **our_envp)
 	delete_strs(&ordered_envp);
 }
 
-#include <stdio.h>
-
 void	add_to_envp(char *str, char ***our_envp_ptr)
 {
 	size_t	strs_count;
 	char	**new_envp;
 
-	printf("adding to envp... [%s]\n", str);
 	strs_count = get_strs_count(*our_envp_ptr);
 	new_envp = ft_calloc(strs_count + 2, sizeof(*new_envp));
 	copy_strs(new_envp, *our_envp_ptr, strs_count);
@@ -151,8 +148,7 @@ void	add_to_envp(char *str, char ***our_envp_ptr)
 	*our_envp_ptr = new_envp;
 }
 
-
-void	exec_export(char **arglist, char ***our_envp_ptr)
+int	exec_export(char **arglist, char ***our_envp_ptr)
 {
 	// if (arglist is 'export' with no argument)
 	// arglist[0] == export
@@ -189,26 +185,30 @@ void	exec_export(char **arglist, char ***our_envp_ptr)
 			ft_putstr_fd(str_quote_removed, STDERR_FILENO);
 			ft_putstr_fd(": not a valid identifier\n", STDERR_FILENO);
 			free(str_quote_removed);
+			return (ERROR);
 		}
 		else
 			add_to_envp(str_quote_removed, our_envp_ptr);
 	}
+	return (SUCCESS);
 }
 
 /** 정렬 없이 출력 진행. 그렇다고 삽입한 대로 출력되는건 아닌듯... */
-void	exec_env(char **arglist, char **our_envp)
+int	exec_env(char **arglist, char **our_envp)
 {
 	if (arglist[1] != NULL && arglist[1][0] == '-')
 	{
 		ft_putstr_fd("env: illegal option or argument", STDERR_FILENO);
 		ft_putstr_fd(arglist[1], STDERR_FILENO);
+		return (ERROR);
 	}
 	else
 		print_strs(our_envp);
+	return (SUCCESS);
 }
 
 /** 환경 변수 리스트에서 제거 */
-void	exec_unset(char **arglist, char ***our_envp_ptr)
+int	exec_unset(char **arglist, char ***our_envp_ptr)
 {
 	char	**str_split;
 	char	**new_envp;
@@ -220,6 +220,7 @@ void	exec_unset(char **arglist, char ***our_envp_ptr)
 	{
 		ft_putstr_fd("env: illegal option ", STDERR_FILENO);
 		ft_putstr_fd(arglist[1], STDERR_FILENO);
+		return (ERROR);
 	}
 	else if (arglist[1] != NULL)
 	{
@@ -243,6 +244,7 @@ void	exec_unset(char **arglist, char ***our_envp_ptr)
 		free(*our_envp_ptr);
 		*our_envp_ptr = new_envp;
 	}
+	return (SUCCESS);
 }
 
 char	*get_environ_value(const char *env_key, char **envp)

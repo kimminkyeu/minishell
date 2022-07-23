@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 14:33:48 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 21:29:52 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,10 @@ t_list	*find_target_token(t_list *tokens, t_token_type _type)
 	while (cur != NULL)
 	{
 		token = cur->content;
-		if (token->type == _type)
+		if (_type == E_TYPE_REDIRECT \
+				&& token->type >= 5 && token->type <= 8)
+			return (cur);
+		else if (token->type == _type)
 			return (cur);
 		cur = cur->next;
 	}
@@ -168,6 +171,10 @@ t_tree *parse_to_tree_recur(t_list *tokens, int need_fork, int is_last_pipe_cmd)
 		parent->is_pipeline = 1;
 		if (is_last_pipe_cmd == 1)
 			parent->is_last_pipe_cmd = 1;
+	}
+	else if (need_fork == 0 && target_token_ptr->type == E_TYPE_SIMPLE_CMD)
+	{
+		parent->is_last_pipe_cmd = 1;
 	}
 
 	/* Set redirection list */

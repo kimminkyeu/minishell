@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 18:27:19 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 20:56:14 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 # include "../../include/builtin.h"
 
 /* only for cmd_execution */
-# define CMD_FAILURE		(0)
-# define CMD_SUCCEESS		(1)
+# define CMD_SUCCEESS		(0)
+# define CMD_FAILURE		(1)
 
 /* only for stopping minishell loop */
 # define CMD_STOP_SHELL		(-1)
@@ -31,9 +31,8 @@ int		expand_tokens(t_list *tokens, t_shell_config *config);
 /* Token to arglist function */
 char	*get_full_path(char *name, char **envp);
 char	**get_cmd_argv(t_list *token);
-void	set_redirection(char *new_io, t_list *redir_list, t_shell_config *shell);
 
-
+void	set_redirection(t_pipe *pipe_fd2, t_list *redir_list, t_shell_config *shell);
 
 void	delete_tree_node(t_tree *node, int *status, t_shell_config *config);
 void	execute_node(t_tree *node, int *status, t_shell_config *config);

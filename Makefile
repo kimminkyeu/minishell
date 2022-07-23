@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/23 14:31:11 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/23 15:38:51 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -35,7 +35,7 @@ MAIN_SRC		= minishell helper
 
 LEXER_SRC		= token scanner
 PARSER_SRC		= parse_tree
-EXECUTER_SRC	= executer token_expand get_full_path
+EXECUTER_SRC	= executer token_expand get_full_path redirection
 BUILTIN_SRC		= environ cd echo pwd exit
 
 STRING_SRC		= string

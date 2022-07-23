@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 23:02:16 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/23 13:51:16 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,10 @@ typedef enum e_token_type {
 	E_TYPE_PIPE,				//	[|]
 	E_TYPE_BRACKET,				//  [(] [)] --> for subshell
 	E_TYPE_SIMPLE_CMD,			// simple_command
-	E_TYPE_REDIRECT,			//	[< << > >>]
+	E_TYPE_REDIR_GREATER,		//	[>]
+	E_TYPE_REDIR_LESS,			//	[<]
+	E_TYPE_REDIR_APPEND,		//	[>>]
+	E_TYPE_REDIR_HEREDOC,		//	[<<]
 								//
 	// E_TYPE_CMD_OPTION,			//  [-*]
 	E_TYPE_REDIR_ARG,			//	[infile outfile]

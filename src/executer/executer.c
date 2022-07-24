@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/24 19:44:02 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/24 19:55:49 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/23 14:33:08 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/22 13:20:52 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
@@ -78,8 +78,6 @@ int	exec_builtin(char **cmd_argv, char **envp)
 	size_t	len;
 	int		status;
 
-	printf("EXECUTE_BUILITIN() : %s\n", cmd_argv[0]);
-
 	len = ft_strlen(cmd_argv[0]);
 	if (ft_strncmp("cd", cmd_argv[0], len + 1) == 0)
 		status = exec_cd(cmd_argv, envp);
@@ -104,7 +102,7 @@ int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 	t_pipe	pipe_fd2;
 	int		status;
 
-	printf("EXECUTE_EXEPTION() : %s\n", cmd_argv[0]);
+	printf("\033[90mcalling exec_exceptions() : %s\033[0m\n", cmd_argv[0]);
 
 	set_redirection(&pipe_fd2, node->redirection, config);
 	status = exec_builtin(cmd_argv, config->envp);
@@ -117,8 +115,7 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 	pid_t	pid;
 	t_pipe	pipe_fd2; // == fd[2]
 
-
-	printf("EXECUTE_GENERAL() : %s\n", cmd_argv[0]);
+	printf("\033[90mcalling exec_general() : %s\033[0m\n", cmd_argv[0]);
 
 	if (pipe(pipe_fd2.data) == PIPE_ERROR)
 		return (ERROR);// pipe function error...
@@ -167,8 +164,8 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	printf("\n");
 	print_tree_node(node->redirection);
 	printf("\n");
-	printf("fork: %d\n", node->is_pipeline);
-	printf("last_pipe_cmd : %d\n\n", node->is_last_pipe_cmd);
+	printf("\033[90mfork: %d\033[0m\n", node->is_pipeline);
+	printf("\033[90mlast_pipe_cmd : %d\033[0m\n\n", node->is_last_pipe_cmd);
 
 	/** (void)config; */
 	/* -------------------------------------
@@ -268,10 +265,11 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 	/** printf("execute() : waiting pid %d\n", config->last_cmd_pid); */
 	waitpid(config->last_cmd_pid, &wait_status, 0);
 	/** printf("execute() : wstatus = %d\n", wait_status); */
-	printf("execute() : child's exit code = %d\n", (wait_status >> 8 & 0xff));
+	printf("\033[90mexecute() : child's exit code = %d\033[0m\n", (wait_status >> 8 & 0xff));
 
 	/** 모든 노드 삭제 */
 	inorder_recur(syntax_tree, &status, delete_tree_node, config);
+	printf("\n");
 
 	return (status);
 }

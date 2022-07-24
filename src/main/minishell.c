@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/24 19:37:04 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/24 19:54:36 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,9 @@
  * TODO : Delete helper files later! */
 #include "helper.h"
 
-/** NOTE : 참고 https://velog.io/@sham/minishell%EA%B3%BC-readline */
+/** NOTE 
+ * : 시그널 부분 참고 https://velog.io/@sham/minishell%EA%B3%BC-readline */
+
 void	shell_loop(t_shell_config *shell_config)
 {
 	int		status;
@@ -42,10 +44,7 @@ void	shell_loop(t_shell_config *shell_config)
 	status = CMD_SUCCEESS;
 	while (status != CMD_STOP_SHELL)
 	{
-		printf("=============== reading next =============\n");
-
-
-	/* Readline library  */
+		/* Readline library  */
 		line = readline("\033[31mlesh& \033[0m");
 
 		/** FIXME : 오류. readline에서 자꾸 null을 반환해서 프로그램이 끝남... */
@@ -56,14 +55,7 @@ void	shell_loop(t_shell_config *shell_config)
 		}
 		else if (line != NULL && *line != '\0')
 			add_history(line);
-		else
-		{
-			free(line);
-			line = NULL;
-			continue ;
-		}
 		
-
 		/* (0) Check input. 쉘 입력값 검사(공백만 입력, 아무것도 없는 입력)
 		 * ctrl+c : ^C가 메시지에 출력 + 프롬프트 새로 띄우기 
 		 * ctrl+d : exit이 메시지에 출력 + 종료 */

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 22:19:24 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/24 19:38:08 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 
 #include <fcntl.h>//open
 #include <unistd.h>
+#include <sys/wait.h>
 
 #include "../main/minishell.h"
 #include "../lexer/token.h"

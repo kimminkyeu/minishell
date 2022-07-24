@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 22:58:04 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/24 19:37:04 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,18 +31,7 @@
  * TODO : Delete helper files later! */
 #include "helper.h"
 
-void handler(int signum)
-{
-    if (signum != SIGINT)
-        return;
-    printf("ctrl + c\n");
-    rl_on_new_line();
-    /** rl_replace_line("", 1); */
-    rl_redisplay();
-}
-
 /** NOTE : 참고 https://velog.io/@sham/minishell%EA%B3%BC-readline */
-
 void	shell_loop(t_shell_config *shell_config)
 {
 	int		status;
@@ -50,14 +39,13 @@ void	shell_loop(t_shell_config *shell_config)
 	t_tree	*syntax_tree;
 	static char	*line;
 
-	signal(SIGINT, handler);
 	status = CMD_SUCCEESS;
 	while (status != CMD_STOP_SHELL)
 	{
 		printf("=============== reading next =============\n");
 
 
-		/* Readline library  */
+	/* Readline library  */
 		line = readline("\033[31mlesh& \033[0m");
 
 		/** FIXME : 오류. readline에서 자꾸 null을 반환해서 프로그램이 끝남... */

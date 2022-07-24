@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 20:56:14 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 02:05:32 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int		expand_tokens(t_list *tokens, t_shell_config *config);
 char	*get_full_path(char *name, char **envp);
 char	**get_cmd_argv(t_list *token);
 
-void	set_redirection(t_pipe *pipe_fd2, t_list *redir_list, t_shell_config *shell);
+void	set_redirection(t_list *redir_list, t_shell_config *shell);
 
 void	delete_tree_node(t_tree *node, int *status, t_shell_config *config);
 void	execute_node(t_tree *node, int *status, t_shell_config *config);

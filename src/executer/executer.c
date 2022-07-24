@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 01:08:14 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 02:29:08 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/23 14:33:08 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/22 13:20:52 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
@@ -23,6 +23,9 @@
 # define PIPE_ERROR		(1)
 # define FORK_ERROR		(-1)
 # define CHILD			(0)
+
+# define READ			(0)
+# define WRITE			(1)
 
 # define EXIT_COMMAND_NOT_FOUND (127)
 
@@ -105,12 +108,12 @@ int	exec_builtin(char **cmd_argv, char ***envp)
 /** no fork. */
 int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 {
-	t_pipe	pipe_fd2;
+	/** int		pipe_fd[2]; */
 	int		status;
 
 	printf("\033[90mcalling exec_exceptions() : %s\033[0m\n\n", cmd_argv[0]);
 
-	set_redirection(&pipe_fd2, node->redirection, config);
+	set_redirection(node->redirection, config);
 	status = exec_builtin(cmd_argv, config->envp);
 	return (status);
 }
@@ -118,49 +121,54 @@ int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 /** TODO : Redirection 복구는 last_pipe_cmd에서 해줘야 한다. */
 int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무조건 fork를 하는 애들.
 {
-	pid_t	pid;
-	t_pipe	pipe_fd2; // == fd[2]
-
-	char	*full_path;
-
 	printf("\033[90mcalling exec_general() : %s\033[0m\n\n", cmd_argv[0]);
 
-	if (pipe(pipe_fd2.data) == PIPE_ERROR)
+	pid_t	pid;
+	char	*full_path;
+
+	set_redirection(node->redirection, config);
+	/** FIXME: 추가한 부분. redir 세팅후, 그것을 stdin혹은 stdout으로 dup 진행. */
+	dup2(config->pipe_fd[READ], STDIN_FILENO);
+	if (node->is_last_pipe_cmd)
+		dup2(config->pipe_fd[WRITE], STDOUT_FILENO);
+
+
+
+
+
+
+
+	if (pipe(config->pipe_fd) == PIPE_ERROR)
 	{
 		perror("pipe()");
 		return (ERROR);// pipe function error...
 	}
 
-	set_redirection(&pipe_fd2, node->redirection, config);
-
 	pid = fork();
 	if (pid == FORK_ERROR)
 		return (ERROR);// fork() function error...
-
 	if (pid != CHILD) // if parent
 	{
 		if (node->is_last_pipe_cmd)
 			config->last_cmd_pid = pid; // save last_cmd's pid
-		else // 마지막 커맨드가 아니면 STDIN을 바꿔주면 됨.
-		{
-			/** printf("changing redir out\n"); */
-
-			dup2(pipe_fd2.read, STDIN_FILENO);
-			close(pipe_fd2.read);
-			close(pipe_fd2.write);
-		}
+		dup2(config->pipe_fd[READ], STDIN_FILENO);
+		close(config->pipe_fd[READ]);
+		close(config->pipe_fd[WRITE]);
 	}
 	else if (pid == CHILD) // if parent
 	{
 		full_path = NULL;
-		dup2(pipe_fd2.write, STDOUT_FILENO);
-		close(pipe_fd2.read);
-		close(pipe_fd2.write);
 
+		if (!node->is_last_pipe_cmd)
+		{
+			dup2(config->pipe_fd[WRITE], STDOUT_FILENO);
+			close(config->pipe_fd[READ]);
+			close(config->pipe_fd[WRITE]);
+		}
 		if (is_builtin_func(cmd_argv[0]) == true)
 		{
 			int status = exec_builtin(cmd_argv, config->envp);
-			/** NOTE : 빌트인에서도 실행 후 exit을 해줘야 한다...
+			/** NOTE : 빌트인에서도 실행 후 exit을 해줘야 한다...(fork했기 때문)
 			 * 그게 오류의 원인이였다... */
 			exit(status);
 		}
@@ -220,10 +228,14 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
   *     else
   *         *status = exec_general(node, cmd_argv, config); //  무조건 fork를 하는 애들.
   *  */
+	if (node->is_last_pipe_cmd)
+	{
+		/** 마지막 커맨드일 경우 fd 복구 */
+		dup2(config->stdin_backup, STDIN_FILENO);
+		dup2(config->stdout_backup, STDOUT_FILENO);
+	}
 
 
-	dup2(config->stdin_backup, STDIN_FILENO);
-	dup2(config->stdout_backup, STDOUT_FILENO);
 	delete_strs(&cmd_argv);
 
 	/** NOTE : if success, then set status to ... CMD_SUCCESS
@@ -275,7 +287,7 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
-
+	
 	// 여기서 마지막 pid_t를 기다리고, 해당 wstatus를 저장한다. --> 추후 $? 실행에 사용.
 	waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
 	printf("\n");

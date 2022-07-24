@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 01:35:18 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 02:12:46 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,9 @@
 /** (2) helper functions for Visualization. 
  * TODO : Delete helper files later! */
 #include "helper.h"
+
+#define READ	(0)
+#define WRITE	(0)
 
 /** NOTE 
  * : 시그널 부분 참고 https://velog.io/@sham/minishell%EA%B3%BC-readline */
@@ -139,7 +142,6 @@ void	show_shell_logo(void)
 
 	red = "\033[31m";
 	white = "\033[0m";
-
 	printf("%s===========================================================================%s\n", red, white);
 	printf("%s|                                                                         |%s\n", red, white);
 	printf("%s|   Welcome to 42 minishell project.                                      |%s\n", red, white);
@@ -155,6 +157,7 @@ void	show_shell_logo(void)
 	printf("%s|                                          .created by yehan & minkyeki   |%s\n", red, white);
 	printf("%s|                                                                         |%s\n", red, white);
 	printf("%s===========================================================================%s\n", red, white);
+	printf("\n");
 }
 
 
@@ -171,6 +174,9 @@ int main(int ac, char **av, char **env)
 	shell_config.stdout_backup = dup(STDOUT_FILENO); // save STDOUT
 	shell_config.last_cmd_pid = 0;
 	shell_config.last_cmd_wstatus = 0;
+	shell_config.pipe_fd[READ] = STDIN_FILENO;
+	shell_config.pipe_fd[WRITE] = STDOUT_FILENO;
+
 
 	/* (+) Show Lee-Shell Logo */
 	show_shell_logo();

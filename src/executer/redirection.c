@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/24 19:38:08 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 02:26:14 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,14 +72,19 @@ int	open_heredoc(const char *limiter)
 	return (pipe_fd[READ]);
 }
 
-int	set_redirection(t_pipe *new_io, t_list *redir_list, t_shell_config *shell)// [>] [out] [<] [in]
+int	set_redirection(t_list *redir_list, t_shell_config *config)// [>] [out] [<] [in]
 {
 	unsigned char	error_no;
 	t_token			*tok;
 	t_list			*cur;
 
-	new_io->read = shell->stdin_backup;
-	new_io->write = shell->stdout_backup;
+	/** (void)shell; */
+	/** config->pipe_fd[READ] = config->stdin_backup; */
+	/** config->pipe_fd[WRITE] = config->stdout_backup; */
+
+
+
+
 	error_no = 0;
 	if (redir_list == NULL)
 		return (error_no);
@@ -87,43 +92,39 @@ int	set_redirection(t_pipe *new_io, t_list *redir_list, t_shell_config *shell)//
 	while (cur->next != NULL)
 	{
 		tok = cur->content;
-		printf("redir tok:%s\n", tok->str->text);
 		if (tok->type == E_TYPE_REDIR_LESS) // < in
 		{
 			cur = cur->next;
 			tok = cur->content;
-			printf("redir tok:%s\n", tok->str->text);
-			new_io->read = open(tok->str->text, O_RDONLY);
-			if (new_io->read == -1)
+			config->pipe_fd[READ] = open(tok->str->text, O_RDONLY);
+			if (config->pipe_fd[READ] == -1)
 				break ;
 		}
 		else if (tok->type == E_TYPE_REDIR_HEREDOC) // << heredoc
 		{
 			cur = cur->next;
 			tok = cur->content;
-			printf("redir tok:%s\n", tok->str->text);
 			open_heredoc(tok->str->text);
 		}
 		else if (tok->type == E_TYPE_REDIR_GREATER) // > out
 		{
 			cur = cur->next;
 			tok = cur->content;
-			printf("redir tok:%s\n", tok->str->text);
-			new_io->write = open(tok->str->text, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-			if (new_io->write == -1)
+			config->pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+			if (config->pipe_fd[WRITE] == -1)
 				break ;
 		}
 		else if (tok->type == E_TYPE_REDIR_APPEND) // >> out
 		{
 			cur = cur->next;
 			tok = cur->content;
-			printf("redir tok:%s\n", tok->str->text);
-			new_io->write = open(tok->str->text, O_WRONLY | O_APPEND | O_CREAT, 0644);
-			if (new_io->write == -1)
+			config->pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_APPEND | O_CREAT, 0644);
+			if (config->pipe_fd[WRITE] == -1)
 				break ;
 		}
-	}
-	printf("redir set complete\n");
+	}	
+
+
 
 	/** FIXME : 여기 설명 한번 더 듣기. */
 	if (cur == NULL)

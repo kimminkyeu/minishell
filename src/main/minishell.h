@@ -6,20 +6,13 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 23:56:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 01:07:02 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 01:51:47 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-typedef union u_pipe {
-	struct {
-		int	read;
-		int	write;
-	};
-	int	data[2];
-}	t_pipe;
 
 typedef struct s_shell_config {
 
@@ -27,11 +20,11 @@ typedef struct s_shell_config {
 
 	int		stdin_backup;
 	int		stdout_backup;
+
+	int		pipe_fd[2];
 	
 	pid_t	last_cmd_pid; // for waitpid()
 	int		last_cmd_wstatus;
-
-	t_pipe	pipe;  // for pipe()
 
 } t_shell_config;
 

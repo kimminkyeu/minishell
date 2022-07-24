@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 01:07:11 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 01:35:18 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,18 +48,20 @@ void	shell_loop(t_shell_config *config)
 		t_string	*prompt;
 
 		prompt = new_string(64);
+		prompt->f_append(prompt, "\033[31m");
 		prompt->f_append(prompt, get_environ_value("LOGNAME", *config->envp));
 		prompt->f_append(prompt, "@");
 		prompt->f_append(prompt, get_environ_value("NAME", *config->envp));
 		prompt->f_append(prompt, ":");
 		prompt->f_append(prompt, get_environ_value("PWD", *config->envp));
-		prompt->f_append(prompt, "\033[31m");
-		prompt->f_append(prompt, " lesh$ \033[0m");
+		prompt->f_replace_all(prompt, get_environ_value("HOME", *config->envp), "~");
+		prompt->f_append(prompt, "\033[0m");
+		prompt->f_append(prompt, "$ ");
 		line = readline(prompt->text);
-
+	
 		delete_string(&prompt);
 
-		/** FIXME : 오류. readline에서 자꾸 null을 반환해서 프로그램이 끝남... */
+		/** CTRL + D 를 눌렀을 때 */
 		if (line == NULL)
 		{
 			printf(" exit\n");
@@ -129,6 +131,33 @@ void	shell_loop(t_shell_config *config)
 	}
 }
 
+
+void	show_shell_logo(void)
+{
+	const char *red;
+	const char *white;
+
+	red = "\033[31m";
+	white = "\033[0m";
+
+	printf("%s===========================================================================%s\n", red, white);
+	printf("%s|                                                                         |%s\n", red, white);
+	printf("%s|   Welcome to 42 minishell project.                                      |%s\n", red, white);
+	printf("%s|                                                                         |%s\n", red, white);
+	printf("%s|                                                                         |%s\n", red, white);
+	printf("%s|   ██╗     ███████╗███████╗    ███████╗██╗  ██╗███████╗██╗     ██╗       |%s\n", red, white);
+	printf("%s|   ██║     ██╔════╝██╔════╝    ██╔════╝██║  ██║██╔════╝██║     ██║       |%s\n", red, white);
+	printf("%s|   ██║     █████╗  █████╗      ███████╗███████║█████╗  ██║     ██║       |%s\n", red, white);
+	printf("%s|   ██║     ██╔══╝  ██╔══╝      ╚════██║██╔══██║██╔══╝  ██║     ██║       |%s\n", red, white);
+	printf("%s|   ███████╗███████╗███████╗    ███████║██║  ██║███████╗███████╗███████╗  |%s\n", red, white);
+	printf("%s|   ╚══════╝╚══════╝╚══════╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝  |%s\n", red, white);
+	printf("%s|                                                                         |%s\n", red, white);
+	printf("%s|                                          .created by yehan & minkyeki   |%s\n", red, white);
+	printf("%s|                                                                         |%s\n", red, white);
+	printf("%s===========================================================================%s\n", red, white);
+}
+
+
 int main(int ac, char **av, char **env)
 {	
 	(void)ac;
@@ -143,6 +172,9 @@ int main(int ac, char **av, char **env)
 	shell_config.last_cmd_pid = 0;
 	shell_config.last_cmd_wstatus = 0;
 
+	/* (+) Show Lee-Shell Logo */
+	show_shell_logo();
+	
 
 	/* (2) Run command loop */
 	shell_loop(&shell_config);

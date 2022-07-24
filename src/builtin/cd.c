@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 23:15:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 00:27:43 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 01:18:21 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,14 @@ int	exec_cd(char **arglist, char ***envp_ptr)
 		path = get_environ_value("OLDPWD", *envp_ptr);
 		arglist[1] = ft_strdup(path);
 	}
+	else if (arglist[1][0] == '~')
+	{
+		/** $HOME을 불러와서 arglist[1]로 치환 */
+		free(arglist[1]);
+		path = get_environ_value("HOME", *envp_ptr);
+		arglist[1] = ft_strdup(path);
+	}
+
 	/* (1) 현재 경로를 old_pwd에 저장. */
 	message = ft_calloc(1, MAXPATHLEN);
 	getcwd(message, MAXPATHLEN);
@@ -52,7 +60,7 @@ int	exec_cd(char **arglist, char ***envp_ptr)
 	free(path);
 	arglist[1] = tmp;
 
-/** (2) 이동 실행.  */
+	/** (2) 이동 실행.  */
 	if (chdir(arglist[1]) == -1)
 	{
 		message = ft_strjoin("lesh: cd: ", arglist[1]);

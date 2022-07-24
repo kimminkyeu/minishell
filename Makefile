@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/23 15:38:51 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/25 01:33:18 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -68,27 +68,29 @@ MAGENTA = \033[0;95m
 CYAN = \033[0;96m
 WHITE = \033[0;97m
 
+	# @echo "$(RED)===========================================================================$(DEF_COLOR)"
+	# @echo "$(RED)|                                                                         |$(DEF_COLOR)"
+	# @echo "$(RED)|   Welcome to 42 minishell project.                                      |$(DEF_COLOR)"
+	# @echo "$(RED)|                                                                         |$(DEF_COLOR)"
+	# @echo "$(RED)|                                                                         |$(DEF_COLOR)"
+	# @echo "$(RED)|   ██╗     ███████╗███████╗    ███████╗██╗  ██╗███████╗██╗     ██╗       |$(DEF_COLOR)"
+	# @echo "$(RED)|   ██║     ██╔════╝██╔════╝    ██╔════╝██║  ██║██╔════╝██║     ██║       |$(DEF_COLOR)"
+	# @echo "$(RED)|   ██║     █████╗  █████╗      ███████╗███████║█████╗  ██║     ██║       |$(DEF_COLOR)"
+	# @echo "$(RED)|   ██║     ██╔══╝  ██╔══╝      ╚════██║██╔══██║██╔══╝  ██║     ██║       |$(DEF_COLOR)"
+	# @echo "$(RED)|   ███████╗███████╗███████╗    ███████║██║  ██║███████╗███████╗███████╗  |$(DEF_COLOR)"
+	# @echo "$(RED)|   ╚══════╝╚══════╝╚══════╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝  |$(DEF_COLOR)"
+	# @echo "$(RED)|                                                                         |$(DEF_COLOR)"
+	# @echo "$(RED)|                                                                         |$(DEF_COLOR)"
+	# @echo "$(RED)|                                          .created by yehan & minkyeki   |$(DEF_COLOR)"
+	# @echo "$(RED)|                                                                         |$(DEF_COLOR)"
+	# @echo "$(RED)===========================================================================$(DEF_COLOR)"
+	# @echo "\n"
+
+
 $(NAME): $(OBJ)
 	@make bonus -C $(LIBFT_DIR)
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT_DIR)libft.a -lreadline
-	@echo "$(RED)===========================================================================$(DEF_COLOR)"
-	@echo "$(RED)|                                                                         |$(DEF_COLOR)"
-	@echo "$(RED)|   Welcome to 42 minishell project.                                      |$(DEF_COLOR)"
-	@echo "$(RED)|                                                                         |$(DEF_COLOR)"
-	@echo "$(RED)|                                                                         |$(DEF_COLOR)"
-	@echo "$(RED)|   ██╗     ███████╗███████╗    ███████╗██╗  ██╗███████╗██╗     ██╗       |$(DEF_COLOR)"
-	@echo "$(RED)|   ██║     ██╔════╝██╔════╝    ██╔════╝██║  ██║██╔════╝██║     ██║       |$(DEF_COLOR)"
-	@echo "$(RED)|   ██║     █████╗  █████╗      ███████╗███████║█████╗  ██║     ██║       |$(DEF_COLOR)"
-	@echo "$(RED)|   ██║     ██╔══╝  ██╔══╝      ╚════██║██╔══██║██╔══╝  ██║     ██║       |$(DEF_COLOR)"
-	@echo "$(RED)|   ███████╗███████╗███████╗    ███████║██║  ██║███████╗███████╗███████╗  |$(DEF_COLOR)"
-	@echo "$(RED)|   ╚══════╝╚══════╝╚══════╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝  |$(DEF_COLOR)"                
-	@echo "$(RED)|                                                                         |$(DEF_COLOR)"
-	@echo "$(RED)|                                                                         |$(DEF_COLOR)"
-	@echo "$(RED)|                                          .created by yehan & minkyeki   |$(DEF_COLOR)"
-	@echo "$(RED)|                                                                         |$(DEF_COLOR)"
-	@echo "$(RED)===========================================================================$(DEF_COLOR)"
-	@echo "\n"
-
+	
 %.o: %.c
 	@${CC} ${CFLAGS} -c $< -o $@
 	@echo "$(RED)Compiling... \t$< $(DEF_COLOR)"

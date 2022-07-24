@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:44:57 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 22:43:52 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/24 22:07:57 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ void	expand_dollar_sign(t_string *str, t_iterator *iter, t_shell_config *config)
 		iter->f_next(iter);
 	end = iter->curpos;
 	env_key = ft_substr(iter->line, start + 1, end - start);
-	env_value = get_environ_value(env_key, config->envp);
+	env_value = get_environ_value(env_key, *(config->envp));
 	str->f_append(str, env_value);
 	free(env_key);
 }
@@ -65,6 +65,9 @@ int	expand_double_quote(t_string *str, t_iterator *iter, t_shell_config *config)
 		else
 			str->f_push_back(str, c);
 	}
+	iter->f_unget(iter);
+	c = iter->f_peek(iter);
+	print_error("lesh: syntax error near unexpected token", &c);
 	return (ERROR);
 }
 
@@ -81,6 +84,9 @@ int	expand_single_quote(t_string *str, t_iterator *iter)
 		else
 			str->f_push_back(str, c);
 	}
+	iter->f_unget(iter);
+	c = iter->f_peek(iter);
+	print_error("lesh: syntax error near unexpected token", &c);
 	return (ERROR);
 }
 

@@ -1,6 +1,6 @@
 # include <unistd.h>//getcwd(), STDOUT
-# include <stdio.h>//perror()
 # include <sys/param.h>//define MAXPATHLEN 1024 (man getwd)
+# include <stdio.h>//perror()
 # include "../libft/include/libft.h"
 
 /*

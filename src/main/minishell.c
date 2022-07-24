@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/24 19:54:36 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 00:18:55 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@
 /** NOTE 
  * : 시그널 부분 참고 https://velog.io/@sham/minishell%EA%B3%BC-readline */
 
-void	shell_loop(t_shell_config *shell_config)
+void	shell_loop(t_shell_config *config)
 {
 	int		status;
 	t_list	*tokens;
@@ -45,7 +45,19 @@ void	shell_loop(t_shell_config *shell_config)
 	while (status != CMD_STOP_SHELL)
 	{
 		/* Readline library  */
-		line = readline("\033[31mlesh& \033[0m");
+		t_string	*prompt;
+
+		prompt = new_string(64);
+		prompt->f_append(prompt, get_environ_value("LOGNAME", *config->envp));
+		prompt->f_append(prompt, "@");
+		prompt->f_append(prompt, get_environ_value("NAME", *config->envp));
+		prompt->f_append(prompt, ":");
+		prompt->f_append(prompt, get_environ_value("PWD", *config->envp));
+		prompt->f_append(prompt, "\033[31m");
+		prompt->f_append(prompt, " lesh$ \033[0m");
+		line = readline(prompt->text);
+
+		delete_string(&prompt);
 
 		/** FIXME : 오류. readline에서 자꾸 null을 반환해서 프로그램이 끝남... */
 		if (line == NULL)
@@ -53,8 +65,14 @@ void	shell_loop(t_shell_config *shell_config)
 			printf(" exit\n");
 			exit(-1);
 		}
-		else if (line != NULL && *line != '\0')
+		if (line != NULL && *line != '\0')
 			add_history(line);
+		else
+		{
+			free(line);
+			continue ;
+		}
+
 		
 		/* (0) Check input. 쉘 입력값 검사(공백만 입력, 아무것도 없는 입력)
 		 * ctrl+c : ^C가 메시지에 출력 + 프롬프트 새로 띄우기 
@@ -101,7 +119,7 @@ void	shell_loop(t_shell_config *shell_config)
 		 *     |	  모든 노드를 해제해야 한다.        | 
 		 *     -----------------------------------------*/
 
-		status = execute(syntax_tree, shell_config);
+		status = execute(syntax_tree, config);
 		if (line != NULL)
 		{
 			free(line);
@@ -118,7 +136,8 @@ int main(int ac, char **av, char **env)
 	t_shell_config	shell_config;
 
 	/* (1) Load config files, Environ, set data etc... */
-	shell_config.envp = new_environ(env); // load envp
+	shell_config.envp = ft_calloc(1, sizeof(size_t));
+	*shell_config.envp = new_environ(env); // load envp
 	shell_config.stdin_backup = dup(STDIN_FILENO); // save STDIN
 	shell_config.stdout_backup = dup(STDOUT_FILENO); // save STDOUT
 	shell_config.last_cmd_pid = 0;
@@ -129,7 +148,8 @@ int main(int ac, char **av, char **env)
 
 
 	/* (3) Perform any shutdown/cleanup  */
-	delete_environ(&shell_config.envp);
+	delete_environ(shell_config.envp);
+	free(shell_config.envp);
 
 	return (EXIT_SUCCESS);
 }

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 23:56:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 17:13:47 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/24 22:03:35 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ typedef union u_pipe {
 
 typedef struct s_shell_config {
 
-	char	**envp; // for environ functions
+	char	***envp; // for environ functions
 
 	int		stdin_backup;
 	int		stdout_backup;

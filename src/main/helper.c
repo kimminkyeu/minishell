@@ -6,16 +6,26 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 22:20:22 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/24 19:50:01 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/24 20:54:12 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/22 16:08:57 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
+#include <unistd.h>
 #include "helper.h"
 #include "../../include/lexer.h"
 
 #define COUNT (25)
+
+/** use to send messege to STDERR */
+void	print_error(char *messege, char *err_char)
+{
+	ft_putstr_fd(messege, STDERR_FILENO);
+	ft_putstr_fd(" \'", STDERR_FILENO);
+	ft_putstr_fd(err_char, STDERR_FILENO);
+	ft_putstr_fd("\'\n", STDERR_FILENO);
+}
 
 const char	*get_token_type(t_token_type type)
 {

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 21:59:30 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 20:03:33 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/24 23:40:26 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ char	*get_environ_value(const char *env_key, char **envp);
 int		exec_export(char **arglist, char ***our_envp_ptr);
 int		exec_env(char **arglist, char **our_envp);
 int		exec_unset(char **arglist, char ***our_envp_ptr); 
-int		exec_cd(char **arglist, char **our_envp);
+int		exec_cd(char **arglist, char ***our_envp_ptr);
 int		exec_echo(char **arglist, char **our_envp);
 int		exec_pwd(char **arglist, char **our_envp);
 int		exec_exit(char **arglist, char **our_envp);

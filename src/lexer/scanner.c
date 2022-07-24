@@ -10,8 +10,10 @@
 /* ************************************************************************** */
 
 #include <stdio.h>
+#include <unistd.h>
 #include "../../include/libft.h"
 #include "../iterator/iterator.h"
+#include "../main/helper.h"
 #include "token.h"
 #include "scanner.h"
 
@@ -55,9 +57,7 @@ void	scanner_skip_white_space(t_scanner *scan)
 
 bool	is_meta_char(char c)
 {
-	if (c != '|' && c != '&' && c != '<' && c != '>' \
-			&& /*c != '(' && c != ')' &&*/ c != ';' \
-			/* && c != '\'' && c != '\"' */ )
+	if (c != '|' && c != '&' && c != '<' && c != '>')
 		return (false);
 	else
 		return (true);
@@ -297,10 +297,9 @@ int	is_syntax_error(t_list *token_list)
 		/** 만약 && || | > 이 서로 연속된다면 */
 		if (is_meta_token_type(tok_1->type) && is_meta_token_type(tok_2->type))
 		{
-			printf("lesh: syntax error near unexpected token '%c'\n", c);
+			print_error("lesh: syntax error near unexpected token", &c);
 			return (true);
 		}
-
 		cur = cur->next;
 	}
 
@@ -308,7 +307,7 @@ int	is_syntax_error(t_list *token_list)
 	tok_1 = cur->content;
 	if (tok_1->type == E_TYPE_REDIRECT)
 	{
-		printf("lesh: syntax error near unexpected token `newline'\n");
+		ft_putstr_fd("lesh: syntax error near unexpected token `newline'\n", STDERR_FILENO);
 		return (true);
 	}
 	else if (tok_1->type == E_TYPE_BRACKET)
@@ -316,7 +315,7 @@ int	is_syntax_error(t_list *token_list)
 		c = tok_1->str->text[tok_1->str->text_len - 1];
 		if (c != ')') // 만약 괄호가 안닫힌 경우
 		{
-			printf("lesh: syntax error near unexpected token `%c'\n", c);
+			print_error("lesh: syntax error near unexpected token", &c);
 			return (true);
 		}
 		else // 괄호 안에 괄호가 또 있는지 체크
@@ -330,13 +329,14 @@ int	is_syntax_error(t_list *token_list)
 				if (*tmp == '(')
 				{
 					tmp++;
-					printf("lesh: syntax error near unexpected token '");
+					ft_putstr_fd("lesh: syntax error near unexpected token \'", STDERR_FILENO);
 					while (*tmp != ')' && *tmp != '\0')
 					{
-						printf("%c", *tmp);
+						ft_putstr_fd(tmp, STDERR_FILENO);
 						tmp++;
 					}
-					printf("'\n"); return (true);
+					ft_putstr_fd("\'\n", STDERR_FILENO);
+					return (true);
 				}
 				tmp++;
 			}

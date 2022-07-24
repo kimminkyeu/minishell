@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/24 19:55:49 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 00:06:10 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/23 14:33:08 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/22 13:20:52 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
@@ -24,6 +24,8 @@
 # define FORK_ERROR		(-1)
 # define CHILD			(0)
 
+# define EXIT_COMMAND_NOT_FOUND (127)
+
 void	delete_tree_node(t_tree *node, int *status, t_shell_config *config)
 {
 	(void)status;
@@ -36,7 +38,7 @@ void	delete_tree_node(t_tree *node, int *status, t_shell_config *config)
 			ft_lstclear(&node->token, delete_token);
 		free(node);
 
-		printf("\033[90mnode deleted\033[0m\n");
+		/** printf("\033[90mnode deleted\033[0m\n"); */
 	}
 }
 
@@ -73,26 +75,30 @@ int	is_builtin_func(char *cmd)
 }
 
 /** TODO : 이 부분 로직 좀 더 효율적인 방법 없나? */
-int	exec_builtin(char **cmd_argv, char **envp)
+int	exec_builtin(char **cmd_argv, char ***envp)
 {
 	size_t	len;
 	int		status;
+
+	/** printf("here\n"); */
 
 	len = ft_strlen(cmd_argv[0]);
 	if (ft_strncmp("cd", cmd_argv[0], len + 1) == 0)
 		status = exec_cd(cmd_argv, envp);
 	else if (ft_strncmp("exit", cmd_argv[0], len + 1) == 0)
-		status = exec_exit(cmd_argv, envp);
+		status = exec_exit(cmd_argv, *envp);
 	else if (ft_strncmp("export", cmd_argv[0], len + 1) == 0)
-		status = exec_export(cmd_argv, &envp);
+		status = exec_export(cmd_argv, envp);
 	else if(ft_strncmp("env", cmd_argv[0], len + 1) == 0)
-		status = exec_env(cmd_argv, envp);
+		status = exec_env(cmd_argv, *envp);
 	else if(ft_strncmp("echo", cmd_argv[0], len + 1) == 0)
-		status = exec_echo(cmd_argv, envp);
+		status = exec_echo(cmd_argv, *envp);
 	else if(ft_strncmp("pwd", cmd_argv[0], len + 1) == 0)
-		status = exec_pwd(cmd_argv, envp);
+		status = exec_pwd(cmd_argv, *envp);
+	else if (ft_strncmp("unset", cmd_argv[0], len + 1) == 0)
+		status = exec_unset(cmd_argv, envp);
 	else
-		status = exec_unset(cmd_argv, &envp);
+		status = ERROR;
 	return (status);
 }
 
@@ -102,7 +108,7 @@ int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 	t_pipe	pipe_fd2;
 	int		status;
 
-	printf("\033[90mcalling exec_exceptions() : %s\033[0m\n", cmd_argv[0]);
+	printf("\033[90mcalling exec_exceptions() : %s\033[0m\n\n", cmd_argv[0]);
 
 	set_redirection(&pipe_fd2, node->redirection, config);
 	status = exec_builtin(cmd_argv, config->envp);
@@ -115,10 +121,15 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 	pid_t	pid;
 	t_pipe	pipe_fd2; // == fd[2]
 
-	printf("\033[90mcalling exec_general() : %s\033[0m\n", cmd_argv[0]);
+	char	*full_path;
+
+	printf("\033[90mcalling exec_general() : %s\033[0m\n\n", cmd_argv[0]);
 
 	if (pipe(pipe_fd2.data) == PIPE_ERROR)
+	{
+		perror("pipe()");
 		return (ERROR);// pipe function error...
+	}
 
 	set_redirection(&pipe_fd2, node->redirection, config);
 
@@ -132,6 +143,8 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 			config->last_cmd_pid = pid; // save last_cmd's pid
 		else // 마지막 커맨드가 아니면 STDIN을 바꿔주면 됨.
 		{
+			/** printf("changing redir out\n"); */
+
 			dup2(pipe_fd2.read, STDIN_FILENO);
 			close(pipe_fd2.read);
 			close(pipe_fd2.write);
@@ -139,18 +152,32 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 	}
 	else if (pid == CHILD) // if parent
 	{
+		full_path = NULL;
 		dup2(pipe_fd2.write, STDOUT_FILENO);
 		close(pipe_fd2.read);
 		close(pipe_fd2.write);
+
 		if (is_builtin_func(cmd_argv[0]) == true)
-			return (exec_builtin(cmd_argv, config->envp));
-		if (cmd_argv[0] != NULL && ft_strchr(cmd_argv[0], '/') == NULL)
 		{
-			char *tmp = get_full_path(cmd_argv[0], config->envp);
-			free(cmd_argv[0]);
-			cmd_argv[0] = tmp;
+			int status = exec_builtin(cmd_argv, config->envp);
+			/** NOTE : 빌트인에서도 실행 후 exit을 해줘야 한다...
+			 * 그게 오류의 원인이였다... */
+			exit(status);
 		}
-	 	execve(cmd_argv[0], cmd_argv, config->envp);
+		if (cmd_argv[0] != NULL && ft_strchr(cmd_argv[0], '/') == NULL)
+			full_path = get_full_path(cmd_argv[0], *config->envp);
+		if (full_path != NULL)
+		{
+			free(cmd_argv[0]);
+			cmd_argv[0] = full_path;
+			execve(cmd_argv[0], cmd_argv, *config->envp);
+		}
+		else
+		{
+			ft_putstr_fd(cmd_argv[0], STDERR_FILENO);
+			ft_putstr_fd(": command not found\n", STDERR_FILENO);
+			exit(EXIT_COMMAND_NOT_FOUND);
+		}
 	}
 	return (SUCCESS);
 }
@@ -160,17 +187,6 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	if (*status != CMD_SUCCEESS || node == NULL)
 		return ;
 
-	print_tree_node(node->token);
-	printf("\n");
-	print_tree_node(node->redirection);
-	printf("\n");
-	printf("\033[90mfork: %d\033[0m\n", node->is_pipeline);
-	printf("\033[90mlast_pipe_cmd : %d\033[0m\n\n", node->is_last_pipe_cmd);
-
-	/** (void)config; */
-	/* -------------------------------------
-	 * | NOTE : write execution code here  |
-	 * ------------------------------------*/
 	t_token *tok = node->token->content;
 
 	/** (1) if | or && or || or ( ), do not expand tokens. */
@@ -187,36 +203,38 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	/** (2) if simple command, expand tokens */
 	if (expand_tokens(node->token, config) == ERROR \
 			|| expand_tokens(node->redirection, config) == ERROR)
-	{
-		// show error messege ...
 		return ;
-	}
 
 	/** (3) make token to char **cmd_argv */
-	char	**cmd_argv = get_cmd_argv(node->token);
+	char	**cmd_argv = get_cmd_argv(node->token);  /** print_strs(cmd_argv); */
 
-	if (!(node->is_pipeline) && is_cd_or_exit_or_export(cmd_argv[0]))
-		*status = exec_exceptions(node, cmd_argv, config); // fork없이 실행
+	/** NOTE: 수정 이후.  */
+	if (node->is_pipeline == false && is_builtin_func(cmd_argv[0])) // 무조건 fork없이 실행.
+		*status = exec_exceptions(node, cmd_argv, config);
 	else
 		*status = exec_general(node, cmd_argv, config); //  무조건 fork를 하는 애들.
 
-	/** if (node->is_last_pipe_cmd) */
-	/** { */
-		/** dup2(config->stdin_backup, STDIN_FILENO); */
-		/** dup2(config->stdout_backup, STDOUT_FILENO); */
-	/** } */
+	/** NOTE: 수정 이전. unset이 fork가 먹어서 안돌아감.  */
+/**     if (!(node->is_pipeline) && is_cd_or_exit_or_export(cmd_argv[0]))
+  *         *status = exec_exceptions(node, cmd_argv, config); // fork없이 실행
+  *     else
+  *         *status = exec_general(node, cmd_argv, config); //  무조건 fork를 하는 애들.
+  *  */
 
+
+	dup2(config->stdin_backup, STDIN_FILENO);
+	dup2(config->stdout_backup, STDOUT_FILENO);
 	delete_strs(&cmd_argv);
 
 	/** NOTE : if success, then set status to ... CMD_SUCCESS
 	 *         else, set status to ...            CMD_FAILURE
 	 *         if exit, then set status to ...    CMD_STOP_SHELL
 	 * */
-
 	/** *status = CMD_SUCCEESS; */
 	/** *status = CMD_STOP_SHELL; */
 	/** *status = CMD_FAILURE; */
 }
+
 /** 함수 포인터 글자수 줄이는 용도 */
 typedef void(*t_callback_func)(t_tree *, int *, t_shell_config *);
 
@@ -249,27 +267,26 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 	int	status;
 	int	wait_status;
 
-	(void)config;
-
+	wait_status = 0xffffffff;
 	status = CMD_SUCCEESS;
 
 	printf("\n");
 	printf("------------------------------------------\n");
 	printf("|     Execution (inorder recursive)      |\n");
-	printf("------------------------------------------\n");
+	printf("------------------------------------------\n\n");
 
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
 
 	// 여기서 마지막 pid_t를 기다린다.
-	/** printf("execute() : waiting pid %d\n", config->last_cmd_pid); */
 	waitpid(config->last_cmd_pid, &wait_status, 0);
-	/** printf("execute() : wstatus = %d\n", wait_status); */
-	printf("\033[90mexecute() : child's exit code = %d\033[0m\n", (wait_status >> 8 & 0xff));
+	printf("\n");
+	printf("\033[90mexecute() : waiting pid %d\033[0m\n", config->last_cmd_pid);
+	printf("\033[90mexecute() : child's exit code = %d\033[0m\n", WEXITSTATUS(wait_status));
+	printf("\n\n\n");
 
 	/** 모든 노드 삭제 */
 	inorder_recur(syntax_tree, &status, delete_tree_node, config);
-	printf("\n");
 
 	return (status);
 }

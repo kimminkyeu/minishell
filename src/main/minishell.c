@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 00:18:55 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 01:07:11 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,6 +141,7 @@ int main(int ac, char **av, char **env)
 	shell_config.stdin_backup = dup(STDIN_FILENO); // save STDIN
 	shell_config.stdout_backup = dup(STDOUT_FILENO); // save STDOUT
 	shell_config.last_cmd_pid = 0;
+	shell_config.last_cmd_wstatus = 0;
 
 
 	/* (2) Run command loop */

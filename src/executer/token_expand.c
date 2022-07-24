@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:44:57 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/24 22:07:57 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 01:13:08 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,14 +40,23 @@ void	expand_dollar_sign(t_string *str, t_iterator *iter, t_shell_config *config)
 	char	*env_key;
 	char	*env_value;
 
-	start = iter->curpos;
-	while (iter->f_has_next(iter) && ft_isalnum(iter->f_peek(iter)))
+	/** $? 처리.  */
+	if (iter->f_peek(iter) == '?')
+	{
+		str->f_append(str, ft_itoa(WEXITSTATUS(config->last_cmd_wstatus)));
 		iter->f_next(iter);
-	end = iter->curpos;
-	env_key = ft_substr(iter->line, start + 1, end - start);
-	env_value = get_environ_value(env_key, *(config->envp));
-	str->f_append(str, env_value);
-	free(env_key);
+	}
+	else
+	{
+		start = iter->curpos;
+		while (iter->f_has_next(iter) && ft_isalnum(iter->f_peek(iter)))
+			iter->f_next(iter);
+		end = iter->curpos;
+		env_key = ft_substr(iter->line, start + 1, end - start);
+		env_value = get_environ_value(env_key, *(config->envp));
+		str->f_append(str, env_value);
+		free(env_key);
+	}
 }
 
 /** NOTE : interpret $ARG */

@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 00:06:10 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 01:08:14 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/23 14:33:08 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/22 13:20:52 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
@@ -265,9 +265,7 @@ void	inorder_recur(t_tree *node, int *status, t_callback_func callback, t_shell_
 int	execute(t_tree *syntax_tree, t_shell_config *config)
 {
 	int	status;
-	int	wait_status;
 
-	wait_status = 0xffffffff;
 	status = CMD_SUCCEESS;
 
 	printf("\n");
@@ -278,11 +276,11 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
 
-	// 여기서 마지막 pid_t를 기다린다.
-	waitpid(config->last_cmd_pid, &wait_status, 0);
+	// 여기서 마지막 pid_t를 기다리고, 해당 wstatus를 저장한다. --> 추후 $? 실행에 사용.
+	waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
 	printf("\n");
 	printf("\033[90mexecute() : waiting pid %d\033[0m\n", config->last_cmd_pid);
-	printf("\033[90mexecute() : child's exit code = %d\033[0m\n", WEXITSTATUS(wait_status));
+	printf("\033[90mexecute() : child's exit code = %d\033[0m\n", WEXITSTATUS(config->last_cmd_wstatus));
 	printf("\n\n\n");
 
 	/** 모든 노드 삭제 */

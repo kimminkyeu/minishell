@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 23:56:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/24 22:03:35 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 01:07:02 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ typedef struct s_shell_config {
 	int		stdout_backup;
 	
 	pid_t	last_cmd_pid; // for waitpid()
+	int		last_cmd_wstatus;
 
 	t_pipe	pipe;  // for pipe()
 

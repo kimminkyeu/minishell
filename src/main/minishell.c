@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 19:05:25 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/25 23:00:44 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -197,7 +197,7 @@ int main(int ac, char **av, char **env)
 	shell_config.stdout_backup = dup(STDOUT_FILENO); // save STDOUT
 	shell_config.last_cmd_pid = 0;
 	shell_config.last_cmd_wstatus = 0;
-	shell_config.pipefd_save = shell_config.stdin_backup;
+	shell_config.pipefd_save = -1;
 
 	/* 리눅스에선 이거 세팅 안해도 되는 데?  */
 	set_signal();

@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 22:16:23 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/25 23:21:36 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -180,7 +180,7 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 		{
 			free(cmd_argv[0]);
 			cmd_argv[0] = full_path;
-			execve(cmd_argv[0], cmd_argv, *config->envp);//
+			execve(cmd_argv[0], cmd_argv, *config->envp);
 		}
 		else
 		{
@@ -193,6 +193,7 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 	{
 		if (node->is_pipeline)
 		{
+			close(config->pipefd_save);
 			if (node->is_last_pipe_cmd)
 			{
 				config->pipefd_save = config->stdin_backup;
@@ -201,7 +202,6 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 			else
 			{
 				config->pipefd_save = pipefd[READ];//이게 자식이 사용하기 전에 먼저 된다...
-				close(pipefd[READ]);
 				close(pipefd[WRITE]);
 			}
 		}

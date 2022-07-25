@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 22:20:35 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/25 22:59:27 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,8 @@ int	open_heredoc(const char *limiter)
 
 void	set_pipe(int *my_io, int *pipefd, t_shell_config *config, t_tree *node)
 {
-	my_io[READ] = config->pipefd_save;
+	if (config->pipefd_save != -1)
+		my_io[READ] = config->pipefd_save;
 	if (node->is_last_pipe_cmd == false)
 		my_io[WRITE] = pipefd[WRITE];
 
@@ -140,10 +141,8 @@ int	open_redirection(int *my_io, t_list *redir_list)// [>] [out] [<] [in]
 
 void	set_redirection(int *my_io)
 {
-	printf("stdin out, %d, %d", STDIN_FILENO, STDOUT_FILENO);
 	if (dup2(my_io[READ], STDIN_FILENO) == -1) //파이프가 닫혔나?
 		perror("dup2 read");
 	if (dup2(my_io[WRITE], STDOUT_FILENO) == -1)
 		perror("dup2 write");
-
 }

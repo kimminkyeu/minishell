@@ -1,7 +1,19 @@
-# include <unistd.h>//getcwd(), STDOUT
-# include <sys/param.h>//define MAXPATHLEN 1024 (man getwd)
-# include <stdio.h>//perror()
-# include "../libft/include/libft.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pwd.c                                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/25 17:33:02 by minkyeki          #+#    #+#             */
+/*   Updated: 2022/07/25 17:33:30 by minkyeki         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include <unistd.h>
+#include <sys/param.h>
+#include <stdio.h>
+#include "../libft/include/libft.h"
 
 /*
 ** NOTE1: It is independent of environment variable PWD.
@@ -21,15 +33,3 @@ void	exec_pwd(char **arglist, char **our_envp)
 	ft_putstr_fd("\n", STDOUT_FILENO);
 	free(buf);
 }
-
-//gcc -g pwd.c ../libft/src/ft_calloc.c ../libft/src/ft_putstr_fd.c ../libft/src/ft_bzero.c ../libft/src/ft_strlen.c
-/** int main() */
-/** { */
-/**     char **arglist = calloc(8, sizeof(char *)); */
-/**     arglist[0] = "pwd"; */
-/**     arglist[1] = "a"; */
-/**     arglist[2] = "c"; */
-/**     arglist[3] = "b"; */
-/**  */
-/**     exec_pwd(arglist); */
-/** } */

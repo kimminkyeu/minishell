@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 12:26:31 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 23:12:47 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 17:38:51 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,8 @@ t_string	*new_string(size_t init_capacity);
  * NOTE: Use this function instead of calling free() yourself !! */
 void	delete_string(t_string **address_of_string);
 
-
 /* @Add str2 to back. Result = str + str2 */
 int	str_append(t_string *str, const char *str2);
-
-/* n번째 index 앞에 str2 문자열을 삽입함. */
-int	str_insert(t_string *str, int index, char *str2);
 
 /* 저장된 문자열을 모두 지움 */
 int	str_clear(t_string *str);

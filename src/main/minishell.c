@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 15:46:40 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 18:46:27 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,6 +44,7 @@ void	sig_ctrl_c(int signal)
 
 	rl_on_new_line(); // 개행 삽입.
 	ft_putstr_fd("\n", STDOUT_FILENO);
+	rl_replace_line("", 1);
 	rl_redisplay();
 }
 

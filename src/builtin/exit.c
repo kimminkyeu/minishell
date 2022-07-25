@@ -1,11 +1,20 @@
-# include <unistd.h>
-# include <stdlib.h>
-# include <stdbool.h>
-# include <limits.h>
-# include "../libft/include/libft.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exit.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/25 17:30:26 by minkyeki          #+#    #+#             */
+/*   Updated: 2022/07/25 17:32:52 by minkyeki         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-# define EXIT_FAILURE 1
-// # define EXIT_BADUSAGE 2
+#include <unistd.h>
+#include <stdlib.h>
+#include <stdbool.h>
+#include <limits.h>
+#include "../libft/include/libft.h"
 
 /* exit [n]: exit with status of n.
 ** 1. no [n]: exit with exit status of last command.
@@ -45,23 +54,20 @@ static bool	get_status(char *str, unsigned char *status)
 		*status = neg * num;
 		return (true);
 	}
-	else
-		return (false);
+	return (false);
 }
 
-int	exec_exit(char **arglist, char **our_envp/*, pipeline command?, 마지막 exit status */)
+int	exec_exit(char **arglist, char **our_envp)
 {
 	unsigned char	status;
 
 	(void)our_envp;
-
-	// if (파이프라인 커맨드가 아닐 때만)
-		ft_putstr_fd("exit\n", STDOUT_FILENO);
+	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	if (arglist[1] == NULL)
-		status = 0/* TODO: 마지막으로 실행된 명령어의 exit status로 변경*/;
+		status = 0;
 	else if (get_status(arglist[1], &status) == false)
 	{
-		status = 255/*DISCUSS: 255는 의미 없는 에러메시지다. jkong님은 EXIT_BADUSAGE(2)를 출력함.*/;
+		status = 255;
 		ft_putstr_fd("lesh: exit: ", STDERR_FILENO);
 		ft_putstr_fd(arglist[1], STDERR_FILENO);
 		ft_putstr_fd(": numeric argument required\n", STDERR_FILENO);
@@ -71,12 +77,5 @@ int	exec_exit(char **arglist, char **our_envp/*, pipeline command?, 마지막 ex
 		ft_putstr_fd("lesh: exit: too many arguments\n", STDERR_FILENO);
 		return (EXIT_FAILURE);
 	}
-	exit(status);/*부모에게 전달하고 종료.*/
+	exit(status);
 }
-
-//gcc exit.c ../libft/src/ft_putstr_fd.c ../libft/src/ft_strlen.c
-
-// int main(int argc, char **argv, char **envp)
-// {
-// 	exec_exit(argv + 1, envp);
-// }

@@ -1,75 +1,19 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   string.c                                           :+:      :+:    :+:   */
+/*   string_modify.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/13 12:30:54 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/21 20:00:30 by minkyeki         ###   ########.fr       */
+/*   Created: 2022/07/25 17:42:10 by minkyeki          #+#    #+#             */
+/*   Updated: 2022/07/25 17:44:16 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "string.h"
 
-t_string	*new_string(size_t init_capacity)
-{
-	t_string	*str;
-
-	if (init_capacity <= 0)
-		return (NULL);
-	str = ft_calloc(1, sizeof(*str));
-	if (str == NULL)
-		return (NULL);
-	str->text = ft_calloc(init_capacity, sizeof(*(str->text)));
-	if (str->text == NULL)
-		return (NULL);
-	str->text_len = 0;
-	str->capacity = init_capacity;
-
-	str->f_append = str_append;
-	str->f_clear = str_clear;
-	str->f_is_empty = str_is_empty;
-	str->f_pop_back = str_pop_back;
-	str->f_push_back = str_push_back;
-	str->f_reserve = str_reserve;
-	str->f_shrink_to_fit = str_shrink_to_fit;
-	str->f_replace = str_replace;
-	str->f_replace_all = str_replace_all;
-
-	return (str);
-}
-
-void	delete_string(t_string **address_of_string)
-{
-	if (*address_of_string != NULL)
-		free((*address_of_string)->text);
-	free(*address_of_string);
-	address_of_string = NULL;
-}
-
-int	str_clear(t_string *str)
-{
-	if (str_is_empty(str))
-		return (NO_ACTION);
-	ft_bzero(str->text, str->capacity);
-	str->text_len = 0;
-	return (SUCCESS);
-}
-
-int	str_shrink_to_fit(t_string *str)
-{
-	if (str->text_len >= (str->capacity - 1))
-		return (NO_ACTION);
-	if (str_reserve(str, str->text_len + 1) != SUCCESS)
-		return (ERROR);
-	return (SUCCESS);
-}
-
-
 int	str_push_back(t_string *str, char c)
 {
-	/** NOTE : Always make last element null */
 	if (str->text_len >= str->capacity - 1)
 	{
 		if (str_reserve(str, str->capacity * 2) != SUCCESS)
@@ -84,37 +28,11 @@ int		str_pop_back(t_string *str)
 {
 	if (str->text_len > 0)
 	{
-		/** NOTE : Always make last element null */
 		str->text[str->text_len - 1] = '\0';
 		str->text_len--;
 		return (SUCCESS);
 	}
 	return (NO_ACTION);
-}
-
-int	str_is_empty(t_string *str)
-{
-	if (str->text_len == 0)
-		return (true);
-	else
-		return (false);
-}
-
-int str_reserve(t_string *str, size_t new_capacity)
-{
-	char	*new_text;
-
-	/* a b c 0 0 [len = 3] --> a b c 0 [new_capa = 4] */
-	if (str->text_len > new_capacity - 1)
-		return (NO_ACTION);
-	new_text = ft_calloc(new_capacity, sizeof(*new_text));
-	if (new_text == NULL)
-		return (ERROR);
-	ft_memmove(new_text, str->text, str->text_len);
-	free(str->text);
-	str->text = new_text;
-	str->capacity = new_capacity;
-	return (SUCCESS);
 }
 
 int	str_append(t_string *str, const char *str2)

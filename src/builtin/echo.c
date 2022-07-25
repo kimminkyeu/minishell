@@ -1,11 +1,19 @@
-# include <stdlib.h>
-# include <unistd.h> //STDOUT, IN
-# include "../libft/include/libft.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   echo.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/25 17:22:13 by minkyeki          #+#    #+#             */
+/*   Updated: 2022/07/25 17:22:57 by minkyeki         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-# define TRUE 1
-# define FALSE 0
-
-// # define FILENO_STDOUT 0
+#include <stdlib.h>
+#include <unistd.h>
+#include <stdbool.h>
+#include "../libft/include/libft.h"
 
 /*
 ** example: [echo] [-nnn] [a] [b] [-n] [c]
@@ -25,9 +33,9 @@ static int	is_n_option(char *str)
 		while (str[i] == 'n')
 			i++;
 		if (str[i] == '\0')
-				return (TRUE);
+				return (true);
 	}
-	return (FALSE);
+	return (false);
 }
 
 static void	write_arguments(char **arglist, size_t i)
@@ -46,25 +54,13 @@ void	exec_echo(char **arglist, char **our_envp)
 	int		n_option;
 
 	(void)our_envp;
-	n_option = FALSE;
+	n_option = false;
 	if (arglist[1] != NULL)
 	{
-		if (is_n_option(arglist[1]) == TRUE)
-			n_option = TRUE;
+		if (is_n_option(arglist[1]) == true)
+			n_option = true;
 		write_arguments(arglist, 1 + n_option);
 	}
-	if (n_option == FALSE)
+	if (n_option == false)
 		ft_putchar_fd('\n', STDOUT_FILENO);
 }
-
-//gcc -g echo.c ../libft/src/ft_putstr_fd.c ../libft/src/ft_putchar_fd.c ../libft/src/ft_strncmp.c ../libft/src/ft_strlen.c
-/** int main() */
-/** { */
-/**     char **arglist = calloc(8, sizeof(char *)); */
-/**     arglist[0] = "echo"; */
-/**     arglist[1] = "-nnn"; */
-/**     arglist[2] = "a  dd"; */
-/**     arglist[3] = "b"; */
-/**  */
-/**     exec_echo(arglist); */
-/** } */

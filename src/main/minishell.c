@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 02:12:46 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 15:46:40 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <signal.h>
 
 /** Readline library */
 #include <readline/readline.h>
@@ -37,37 +38,59 @@
 /** NOTE 
  * : 시그널 부분 참고 https://velog.io/@sham/minishell%EA%B3%BC-readline */
 
+void	sig_ctrl_c(int signal)
+{
+	(void)signal;
+
+	rl_on_new_line(); // 개행 삽입.
+	ft_putstr_fd("\n", STDOUT_FILENO);
+	rl_redisplay();
+}
+
+void	set_signal(void)
+{
+	signal(SIGINT, sig_ctrl_c); // CTRL + C
+	signal(SIGQUIT, SIG_IGN); // CTRL + / -> SIG_IGN = signal 무시.
+}
+
+/** show prompt_messege + readline */
+char	*readline_prompt(t_shell_config *config)
+{
+	t_string	*prompt;
+	static char	*line;
+
+	prompt = new_string(64);
+	prompt->f_append(prompt, "\033[31m");
+	prompt->f_append(prompt, get_environ_value("LOGNAME", *config->envp));
+	prompt->f_append(prompt, "@");
+	prompt->f_append(prompt, get_environ_value("NAME", *config->envp));
+	prompt->f_append(prompt, ":");
+	prompt->f_append(prompt, get_environ_value("PWD", *config->envp));
+	prompt->f_replace_all(prompt, get_environ_value("HOME", *config->envp), "~");
+	prompt->f_append(prompt, "\033[0m");
+	prompt->f_append(prompt, "$ ");
+	line = readline(prompt->text);
+	delete_string(&prompt);
+	return (line);
+}
+
 void	shell_loop(t_shell_config *config)
 {
 	int		status;
 	t_list	*tokens;
 	t_tree	*syntax_tree;
-	static char	*line;
+	char	*line;
 
 	status = CMD_SUCCEESS;
 	while (status != CMD_STOP_SHELL)
 	{
 		/* Readline library  */
-		t_string	*prompt;
-
-		prompt = new_string(64);
-		prompt->f_append(prompt, "\033[31m");
-		prompt->f_append(prompt, get_environ_value("LOGNAME", *config->envp));
-		prompt->f_append(prompt, "@");
-		prompt->f_append(prompt, get_environ_value("NAME", *config->envp));
-		prompt->f_append(prompt, ":");
-		prompt->f_append(prompt, get_environ_value("PWD", *config->envp));
-		prompt->f_replace_all(prompt, get_environ_value("HOME", *config->envp), "~");
-		prompt->f_append(prompt, "\033[0m");
-		prompt->f_append(prompt, "$ ");
-		line = readline(prompt->text);
+		line = readline_prompt(config);
 	
-		delete_string(&prompt);
-
-		/** CTRL + D 를 눌렀을 때 */
+		/** CTRL + D 를 눌렀을 때, realine에서 NULL문자를 반환한다. */
 		if (line == NULL)
 		{
-			printf(" exit\n");
+			printf("exit\n");
 			exit(-1);
 		}
 		if (line != NULL && *line != '\0')
@@ -177,6 +200,8 @@ int main(int ac, char **av, char **env)
 	shell_config.pipe_fd[READ] = STDIN_FILENO;
 	shell_config.pipe_fd[WRITE] = STDOUT_FILENO;
 
+	/* 리눅스에선 이거 세팅 안해도 되는 데?  */
+	set_signal();
 
 	/* (+) Show Lee-Shell Logo */
 	show_shell_logo();

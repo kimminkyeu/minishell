@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 02:26:14 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 15:57:54 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,7 @@
 #include <fcntl.h>//open
 #include <unistd.h>
 #include <sys/wait.h>
+#include <string.h>//strerror
 
 #include "../main/minishell.h"
 #include "../lexer/token.h"
@@ -41,7 +42,7 @@ int	open_heredoc(const char *limiter)
 {
 	// 여기는 pipex heredoc 코드에서 readline 부분만 바꾼 상태예요.
 	// heredoc 관련 내용:
-	// 노션 여기서 봐주세요. 
+	// 노션 여기서 봐주세요.
 	// (https://www.notion.so/kyeu/Minishell-110e3b17e97e467eb44e1ef23b9e8882#df7f3307d1ce4456a6d3fbb7ca11e7b7)
 	int			pipe_fd[2];
 	pid_t		pid;
@@ -72,24 +73,20 @@ int	open_heredoc(const char *limiter)
 	return (pipe_fd[READ]);
 }
 
-int	set_redirection(t_list *redir_list, t_shell_config *config)// [>] [out] [<] [in]
+int	open_redirection(t_list *redir_list, t_shell_config *config)// [>] [out] [<] [in]
 {
-	unsigned char	error_no;
+	int				status;
 	t_token			*tok;
 	t_list			*cur;
 
-	/** (void)shell; */
-	/** config->pipe_fd[READ] = config->stdin_backup; */
-	/** config->pipe_fd[WRITE] = config->stdout_backup; */
+	/** config->pipe_fd[READ] == config->stdin_backup; */
+	/** config->pipe_fd[WRITE] == config->stdout_backup; */
 
-
-
-
-	error_no = 0;
+	status = 0;
 	if (redir_list == NULL)
-		return (error_no);
+		return (status);
 	cur = redir_list;
-	while (cur->next != NULL)
+	while (cur != NULL)
 	{
 		tok = cur->content;
 		if (tok->type == E_TYPE_REDIR_LESS) // < in
@@ -98,13 +95,11 @@ int	set_redirection(t_list *redir_list, t_shell_config *config)// [>] [out] [<] 
 			tok = cur->content;
 			config->pipe_fd[READ] = open(tok->str->text, O_RDONLY);
 			if (config->pipe_fd[READ] == -1)
+			{
+				status = errno;
+				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
 				break ;
-		}
-		else if (tok->type == E_TYPE_REDIR_HEREDOC) // << heredoc
-		{
-			cur = cur->next;
-			tok = cur->content;
-			open_heredoc(tok->str->text);
+			}
 		}
 		else if (tok->type == E_TYPE_REDIR_GREATER) // > out
 		{
@@ -112,7 +107,11 @@ int	set_redirection(t_list *redir_list, t_shell_config *config)// [>] [out] [<] 
 			tok = cur->content;
 			config->pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_TRUNC | O_CREAT, 0644);
 			if (config->pipe_fd[WRITE] == -1)
+			{
+				status = errno;
+				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
 				break ;
+			}
 		}
 		else if (tok->type == E_TYPE_REDIR_APPEND) // >> out
 		{
@@ -120,32 +119,20 @@ int	set_redirection(t_list *redir_list, t_shell_config *config)// [>] [out] [<] 
 			tok = cur->content;
 			config->pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_APPEND | O_CREAT, 0644);
 			if (config->pipe_fd[WRITE] == -1)
-				break ;
-		}
-	}	
-
-
-
-	/** FIXME : 여기 설명 한번 더 듣기. */
-	if (cur == NULL)
-	{
-		printf("redir heredoc other\n");
-		//break로 나오면 open()이 실패해서 errno이 설정되었을 테고,
-		//여기서 중단되고 에러메시지가 뜹니다.
-		//다만, 뒤에 heredoc이 남아있을 경우에 모든 heredoc에 대한 입력을 받습니다.
-		error_no = errno;
-		while (cur != NULL)
-		{
-			tok = cur->content;
-			if (tok->type == E_TYPE_REDIR_HEREDOC)
 			{
-				cur = cur->next;
-				tok = cur->content;
-				open_heredoc(tok->str->text);
+				status = errno;
+				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
+				break ;
 			}
 		}
+		cur = cur->next;
 	}
-	return (error_no);
-	//exit() 해야 한다면 밖에서
+
+	return (status);
 }
 
+void	set_redirection(t_shell_config *shell)
+{
+	dup2(shell->pipe_fd[READ], STDIN_FILENO);
+	dup2(shell->pipe_fd[WRITE], STDOUT_FILENO);
+}

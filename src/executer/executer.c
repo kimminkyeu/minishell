@@ -6,10 +6,10 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 02:29:08 by minkyeki         ###   ########.fr       */
-/*   Updated: 2022/07/23 14:33:08 by minkyeki         ###   ########.fr       */
-/*   Updated: 2022/07/22 13:20:52 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/25 16:30:35 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
+/* ************************************************************************** */
+
 /* ************************************************************************** */
 
 
@@ -113,35 +113,31 @@ int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 
 	printf("\033[90mcalling exec_exceptions() : %s\033[0m\n\n", cmd_argv[0]);
 
-	set_redirection(node->redirection, config);
+	status = open_redirection(node->redirection, config);
+	if (status != 0)
+		return (status);
 	status = exec_builtin(cmd_argv, config->envp);
 	return (status);
 }
 
-/** TODO : Redirection 복구는 last_pipe_cmd에서 해줘야 한다. */
+/** TODO : Redirection 복구는
+ * last_pipe_cmd를 다 기다린 후에 config의 파이프 fd를 init해준다. */
+
 int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무조건 fork를 하는 애들.
 {
 	printf("\033[90mcalling exec_general() : %s\033[0m\n\n", cmd_argv[0]);
 
 	pid_t	pid;
 	char	*full_path;
+	int		status;
 
-	set_redirection(node->redirection, config);
-	/** FIXME: 추가한 부분. redir 세팅후, 그것을 stdin혹은 stdout으로 dup 진행. */
-	dup2(config->pipe_fd[READ], STDIN_FILENO);
-	if (node->is_last_pipe_cmd)
-		dup2(config->pipe_fd[WRITE], STDOUT_FILENO);
-
-
-
-
-
-
-
-	if (pipe(config->pipe_fd) == PIPE_ERROR)
+	if (node->is_pipeline == true && node->is_last_pipe_cmd == false)
 	{
-		perror("pipe()");
-		return (ERROR);// pipe function error...
+		if (pipe(config->pipe_fd) == PIPE_ERROR)
+		{
+			perror("pipe()");
+			return (ERROR);// pipe function error...
+		}
 	}
 
 	pid = fork();
@@ -155,16 +151,15 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 		close(config->pipe_fd[READ]);
 		close(config->pipe_fd[WRITE]);
 	}
-	else if (pid == CHILD) // if parent
+	else if (pid == CHILD) // if child
 	{
+		status = open_redirection(node->redirection, config);
+		if (status != 0)
+			exit(status);
+		set_redirection(config);
+
 		full_path = NULL;
 
-		if (!node->is_last_pipe_cmd)
-		{
-			dup2(config->pipe_fd[WRITE], STDOUT_FILENO);
-			close(config->pipe_fd[READ]);
-			close(config->pipe_fd[WRITE]);
-		}
 		if (is_builtin_func(cmd_argv[0]) == true)
 		{
 			int status = exec_builtin(cmd_argv, config->envp);
@@ -287,7 +282,7 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
-	
+
 	// 여기서 마지막 pid_t를 기다리고, 해당 wstatus를 저장한다. --> 추후 $? 실행에 사용.
 	waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
 	printf("\n");

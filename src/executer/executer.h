@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executer.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 02:05:32 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 15:56:44 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,8 @@ int		expand_tokens(t_list *tokens, t_shell_config *config);
 char	*get_full_path(char *name, char **envp);
 char	**get_cmd_argv(t_list *token);
 
-void	set_redirection(t_list *redir_list, t_shell_config *shell);
+int 	open_redirection(t_list *redir_list, t_shell_config *shell);
+void 	set_redirection(t_shell_config *shell);
 
 void	delete_tree_node(t_tree *node, int *status, t_shell_config *config);
 void	execute_node(t_tree *node, int *status, t_shell_config *config);

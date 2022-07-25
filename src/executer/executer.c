@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 16:30:35 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/25 23:55:36 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,68 +120,102 @@ int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 	return (status);
 }
 
-/** TODO : Redirection 복구는
- * last_pipe_cmd를 다 기다린 후에 config의 파이프 fd를 init해준다. */
+void	run_child_process(char **cmd_argv, t_shell_config *config)
+{
+	char	*full_path;
 
-int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무조건 fork를 하는 애들.
+	if (is_builtin_func(cmd_argv[0]) == true)
+	{
+		int status = exec_builtin(cmd_argv, config->envp);
+		exit(status);
+	}
+	if (cmd_argv[0] != NULL && ft_strchr(cmd_argv[0], '/') == NULL)
+		full_path = get_full_path(cmd_argv[0], *config->envp);
+	if (full_path != NULL)
+	{
+		free(cmd_argv[0]);
+		cmd_argv[0] = full_path;
+		execve(cmd_argv[0], cmd_argv, *config->envp);
+	}
+	else
+	{
+		ft_putstr_fd(cmd_argv[0], STDERR_FILENO);
+		ft_putstr_fd(": command not found\n", STDERR_FILENO);
+		exit(EXIT_COMMAND_NOT_FOUND);
+	}
+}
+
+int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 {
 	printf("\033[90mcalling exec_general() : %s\033[0m\n\n", cmd_argv[0]);
 
 	pid_t	pid;
-	char	*full_path;
-	int		status;
+	int		pipe_fd[2];
 
-	if (node->is_pipeline == true && node->is_last_pipe_cmd == false)
+
+	/** 처음 실행되거나 유일한 명령이라면 ? */
+
+
+	/** 파이프 열기. */
+	if (pipe(pipe_fd) == PIPE_ERROR)
 	{
-		if (pipe(config->pipe_fd) == PIPE_ERROR)
-		{
-			perror("pipe()");
-			return (ERROR);// pipe function error...
-		}
+		perror("pipe()");
+		return (ERROR);
 	}
 
+	/** 파이프 열고 포크를 뜨면, 두 프로세스가 같은 파이프를 같게 된다.  */
 	pid = fork();
 	if (pid == FORK_ERROR)
-		return (ERROR);// fork() function error...
-	if (pid != CHILD) // if parent
 	{
+		perror("fork()");
+		return (ERROR);
+	}
+
+
+
+	if (pid == CHILD) /* child */
+	{
+
+
+
+		/** 만약 <in이 있다면, <in이 stdin으로 세팅되어야 한다. 
+		 * <in이 없다면 파이프로부터 받으면 된다. 
+		 */
+
+
+
+		/** 만약 >out이 있다면, >out이 stdin으로 세팅되어야 한다. 
+		 * >out이 없다면, 파이프로 전달하면 된다. 
+		 * 만약 마지막 명령어라면, 파이프가 아닌 백업해둔 stdout에 전달한다. */
 		if (node->is_last_pipe_cmd)
-			config->last_cmd_pid = pid; // save last_cmd's pid
-		dup2(config->pipe_fd[READ], STDIN_FILENO);
-		close(config->pipe_fd[READ]);
-		close(config->pipe_fd[WRITE]);
+			pipe_fd[WRITE] = config->stdout_backup;
+
+
+
+		dup2(pipe_fd[WRITE], STDOUT_FILENO);
+		close(pipe_fd[WRITE]);
+		close(pipe_fd[READ]);
+
+		run_child_process(cmd_argv, config);
 	}
-	else if (pid == CHILD) // if child
+	else /* parent */
 	{
-		status = open_redirection(node->redirection, config);
-		if (status != 0)
-			exit(status);
-		set_redirection(config);
 
-		full_path = NULL;
 
-		if (is_builtin_func(cmd_argv[0]) == true)
-		{
-			int status = exec_builtin(cmd_argv, config->envp);
-			/** NOTE : 빌트인에서도 실행 후 exit을 해줘야 한다...(fork했기 때문)
-			 * 그게 오류의 원인이였다... */
-			exit(status);
-		}
-		if (cmd_argv[0] != NULL && ft_strchr(cmd_argv[0], '/') == NULL)
-			full_path = get_full_path(cmd_argv[0], *config->envp);
-		if (full_path != NULL)
-		{
-			free(cmd_argv[0]);
-			cmd_argv[0] = full_path;
-			execve(cmd_argv[0], cmd_argv, *config->envp);
-		}
-		else
-		{
-			ft_putstr_fd(cmd_argv[0], STDERR_FILENO);
-			ft_putstr_fd(": command not found\n", STDERR_FILENO);
-			exit(EXIT_COMMAND_NOT_FOUND);
-		}
+
+
+	
+		dup2(pipe_fd[READ], STDIN_FILENO);
+		close(pipe_fd[WRITE]);
+		close(pipe_fd[READ]);
 	}
+
+
+
+
+
+
+	(void)node;
 	return (SUCCESS);
 }
 
@@ -203,34 +237,18 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 		return ;
 	}
 
-	/** (2) if simple command, expand tokens */
 	if (expand_tokens(node->token, config) == ERROR \
 			|| expand_tokens(node->redirection, config) == ERROR)
 		return ;
 
-	/** (3) make token to char **cmd_argv */
-	char	**cmd_argv = get_cmd_argv(node->token);  /** print_strs(cmd_argv); */
+	char	**cmd_argv = get_cmd_argv(node->token);
 
-	/** NOTE: 수정 이후.  */
-	if (node->is_pipeline == false && is_builtin_func(cmd_argv[0])) // 무조건 fork없이 실행.
+	if (node->is_pipeline == false && is_builtin_func(cmd_argv[0]))
 		*status = exec_exceptions(node, cmd_argv, config);
 	else
 		*status = exec_general(node, cmd_argv, config); //  무조건 fork를 하는 애들.
 
-	/** NOTE: 수정 이전. unset이 fork가 먹어서 안돌아감.  */
-/**     if (!(node->is_pipeline) && is_cd_or_exit_or_export(cmd_argv[0]))
-  *         *status = exec_exceptions(node, cmd_argv, config); // fork없이 실행
-  *     else
-  *         *status = exec_general(node, cmd_argv, config); //  무조건 fork를 하는 애들.
-  *  */
-	if (node->is_last_pipe_cmd)
-	{
-		/** 마지막 커맨드일 경우 fd 복구 */
-		dup2(config->stdin_backup, STDIN_FILENO);
-		dup2(config->stdout_backup, STDOUT_FILENO);
-	}
-
-
+	
 	delete_strs(&cmd_argv);
 
 	/** NOTE : if success, then set status to ... CMD_SUCCESS
@@ -252,8 +270,6 @@ void	inorder_recur(t_tree *node, int *status, t_callback_func callback, t_shell_
 		return ;
 
 	/** (1) if status == CMD_STOP_SHELL (ex. calling exit) then stop all */
-
-	/** NOTE : 노드 삭제 함수의 경우 에러 여부와 관계 없이 순회해야함.  */
 	if (callback != delete_tree_node && *status == CMD_SUCCEESS)
 	{
 		inorder_recur(node->left, status, callback, shell_config);
@@ -282,13 +298,17 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
-
+	
 	// 여기서 마지막 pid_t를 기다리고, 해당 wstatus를 저장한다. --> 추후 $? 실행에 사용.
 	waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
 	printf("\n");
 	printf("\033[90mexecute() : waiting pid %d\033[0m\n", config->last_cmd_pid);
 	printf("\033[90mexecute() : child's exit code = %d\033[0m\n", WEXITSTATUS(config->last_cmd_wstatus));
 	printf("\n\n\n");
+
+	/** 0726 NOTE : 문제 해결 1. 이걸 안해주면, 계속 stdin으로 null이 무한입력된다.  */
+	dup2(config->stdin_backup, STDIN_FILENO);
+	dup2(config->stdout_backup, STDOUT_FILENO);
 
 	/** 모든 노드 삭제 */
 	inorder_recur(syntax_tree, &status, delete_tree_node, config);

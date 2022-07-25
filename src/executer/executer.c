@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 01:59:00 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 02:06:43 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -184,43 +184,44 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 
 
 	/** 
+	 * -------------------------------------------------------------------------------
+	 * | FIXME BOARD                                                                 |
+	 * -------------------------------------------------------------------------------
 	 *
-	 * @FIXME <in cat : cat으로 <in이 전달이 안됨.
+	 * @ FIXME [ <in cat ] cat으로 <in이 전달이 안됨.
+	 * 수정완료 --> | 자식프로세스에서 dup2()로 덮어쓰니 된다. 
 	 *
-	 * @FIXME <in ls >out | <in grep minishell : core dumpe 에러.  
-	 * 수정완료 --> | 다음에 <가 등장해도 되므로 에러처리 x
+	 * @ FIXME [ <in ls >out | <in grep minishell ] : core dumpe 에러.  
+	 * 수정완료 --> | 다음에 <가 등장해도 되므로 토큰상 에러처리 하면 안됨. (원래 했었음)
 	 *
+	 * @ FIXME [ ls -al | grep minishell ] 을 여러번 치면 readline에 그 내용이 들어갈까?
+	 * 수정완료 --> wait(NULL) 로 모든 자식프로세스를 기다리게 하니 해결됬다. 
 	 *
-	 *
-	 *
-	 *
-	 * */
+	 * ------------------------------------------------------------------------------*/
 
 	if (pid == CHILD) /* child */
 	{
 	
-		/** FIXME : 왜 ls -al | grep minishell 을 여러번 치면 readline에 그 내용이 들어가?
-		 * 무한대기에 빠지는 이유가 뭐지? --> NOTE : wait 문제였음. */
-
 		/** 마지막 커맨드라면, 파이프의 쓰기 기본값은 표준출력이여야 한다. */
 		if (node->is_last_pipe_cmd)
 			dup2(config->stdout_backup, pipe_fd[WRITE]);
 
 		int	tmp1 = pipe_fd[READ];
 
-		open_redirection(pipe_fd, node->redirection);
-
 
 		/** NOTE : 애먹은 부분이다.  
 		 * 만약 open_redirection으로 pipe_fd[READ]가 바뀌었다면,
 		 * redirection_in이 있다는 이야기이므로 이때만 dup2로 stdin을 변조시킨다.
 		 * 만약 바뀌지 않았다면 dup2를 실행하면 안된다. */
+		open_redirection(pipe_fd, node->redirection);
 		if (tmp1 != pipe_fd[READ])
 			dup2(pipe_fd[READ], STDIN_FILENO);
 
 
+
 		/** 여긴 확실. 세팅된 파이프를 표준 출력에 덮어쓴다. */
 		dup2(pipe_fd[WRITE], STDOUT_FILENO);
+
 
 
 		close(pipe_fd[WRITE]);
@@ -248,7 +249,6 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 			close(pipe_fd[READ]);
 		}
 	}
-	(void)node;
 	return (SUCCESS);
 }
 

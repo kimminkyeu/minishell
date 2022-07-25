@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 23:55:36 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 01:59:00 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,15 +108,26 @@ int	exec_builtin(char **cmd_argv, char ***envp)
 /** no fork. */
 int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 {
-	/** int		pipe_fd[2]; */
+	int		pipe_fd[2];
 	int		status;
 
 	printf("\033[90mcalling exec_exceptions() : %s\033[0m\n\n", cmd_argv[0]);
 
-	status = open_redirection(node->redirection, config);
+	status = open_redirection(pipe_fd, node->redirection);
+
+	dup2(pipe_fd[READ], STDIN_FILENO);
+	close(pipe_fd[READ]);
+
+	dup2(pipe_fd[WRITE], STDOUT_FILENO);
+	close(pipe_fd[WRITE]);
+
 	if (status != 0)
 		return (status);
 	status = exec_builtin(cmd_argv, config->envp);
+
+	dup2(config->stdin_backup, STDIN_FILENO);
+	dup2(config->stdout_backup, STDOUT_FILENO);
+
 	return (status);
 }
 
@@ -145,6 +156,8 @@ void	run_child_process(char **cmd_argv, t_shell_config *config)
 	}
 }
 
+
+
 int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 {
 	printf("\033[90mcalling exec_general() : %s\033[0m\n\n", cmd_argv[0]);
@@ -153,15 +166,13 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 	int		pipe_fd[2];
 
 
-	/** 처음 실행되거나 유일한 명령이라면 ? */
-
-
 	/** 파이프 열기. */
 	if (pipe(pipe_fd) == PIPE_ERROR)
 	{
 		perror("pipe()");
 		return (ERROR);
 	}
+
 
 	/** 파이프 열고 포크를 뜨면, 두 프로세스가 같은 파이프를 같게 된다.  */
 	pid = fork();
@@ -172,49 +183,71 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 	}
 
 
+	/** 
+	 *
+	 * @FIXME <in cat : cat으로 <in이 전달이 안됨.
+	 *
+	 * @FIXME <in ls >out | <in grep minishell : core dumpe 에러.  
+	 * 수정완료 --> | 다음에 <가 등장해도 되므로 에러처리 x
+	 *
+	 *
+	 *
+	 *
+	 *
+	 * */
 
 	if (pid == CHILD) /* child */
 	{
+	
+		/** FIXME : 왜 ls -al | grep minishell 을 여러번 치면 readline에 그 내용이 들어가?
+		 * 무한대기에 빠지는 이유가 뭐지? --> NOTE : wait 문제였음. */
 
-
-
-		/** 만약 <in이 있다면, <in이 stdin으로 세팅되어야 한다. 
-		 * <in이 없다면 파이프로부터 받으면 된다. 
-		 */
-
-
-
-		/** 만약 >out이 있다면, >out이 stdin으로 세팅되어야 한다. 
-		 * >out이 없다면, 파이프로 전달하면 된다. 
-		 * 만약 마지막 명령어라면, 파이프가 아닌 백업해둔 stdout에 전달한다. */
+		/** 마지막 커맨드라면, 파이프의 쓰기 기본값은 표준출력이여야 한다. */
 		if (node->is_last_pipe_cmd)
-			pipe_fd[WRITE] = config->stdout_backup;
+			dup2(config->stdout_backup, pipe_fd[WRITE]);
+
+		int	tmp1 = pipe_fd[READ];
+
+		open_redirection(pipe_fd, node->redirection);
 
 
+		/** NOTE : 애먹은 부분이다.  
+		 * 만약 open_redirection으로 pipe_fd[READ]가 바뀌었다면,
+		 * redirection_in이 있다는 이야기이므로 이때만 dup2로 stdin을 변조시킨다.
+		 * 만약 바뀌지 않았다면 dup2를 실행하면 안된다. */
+		if (tmp1 != pipe_fd[READ])
+			dup2(pipe_fd[READ], STDIN_FILENO);
 
+
+		/** 여긴 확실. 세팅된 파이프를 표준 출력에 덮어쓴다. */
 		dup2(pipe_fd[WRITE], STDOUT_FILENO);
+
+
 		close(pipe_fd[WRITE]);
 		close(pipe_fd[READ]);
 
+		/** 최종 설정된 stdin stdout을 그대로 실행한다. */
 		run_child_process(cmd_argv, config);
 	}
 	else /* parent */
 	{
-
-
-
-
-	
-		dup2(pipe_fd[READ], STDIN_FILENO);
-		close(pipe_fd[WRITE]);
-		close(pipe_fd[READ]);
+		if (node->is_last_pipe_cmd)
+		{
+			/* 마지막 커맨드의 부모에서 변조된 표준입출력을 복구한다. */
+			config->last_cmd_pid = pid;
+			dup2(config->stdin_backup, STDIN_FILENO);
+			dup2(config->stdout_backup, STDOUT_FILENO);
+			close(pipe_fd[WRITE]);
+			close(pipe_fd[READ]);
+		}
+		if (!node->is_last_pipe_cmd)
+		{
+			/** 마지막 커맨드가 아니라면, 부모는 항상 다음 커맨드의 STDIN을 연결해준다.  */
+			dup2(pipe_fd[READ], STDIN_FILENO);
+			close(pipe_fd[WRITE]);
+			close(pipe_fd[READ]);
+		}
 	}
-
-
-
-
-
-
 	(void)node;
 	return (SUCCESS);
 }
@@ -299,16 +332,20 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
 	
-	// 여기서 마지막 pid_t를 기다리고, 해당 wstatus를 저장한다. --> 추후 $? 실행에 사용.
+
+	/** 0726 NOTE : 
+	 * 가장 중요한 문제. 
+	 * wait을 모두 해주지 않아 자식 프로세스의 응답이 늦게 stdin으로 출력되고
+	 * 이게 꼬여서 결국 실행되지 않는 거였어...*/
 	waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
+	wait(NULL);
+
+
+
 	printf("\n");
 	printf("\033[90mexecute() : waiting pid %d\033[0m\n", config->last_cmd_pid);
 	printf("\033[90mexecute() : child's exit code = %d\033[0m\n", WEXITSTATUS(config->last_cmd_wstatus));
-	printf("\n\n\n");
-
-	/** 0726 NOTE : 문제 해결 1. 이걸 안해주면, 계속 stdin으로 null이 무한입력된다.  */
-	dup2(config->stdin_backup, STDIN_FILENO);
-	dup2(config->stdout_backup, STDOUT_FILENO);
+	printf("\n\n");
 
 	/** 모든 노드 삭제 */
 	inorder_recur(syntax_tree, &status, delete_tree_node, config);

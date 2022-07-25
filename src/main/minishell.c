@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 23:50:31 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 00:51:36 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,10 +65,12 @@ void	shell_loop(t_shell_config *config)
 		else
 		{
 			free(line);
+			line = NULL;
 			continue ;
 		}
 		status = run_shell(line, config);
 		free(line);
+		line = NULL;
 	}
 	/** system("leaks minishell > leaks_result_temp; cat leaks_result_temp | grep leaked && rm -rf leaks_result_temp"); */
 }
@@ -86,8 +88,8 @@ int main(int ac, char **av, char **env)
 	shell_config.stdout_backup = dup(STDOUT_FILENO); // save STDOUT
 	shell_config.last_cmd_pid = 0;
 	shell_config.last_cmd_wstatus = 0;
-	shell_config.pipe_fd[READ] = STDIN_FILENO;
-	shell_config.pipe_fd[WRITE] = STDOUT_FILENO;
+	/** shell_config.pipe_fd[READ] = STDIN_FILENO; */
+	/** shell_config.pipe_fd[WRITE] = STDOUT_FILENO; */
 	/* 리눅스에선 이거 세팅 안해도 되는 데?  */
 	set_signal();
 	/* (+) Show Lee-Shell Logo */

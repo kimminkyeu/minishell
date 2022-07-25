@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:52:12 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 18:57:38 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 01:42:19 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
 bool	is_meta_token_type(t_token_type type)
 {
 	if (type != E_TYPE_PIPE && type != E_TYPE_DOUBLE_PIPE && \
-			type != E_TYPE_REDIRECT && type != E_TYPE_DOUBLE_AMPERSAND)
+			/* type != E_TYPE_REDIRECT && */ type != E_TYPE_DOUBLE_AMPERSAND)
 		return (false);
 	else
 		return (true);

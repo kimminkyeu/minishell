@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 15:57:54 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/26 01:06:01 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int	open_heredoc(const char *limiter)
 	return (pipe_fd[READ]);
 }
 
-int	open_redirection(t_list *redir_list, t_shell_config *config)// [>] [out] [<] [in]
+int	open_redirection(int *pipe_fd, t_list *redir_list /*, t_shell_config *config*/)// [>] [out] [<] [in]
 {
 	int				status;
 	t_token			*tok;
@@ -93,8 +93,8 @@ int	open_redirection(t_list *redir_list, t_shell_config *config)// [>] [out] [<]
 		{
 			cur = cur->next;
 			tok = cur->content;
-			config->pipe_fd[READ] = open(tok->str->text, O_RDONLY);
-			if (config->pipe_fd[READ] == -1)
+			pipe_fd[READ] = open(tok->str->text, O_RDONLY);
+			if (pipe_fd[READ] == -1)
 			{
 				status = errno;
 				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
@@ -105,8 +105,8 @@ int	open_redirection(t_list *redir_list, t_shell_config *config)// [>] [out] [<]
 		{
 			cur = cur->next;
 			tok = cur->content;
-			config->pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-			if (config->pipe_fd[WRITE] == -1)
+			pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+			if (pipe_fd[WRITE] == -1)
 			{
 				status = errno;
 				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
@@ -117,8 +117,8 @@ int	open_redirection(t_list *redir_list, t_shell_config *config)// [>] [out] [<]
 		{
 			cur = cur->next;
 			tok = cur->content;
-			config->pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_APPEND | O_CREAT, 0644);
-			if (config->pipe_fd[WRITE] == -1)
+			pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_APPEND | O_CREAT, 0644);
+			if (pipe_fd[WRITE] == -1)
 			{
 				status = errno;
 				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
@@ -129,10 +129,4 @@ int	open_redirection(t_list *redir_list, t_shell_config *config)// [>] [out] [<]
 	}
 
 	return (status);
-}
-
-void	set_redirection(t_shell_config *shell)
-{
-	dup2(shell->pipe_fd[READ], STDIN_FILENO);
-	dup2(shell->pipe_fd[WRITE], STDOUT_FILENO);
 }

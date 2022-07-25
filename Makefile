@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/25 19:00:17 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/25 22:07:42 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -31,13 +31,13 @@ ITERATOR_DIR	= $(SRC_DIR)/iterator/
 
 # NOTE : Add Source files here
 # ------------------------------------------------------ #
-MAIN_SRC		= minishell helper
+MAIN_SRC		= minishell prompt helper
 
 LEXER_SRC		= token_create token_modify \
 				  scanner_main scanner_create scanner_function_ptr \
 				  scanner_helper scanner_get_token_1 scanner_get_token_2
 
-PARSER_SRC		= parse_tree
+PARSER_SRC		= parse_tree parse_tree_utils
 EXECUTER_SRC	= executer token_expand get_full_path redirection
 
 BUILTIN_SRC		= environ environ_utils environ_helper cd echo pwd exit

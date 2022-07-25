@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 16:30:35 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/25 22:16:23 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,19 +109,21 @@ int	exec_builtin(char **cmd_argv, char ***envp)
 int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 {
 	/** int		pipe_fd[2]; */
+	int		my_io[2];
 	int		status;
 
 	printf("\033[90mcalling exec_exceptions() : %s\033[0m\n\n", cmd_argv[0]);
 
-	status = open_redirection(node->redirection, config);
+	my_io[READ] = config->stdin_backup;
+	my_io[WRITE] = config->stdout_backup;
+
+	status = open_redirection(my_io, node->redirection);
 	if (status != 0)
 		return (status);
+	set_redirection(my_io);
 	status = exec_builtin(cmd_argv, config->envp);
 	return (status);
 }
-
-/** TODO : Redirection 복구는
- * last_pipe_cmd를 다 기다린 후에 config의 파이프 fd를 init해준다. */
 
 int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무조건 fork를 하는 애들.
 {
@@ -129,11 +131,17 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 
 	pid_t	pid;
 	char	*full_path;
+	int		pipefd[2];
+	int		my_io[2];
 	int		status;
+
+	my_io[READ] = config->stdin_backup;
+	my_io[WRITE] = config->stdout_backup;
+	printf("%s: enter: read: %d, write: %d\n", cmd_argv[0], my_io[READ], my_io[WRITE]);
 
 	if (node->is_pipeline == true && node->is_last_pipe_cmd == false)
 	{
-		if (pipe(config->pipe_fd) == PIPE_ERROR)
+		if (pipe(pipefd) == PIPE_ERROR)
 		{
 			perror("pipe()");
 			return (ERROR);// pipe function error...
@@ -143,28 +151,27 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 	pid = fork();
 	if (pid == FORK_ERROR)
 		return (ERROR);// fork() function error...
-	if (pid != CHILD) // if parent
+
+
+	if (pid == CHILD) // if child
 	{
-		if (node->is_last_pipe_cmd)
-			config->last_cmd_pid = pid; // save last_cmd's pid
-		dup2(config->pipe_fd[READ], STDIN_FILENO);
-		close(config->pipe_fd[READ]);
-		close(config->pipe_fd[WRITE]);
-	}
-	else if (pid == CHILD) // if child
-	{
-		status = open_redirection(node->redirection, config);
+	printf("%s: enter child: read: %d, write: %d\n", cmd_argv[0], my_io[READ], my_io[WRITE]);
+
+		if (node->is_pipeline)
+			set_pipe(my_io, pipefd, config, node);
+	printf("%s: after set pipe: read: %d, write: %d\n", cmd_argv[0], my_io[READ], my_io[WRITE]);
+
+		status = open_redirection(my_io, node->redirection);
+	printf("%s: after open: read: %d, write: %d\n", cmd_argv[0], my_io[READ], my_io[WRITE]);
+
 		if (status != 0)
 			exit(status);
-		set_redirection(config);
+		set_redirection(my_io);
 
 		full_path = NULL;
-
 		if (is_builtin_func(cmd_argv[0]) == true)
 		{
 			int status = exec_builtin(cmd_argv, config->envp);
-			/** NOTE : 빌트인에서도 실행 후 exit을 해줘야 한다...(fork했기 때문)
-			 * 그게 오류의 원인이였다... */
 			exit(status);
 		}
 		if (cmd_argv[0] != NULL && ft_strchr(cmd_argv[0], '/') == NULL)
@@ -173,7 +180,7 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 		{
 			free(cmd_argv[0]);
 			cmd_argv[0] = full_path;
-			execve(cmd_argv[0], cmd_argv, *config->envp);
+			execve(cmd_argv[0], cmd_argv, *config->envp);//
 		}
 		else
 		{
@@ -182,7 +189,24 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config) // 무�
 			exit(EXIT_COMMAND_NOT_FOUND);
 		}
 	}
-	return (SUCCESS);
+	else
+	{
+		if (node->is_pipeline)
+		{
+			if (node->is_last_pipe_cmd)
+			{
+				config->pipefd_save = config->stdin_backup;
+				config->last_cmd_pid = pid; // save last_cmd's pid
+			}
+			else
+			{
+				config->pipefd_save = pipefd[READ];//이게 자식이 사용하기 전에 먼저 된다...
+				close(pipefd[READ]);
+				close(pipefd[WRITE]);
+			}
+		}
+	}
+	return (SUCCESS);//for what?
 }
 
 void	execute_node(t_tree *node, int *status, t_shell_config *config)
@@ -217,18 +241,12 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	else
 		*status = exec_general(node, cmd_argv, config); //  무조건 fork를 하는 애들.
 
-	/** NOTE: 수정 이전. unset이 fork가 먹어서 안돌아감.  */
-/**     if (!(node->is_pipeline) && is_cd_or_exit_or_export(cmd_argv[0]))
-  *         *status = exec_exceptions(node, cmd_argv, config); // fork없이 실행
-  *     else
-  *         *status = exec_general(node, cmd_argv, config); //  무조건 fork를 하는 애들.
-  *  */
-	if (node->is_last_pipe_cmd)
-	{
-		/** 마지막 커맨드일 경우 fd 복구 */
-		dup2(config->stdin_backup, STDIN_FILENO);
-		dup2(config->stdout_backup, STDOUT_FILENO);
-	}
+	// if (node->is_last_pipe_cmd)
+	// {
+	// 	/** 마지막 커맨드일 경우 fd 복구 */
+	// 	dup2(config->stdin_backup, STDIN_FILENO);
+	// 	dup2(config->stdout_backup, STDOUT_FILENO);
+	// }
 
 
 	delete_strs(&cmd_argv);

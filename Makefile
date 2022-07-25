@@ -3,16 +3,16 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
+#    By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/25 01:33:18 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/25 19:37:14 by han-yeseul       ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			= minishell
 CC				= cc
-CFLAGS			= -Wall -Wextra -Werror
+CFLAGS			= -Wall -Wextra -Werror -g
 INCLUDE			= include
 
 # NOTE : Add Source directory here
@@ -90,7 +90,7 @@ WHITE = \033[0;97m
 $(NAME): $(OBJ)
 	@make bonus -C $(LIBFT_DIR)
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT_DIR)libft.a -lreadline
-	
+
 %.o: %.c
 	@${CC} ${CFLAGS} -c $< -o $@
 	@echo "$(RED)Compiling... \t$< $(DEF_COLOR)"

@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 15:57:54 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/25 22:20:35 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,7 @@
 #include <sys/wait.h>
 #include <string.h>//strerror
 
+#include "executer.h"
 #include "../main/minishell.h"
 #include "../lexer/token.h"
 
@@ -73,66 +74,76 @@ int	open_heredoc(const char *limiter)
 	return (pipe_fd[READ]);
 }
 
-int	open_redirection(t_list *redir_list, t_shell_config *config)// [>] [out] [<] [in]
+void	set_pipe(int *my_io, int *pipefd, t_shell_config *config, t_tree *node)
+{
+	my_io[READ] = config->pipefd_save;
+	if (node->is_last_pipe_cmd == false)
+		my_io[WRITE] = pipefd[WRITE];
+
+}
+
+int	open_redirection(int *my_io, t_list *redir_list)// [>] [out] [<] [in]
 {
 	int				status;
 	t_token			*tok;
 	t_list			*cur;
 
-	/** config->pipe_fd[READ] == config->stdin_backup; */
-	/** config->pipe_fd[WRITE] == config->stdout_backup; */
-
 	status = 0;
-	if (redir_list == NULL)
-		return (status);
-	cur = redir_list;
-	while (cur != NULL)
+	if (redir_list != NULL)
 	{
-		tok = cur->content;
-		if (tok->type == E_TYPE_REDIR_LESS) // < in
+		cur = redir_list;
+		while (cur != NULL)
 		{
-			cur = cur->next;
 			tok = cur->content;
-			config->pipe_fd[READ] = open(tok->str->text, O_RDONLY);
-			if (config->pipe_fd[READ] == -1)
+			if (tok->type == E_TYPE_REDIR_LESS) // < in
 			{
-				status = errno;
-				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
-				break ;
+				cur = cur->next;
+				tok = cur->content;
+				my_io[READ] = open(tok->str->text, O_RDONLY);
+				if (my_io[READ] == -1)
+				{
+					status = errno;
+					printf("lesh: %s: %s\n", tok->str->text, strerror(status));
+					break ;
+				}
 			}
-		}
-		else if (tok->type == E_TYPE_REDIR_GREATER) // > out
-		{
+			else if (tok->type == E_TYPE_REDIR_GREATER) // > out
+			{
+				cur = cur->next;
+				tok = cur->content;
+				my_io[WRITE] = open(tok->str->text, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+				if (my_io[WRITE] == -1)
+				{
+					status = errno;
+					printf("lesh: %s: %s\n", tok->str->text, strerror(status));
+					break ;
+				}
+			}
+			else if (tok->type == E_TYPE_REDIR_APPEND) // >> out
+			{
+				cur = cur->next;
+				tok = cur->content;
+				my_io[WRITE] = open(tok->str->text, O_WRONLY | O_APPEND | O_CREAT, 0644);
+				if (my_io[WRITE] == -1)
+				{
+					status = errno;
+				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
+					break ;
+				}
+			}
 			cur = cur->next;
-			tok = cur->content;
-			config->pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-			if (config->pipe_fd[WRITE] == -1)
-			{
-				status = errno;
-				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
-				break ;
-			}
 		}
-		else if (tok->type == E_TYPE_REDIR_APPEND) // >> out
-		{
-			cur = cur->next;
-			tok = cur->content;
-			config->pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_APPEND | O_CREAT, 0644);
-			if (config->pipe_fd[WRITE] == -1)
-			{
-				status = errno;
-				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
-				break ;
-			}
-		}
-		cur = cur->next;
 	}
 
 	return (status);
 }
 
-void	set_redirection(t_shell_config *shell)
+void	set_redirection(int *my_io)
 {
-	dup2(shell->pipe_fd[READ], STDIN_FILENO);
-	dup2(shell->pipe_fd[WRITE], STDOUT_FILENO);
+	printf("stdin out, %d, %d", STDIN_FILENO, STDOUT_FILENO);
+	if (dup2(my_io[READ], STDIN_FILENO) == -1) //파이프가 닫혔나?
+		perror("dup2 read");
+	if (dup2(my_io[WRITE], STDOUT_FILENO) == -1)
+		perror("dup2 write");
+
 }

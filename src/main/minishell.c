@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 15:46:40 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 19:05:25 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,14 @@
 #include "../../include/builtin.h"
 #include "minishell.h"
 
-/** (2) helper functions for Visualization. 
+/** (2) helper functions for Visualization.
  * TODO : Delete helper files later! */
 #include "helper.h"
 
 #define READ	(0)
-#define WRITE	(0)
+#define WRITE	(1)
 
-/** NOTE 
+/** NOTE
  * : 시그널 부분 참고 https://velog.io/@sham/minishell%EA%B3%BC-readline */
 
 void	sig_ctrl_c(int signal)
@@ -86,7 +86,7 @@ void	shell_loop(t_shell_config *config)
 	{
 		/* Readline library  */
 		line = readline_prompt(config);
-	
+
 		/** CTRL + D 를 눌렀을 때, realine에서 NULL문자를 반환한다. */
 		if (line == NULL)
 		{
@@ -101,16 +101,16 @@ void	shell_loop(t_shell_config *config)
 			continue ;
 		}
 
-		
+
 		/* (0) Check input. 쉘 입력값 검사(공백만 입력, 아무것도 없는 입력)
-		 * ctrl+c : ^C가 메시지에 출력 + 프롬프트 새로 띄우기 
+		 * ctrl+c : ^C가 메시지에 출력 + 프롬프트 새로 띄우기
 		 * ctrl+d : exit이 메시지에 출력 + 종료 */
 
 		// ...
 
 
-		/* (1) ------------------------------------- 
-		 *     |  Lexer + Syntax error check       | 
+		/* (1) -------------------------------------
+		 *     |  Lexer + Syntax error check       |
 		 *     ------------------------------------*/
 		tokens = tokenize(line);
 		if (tokens == NULL) /* NULL if syntax error occurs */
@@ -120,11 +120,11 @@ void	shell_loop(t_shell_config *config)
 			continue ;
 		}
 		else /* Visualize tokens */
-			print_tokens(tokens);		
+			print_tokens(tokens);
 
 
-		/* (2) ------------------------ 
-		 *     |  Parser (AST)        | 
+		/* (2) ------------------------
+		 *     |  Parser (AST)        |
 		 *     ------------------------*/
 		syntax_tree = parse(tokens);
 		if (syntax_tree == NULL)
@@ -138,13 +138,13 @@ void	shell_loop(t_shell_config *config)
 			print_tree(syntax_tree);
 
 
-		/* (3) ------------------------------------------ 
-		 *     |  Executer (inorder traverse)           | 
-		 *     |----------------------------------------| 
-		 *     |  (1) node free를 여기서 수행한다.      | 
-		 *     |                                        | 
+		/* (3) ------------------------------------------
+		 *     |  Executer (inorder traverse)           |
+		 *     |----------------------------------------|
+		 *     |  (1) node free를 여기서 수행한다.      |
+		 *     |                                        |
 		 *     |  (2) NOTE : 노드 방문중 에러 발생시    |
-		 *     |	  모든 노드를 해제해야 한다.        | 
+		 *     |	  모든 노드를 해제해야 한다.        |
 		 *     -----------------------------------------*/
 
 		status = execute(syntax_tree, config);
@@ -185,7 +185,7 @@ void	show_shell_logo(void)
 
 
 int main(int ac, char **av, char **env)
-{	
+{
 	(void)ac;
 	(void)av;
 	t_shell_config	shell_config;
@@ -197,15 +197,14 @@ int main(int ac, char **av, char **env)
 	shell_config.stdout_backup = dup(STDOUT_FILENO); // save STDOUT
 	shell_config.last_cmd_pid = 0;
 	shell_config.last_cmd_wstatus = 0;
-	shell_config.pipe_fd[READ] = STDIN_FILENO;
-	shell_config.pipe_fd[WRITE] = STDOUT_FILENO;
+	shell_config.pipefd_save = shell_config.stdin_backup;
 
 	/* 리눅스에선 이거 세팅 안해도 되는 데?  */
 	set_signal();
 
 	/* (+) Show Lee-Shell Logo */
 	show_shell_logo();
-	
+
 
 	/* (2) Run command loop */
 	shell_loop(&shell_config);

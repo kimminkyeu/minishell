@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 23:56:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 01:51:47 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/25 18:57:04 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,8 @@ typedef struct s_shell_config {
 	int		stdin_backup;
 	int		stdout_backup;
 
-	int		pipe_fd[2];
-	
+	int		pipefd_save;
+
 	pid_t	last_cmd_pid; // for waitpid()
 	int		last_cmd_wstatus;
 

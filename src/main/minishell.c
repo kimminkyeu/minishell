@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 17:49:53 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 19:09:00 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,14 +31,14 @@ int	run_shell(char *line, t_shell_config *config)
 	tokens = tokenize(line);
 	if (tokens == NULL)
 		return (CMD_KEEP_RUNNING);
-	print_tokens(tokens); // TODO : delete later
+	/** print_tokens(tokens); // TODO : delete later */
 	syntax_tree = parse(tokens);
 	if (syntax_tree == NULL)
 	{
 		free(tokens);
 		return (CMD_KEEP_RUNNING);
 	}
-	print_tree(syntax_tree); // TODO : delete later
+	/** print_tree(syntax_tree); // TODO : delete later */
 	return (execute(syntax_tree, config));
 }
 
@@ -48,6 +48,10 @@ void	shell_loop(t_shell_config *config)
 	char	*line;
 
 	status = CMD_KEEP_RUNNING;
+
+	/** FIXME : CMD_STOP_SHELL 이 필요한가? 
+	 *          필요 없다면 그냥 while(true)로 변경할 것.
+	 **/
 	while (status != CMD_STOP_SHELL)
 	{
 		line = readline_prompt(config);

@@ -6,14 +6,14 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 22:47:10 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 23:13:03 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <unistd.h>
 #include <sys/wait.h>
 #include "executer.h"
-#include "../../include/builtin.h"
+#include "../builtin/environ.h"
 #include "../main/minishell.h"
 #include "../lexer/token.h"
 

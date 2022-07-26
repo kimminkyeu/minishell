@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 21:59:30 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/24 23:40:26 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 23:08:23 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,10 @@
 /* --------------------------------------------
  * |  NOTE : Environment variable functions   |
  * -------------------------------------------*/
+
 /** deep copy system envp content */
 char	**new_environ(char **system_envp);
+
 /** free every environs */
 void	delete_environ(char ***our_envp_ptr);
 

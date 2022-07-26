@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 21:52:20 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 17:26:01 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 16:05:55 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ int		exec_unset(char **arglist, char ***our_envp_ptr);
 size_t	get_strs_count(char **strs);
 void	copy_strs(char **dst, char **src, size_t strs_count);
 void	sort_ascii(int len, char **argv);
+
+/* in builtin/environ_utils.c */
 void	delete_strs(char ***strs);
 void	print_strs(char **strs);
 void	print_in_order(char **our_envp);

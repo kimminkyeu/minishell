@@ -6,30 +6,43 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:44:57 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 01:13:08 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 17:00:29 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "token_expand.h"
 #include "executer.h"
 
+/** NOTE : spliting with ' ' (aka. whitespace) is a problem. 
+ *         For example [ grep "my name" ] becomes [grep, my, name].
+ *         As a result [grep] only finds word [my].
+ *         Inorder to fix this problem, I changed "ft_split" logic.
+ **/
 char	**get_cmd_argv(t_list *token)
 {
-	t_string	*joined_str;
 	t_list		*cur;
 	char		**arglist;
+	size_t		word_cnt;
 
-	joined_str = new_string(50);
+	if (token == NULL)
+		return (NULL);
+	word_cnt = 0;
 	cur = token;
 	while (cur != NULL)
 	{
-		t_token *tok = cur->content;
-		joined_str->f_append(joined_str, tok->str->text);
-		joined_str->f_push_back(joined_str, ' ');
+		word_cnt++;
 		cur = cur->next;
 	}
-	arglist = ft_split(joined_str->text, ' ');
-	delete_string(&joined_str);
+	arglist = ft_calloc(word_cnt + 1, sizeof(*arglist));
+	cur = token;
+	word_cnt = 0;
+	while (cur != NULL)
+	{
+		t_token *tok = cur->content;
+		arglist[word_cnt] = ft_strdup(tok->str->text);
+		word_cnt++;
+		cur = cur->next;
+	}
 	return (arglist);
 }
 
@@ -40,7 +53,6 @@ void	expand_dollar_sign(t_string *str, t_iterator *iter, t_shell_config *config)
 	char	*env_key;
 	char	*env_value;
 
-	/** $? 처리.  */
 	if (iter->f_peek(iter) == '?')
 	{
 		str->f_append(str, ft_itoa(WEXITSTATUS(config->last_cmd_wstatus)));

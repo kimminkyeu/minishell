@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 01:05:38 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 15:57:18 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,8 @@ int		expand_tokens(t_list *tokens, t_shell_config *config);
 
 /* Token to arglist function */
 char	*get_full_path(char *name, char **envp);
+
+/* in token_expand.c */
 char	**get_cmd_argv(t_list *token);
 
 int 	open_redirection(int *pipe_fd, t_list *redir_list /*, t_shell_config *shell*/);

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 21:38:25 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 16:33:55 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,20 +43,6 @@ t_list	*collect_redirection_node(t_list *tokens)
 	return (redir_list);
 }
 
-void	set_node_flag(t_tree *parent, t_token *target_token_ptr, int *flag)
-{
-	if (flag[NEED_FORK] == 1 && target_token_ptr->type == E_TYPE_SIMPLE_CMD)
-	{
-		parent->is_pipeline = 1;
-		if (flag[IS_LAST_PIPE_CMD] == 1)
-			parent->is_last_pipe_cmd = 1;
-	}
-	else if (flag[NEED_FORK] == 0 && target_token_ptr->type == E_TYPE_SIMPLE_CMD)
-	{
-		parent->is_last_pipe_cmd = 1;
-	}
-}
-
 /** Parse to tree function's divided for NORMINETTE */
 void	cut_node_and_do_recur(t_tree *parent, t_list *tokens, t_list *target_token, int *flag)
 {
@@ -86,6 +72,35 @@ void	cut_node_and_do_recur(t_tree *parent, t_list *tokens, t_list *target_token,
 	parent->right = parse_to_tree_recur(right_tokens, flag);
 }
 
+/** NOTE : Error log.
+ * if command is [ <infile ], then <infile should be last_pipe_cmd. 
+ * */
+void	set_node_flag(t_tree *parent, t_token *target_token_ptr, int *flag)
+{
+	if (flag[NEED_FORK] == 1 && target_token_ptr == NULL)
+	{
+		parent->is_pipeline = 1;
+		if (flag[IS_LAST_PIPE_CMD] == 1)
+			parent->is_last_pipe_cmd = 1;
+	}
+	else if (flag[NEED_FORK] == 0 && target_token_ptr == NULL)
+	{
+		parent->is_last_pipe_cmd = 1;
+	}
+	else if (flag[NEED_FORK] == 1 && target_token_ptr->type == E_TYPE_SIMPLE_CMD)
+	{
+		parent->is_pipeline = 1;
+		if (flag[IS_LAST_PIPE_CMD] == 1)
+			parent->is_last_pipe_cmd = 1;
+	}
+	else if (flag[NEED_FORK] == 0 && target_token_ptr->type == E_TYPE_SIMPLE_CMD)
+	{
+		parent->is_last_pipe_cmd = 1;
+	}
+	else
+		return ;
+}
+
 t_tree *parse_to_tree_recur(t_list *tokens, int *flag)
 {
 	t_tree	*parent;
@@ -97,6 +112,7 @@ t_tree *parse_to_tree_recur(t_list *tokens, int *flag)
 	parent = new_tree_node();
 	target_token = find_top_priority_token(tokens);
 	parent->token = target_token;
+	target_token_ptr = NULL;
 	if (target_token != NULL)
 		target_token_ptr = target_token->content;
 	set_node_flag(parent, target_token_ptr, flag);

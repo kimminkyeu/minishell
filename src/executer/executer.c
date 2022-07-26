@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 02:06:43 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 16:40:07 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,8 @@ void	run_child_process(char **cmd_argv, t_shell_config *config)
 {
 	char	*full_path;
 
+	if (cmd_argv == NULL)
+		exit(SUCCESS);
 	if (is_builtin_func(cmd_argv[0]) == true)
 	{
 		int status = exec_builtin(cmd_argv, config->envp);
@@ -160,8 +162,6 @@ void	run_child_process(char **cmd_argv, t_shell_config *config)
 
 int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 {
-	printf("\033[90mcalling exec_general() : %s\033[0m\n\n", cmd_argv[0]);
-
 	pid_t	pid;
 	int		pipe_fd[2];
 
@@ -196,6 +196,13 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 	 *
 	 * @ FIXME [ ls -al | grep minishell ] 을 여러번 치면 readline에 그 내용이 들어갈까?
 	 * 수정완료 --> wait(NULL) 로 모든 자식프로세스를 기다리게 하니 해결됬다. 
+	 *
+	 * @ FIXME [ <in ] 만 들어왔을 때 redirection이 실행 되어야 한다.
+	 * 수정완료 --> command가 없어도, set_redirection 함수를 호출하도록 로직 변경.
+	 *
+	 * @ FIXME [ ls -al | <out2 grep "my name" >out4 ] 하면 grep에 my만 들어옴. 
+	 *         name이 안들어오고 터짐. 고칠것. 
+	 *         정상 bash 결과 : grep 이 "my name"을 찾아야 함.
 	 *
 	 * ------------------------------------------------------------------------------*/
 
@@ -257,10 +264,15 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	if (*status != CMD_SUCCEESS || node == NULL)
 		return ;
 
-	t_token *tok = node->token->content;
+	t_token *tok;
+
+	tok = NULL;
+	if (node->token != NULL)
+		tok = node->token->content;
+
 
 	/** (1) if | or && or || or ( ), do not expand tokens. */
-	if (tok->type != E_TYPE_SIMPLE_CMD)
+	if (tok != NULL && tok->type != E_TYPE_SIMPLE_CMD)
 	{
 		/* handle_operation(t_shell_config *config)  */
 		/** (1-1) if [() : subshell] */
@@ -269,20 +281,29 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 		/** (1-4) if [|| : waitpid] */
 		return ;
 	}
-
-	if (expand_tokens(node->token, config) == ERROR \
+	else if (expand_tokens(node->token, config) == ERROR \
 			|| expand_tokens(node->redirection, config) == ERROR)
 		return ;
 
+
 	char	**cmd_argv = get_cmd_argv(node->token);
 
-	if (node->is_pipeline == false && is_builtin_func(cmd_argv[0]))
+
+	/** --------------------------------------- */
+	print_strs(cmd_argv);
+
+
+
+	/** --------------------------------------- */
+
+	if (cmd_argv != NULL && node->is_pipeline == false && is_builtin_func(cmd_argv[0]))
 		*status = exec_exceptions(node, cmd_argv, config);
 	else
 		*status = exec_general(node, cmd_argv, config); //  무조건 fork를 하는 애들.
 
 	
-	delete_strs(&cmd_argv);
+	if (cmd_argv != NULL)
+		delete_strs(&cmd_argv);
 
 	/** NOTE : if success, then set status to ... CMD_SUCCESS
 	 *         else, set status to ...            CMD_FAILURE

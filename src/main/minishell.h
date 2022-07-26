@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 23:56:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 00:51:55 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 20:01:42 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ typedef struct s_shell_config {
 	int		last_cmd_wstatus;
 } t_shell_config;
 
+void	load_shell_config(t_shell_config *shell_config, char **env);
 int		run_shell(char *line, t_shell_config *config);
 void	shell_loop(t_shell_config *config);
 void	show_shell_logo(void);

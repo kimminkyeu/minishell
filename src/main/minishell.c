@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 19:09:00 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 20:11:35 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,16 @@ void	shell_loop(t_shell_config *config)
 	/** system("leaks minishell > leaks_result_temp; cat leaks_result_temp | grep leaked && rm -rf leaks_result_temp"); */
 }
 
+void	load_shell_config(t_shell_config *shell_config, char **env)
+{
+	shell_config->envp = ft_calloc(1, sizeof(size_t));
+	*shell_config->envp = new_environ(env); // load envp
+	shell_config->stdin_backup = dup(STDIN_FILENO); // save STDIN
+	shell_config->stdout_backup = dup(STDOUT_FILENO); // save STDOUT
+	shell_config->last_cmd_pid = 0;
+	shell_config->last_cmd_wstatus = 0;
+}
+
 int main(int ac, char **av, char **env)
 {	
 	t_shell_config	shell_config;
@@ -83,22 +93,20 @@ int main(int ac, char **av, char **env)
 	(void)av;
 
 	/* (1) Load config files, Environ, set data etc... */
-	shell_config.envp = ft_calloc(1, sizeof(size_t));
-	*shell_config.envp = new_environ(env); // load envp
-	shell_config.stdin_backup = dup(STDIN_FILENO); // save STDIN
-	shell_config.stdout_backup = dup(STDOUT_FILENO); // save STDOUT
-	shell_config.last_cmd_pid = 0;
-	shell_config.last_cmd_wstatus = 0;
-	/** shell_config.pipe_fd[READ] = STDIN_FILENO; */
-	/** shell_config.pipe_fd[WRITE] = STDOUT_FILENO; */
-	/* 리눅스에선 이거 세팅 안해도 되는 데?  */
+	load_shell_config(&shell_config, env);
+
+	/* (2) Set signal for Ctrl+C | Ctrl+\ */
 	set_signal();
+
 	/* (+) Show Lee-Shell Logo */
 	show_shell_logo();
-	/* (2) Run command loop */
+
+	/* (3) Run command loop */
 	shell_loop(&shell_config);
-	/* (3) Perform any shutdown/cleanup  */
+
+	/* (4) Perform any shutdown/cleanup  */
 	delete_environ(shell_config.envp);
 	free(shell_config.envp);
+
 	return (EXIT_SUCCESS);
 }

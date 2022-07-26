@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 19:08:09 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 20:17:01 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -203,16 +203,60 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 	return (SUCCESS);
 }
 
-/** NOTE: subshell 코드는 exec_general의 코드와 동일함.
- * 함수 포인터를 마지막 인자로 받게 해서 두 함수를 하나로 줄일 수 있을 듯. 
+
+/** exec_subshell은 무조건 fork로 실행. --> 기본 구조는 exec_general 과 코드가 동일.
  * */
 int	exec_subshell(t_tree *node, t_string *str, t_shell_config *config)
 {
-	/** printf("Running Subshell : [%s]\n", str->text); */
-	(void)str;
-	(void)node;
-	(void)config;
-	// ...
+	t_shell_config	new_config;
+	pid_t			pid;
+	int				pipe_fd[2];
+	int				tmp_fd;
+	char			*line; // 입력 라인.
+
+	/** (1) set_up new_config */
+	load_shell_config(&new_config, *(config->envp));
+	/** (2) delete bracket ( ) */
+	line = ft_substr(str->text, 1, ft_strlen(str->text) - 2);
+	/** (3) fork and run Subshell */
+	if (pipe(pipe_fd) == PIPE_ERROR)
+	{
+		perror("pipe()");
+		return (ERROR);
+	}
+	pid = fork();
+	if (pid == FORK_ERROR)
+	{
+		perror("fork()");
+		return (ERROR);
+	}	
+	if (pid == CHILD) /* child */
+	{
+		if (node->is_last_pipe_cmd)
+			dup2(config->stdout_backup, pipe_fd[WRITE]);
+		tmp_fd = pipe_fd[READ];
+		open_redirection(pipe_fd, node->redirection);
+		if (tmp_fd != pipe_fd[READ])
+			dup2(pipe_fd[READ], STDIN_FILENO);
+		dup2(pipe_fd[WRITE], STDOUT_FILENO);
+		close(pipe_fd[WRITE]);
+		close(pipe_fd[READ]);
+		/** SubShell 의 실행결과를 exit으로 전달.  */
+		exit(run_shell(line, &new_config));
+	}
+	else /* parent */
+	{
+		if (node->is_last_pipe_cmd)
+		{
+			config->last_cmd_pid = pid;
+			dup2(config->stdin_backup, STDIN_FILENO);
+			dup2(config->stdout_backup, STDOUT_FILENO);
+		}
+		if (!node->is_last_pipe_cmd)
+			dup2(pipe_fd[READ], STDIN_FILENO);
+		close(pipe_fd[WRITE]);
+		close(pipe_fd[READ]);
+	}
 	return (SUCCESS);
 }
 
@@ -323,5 +367,5 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 	/** 모든 노드 삭제 */
 	inorder_recur(syntax_tree, &status, delete_tree_node, config);
 
-	return (status);
+	return (WEXITSTATUS(config->last_cmd_wstatus));
 }

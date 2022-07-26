@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 16:33:55 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 19:44:18 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,11 @@ void	cut_node_and_do_recur(t_tree *parent, t_list *tokens, t_list *target_token,
 }
 
 /** NOTE : Error log.
- * if command is [ <infile ], then <infile should be last_pipe_cmd. 
+ *  if command is [ <infile ], then <infile should be 
+ *  the last pipe cmd of a cmd-cycle. 
+ *
+ *  [ target_token_ptr == NULL ] means node has only redirection. (no command)
+ *  ex. [ <in ] or [ <in | cat ]
  * */
 void	set_node_flag(t_tree *parent, t_token *target_token_ptr, int *flag)
 {
@@ -87,13 +91,15 @@ void	set_node_flag(t_tree *parent, t_token *target_token_ptr, int *flag)
 	{
 		parent->is_last_pipe_cmd = 1;
 	}
-	else if (flag[NEED_FORK] == 1 && target_token_ptr->type == E_TYPE_SIMPLE_CMD)
+	else if (flag[NEED_FORK] == 1 && \
+			(target_token_ptr->type == E_TYPE_SIMPLE_CMD || target_token_ptr->type == E_TYPE_BRACKET))
 	{
 		parent->is_pipeline = 1;
 		if (flag[IS_LAST_PIPE_CMD] == 1)
 			parent->is_last_pipe_cmd = 1;
 	}
-	else if (flag[NEED_FORK] == 0 && target_token_ptr->type == E_TYPE_SIMPLE_CMD)
+	else if (flag[NEED_FORK] == 0 && \
+			(target_token_ptr->type == E_TYPE_SIMPLE_CMD || target_token_ptr->type == E_TYPE_BRACKET))
 	{
 		parent->is_last_pipe_cmd = 1;
 	}

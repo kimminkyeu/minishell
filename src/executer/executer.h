@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 15:57:18 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 17:07:56 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@
 # include "../../include/builtin.h"
 
 /* only for cmd_execution */
-# define CMD_SUCCEESS		(0)
-# define CMD_FAILURE		(1)
+# define CMD_KEEP_RUNNING	(0)
+# define CMD_STOP_RUNNING	(1)
 
 /* only for stopping minishell loop */
 # define CMD_STOP_SHELL		(-1)

@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 16:40:07 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 17:47:04 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 	int		pipe_fd[2];
 	int		status;
 
-	printf("\033[90mcalling exec_exceptions() : %s\033[0m\n\n", cmd_argv[0]);
+	/** printf("\033[90mcalling exec_exceptions() : %s\033[0m\n\n", cmd_argv[0]); */
 
 	status = open_redirection(pipe_fd, node->redirection);
 
@@ -203,6 +203,8 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 	 * @ FIXME [ ls -al | <out2 grep "my name" >out4 ] 하면 grep에 my만 들어옴. 
 	 *         name이 안들어오고 터짐. 고칠것. 
 	 *         정상 bash 결과 : grep 이 "my name"을 찾아야 함.
+	 * 수정완료 --> expand_token.c 의 get_arglist()함수 로직이 문제였음. ft_split 사용안하니 해결.
+	 *
 	 *
 	 * ------------------------------------------------------------------------------*/
 
@@ -259,9 +261,21 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 	return (SUCCESS);
 }
 
+/** NOTE: subshell 코드는 exec_general의 코드와 동일함.
+ * 함수 포인터를 마지막 인자로 받게 해서 두 함수를 하나로 줄일 수 있을 듯. 
+ * */
+int	exec_subshell(t_tree *node, t_string *str, t_shell_config *config)
+{
+	printf("Running Subshell : [%s]\n", str->text);
+	(void)node;
+	(void)config;
+	// ...
+	return (SUCCESS);
+}
+
 void	execute_node(t_tree *node, int *status, t_shell_config *config)
 {
-	if (*status != CMD_SUCCEESS || node == NULL)
+	if (*status != CMD_KEEP_RUNNING || node == NULL)
 		return ;
 
 	t_token *tok;
@@ -274,11 +288,27 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	/** (1) if | or && or || or ( ), do not expand tokens. */
 	if (tok != NULL && tok->type != E_TYPE_SIMPLE_CMD)
 	{
-		/* handle_operation(t_shell_config *config)  */
 		/** (1-1) if [() : subshell] */
-		/** (1-2) if [| : pipe, do nothing] */
+		if (tok->type == E_TYPE_BRACKET)
+		{
+			*status = exec_subshell(node, tok->str, config);
+		}
 		/** (1-3) if [&& : waitpid] */
+		else if (tok->type == E_TYPE_DOUBLE_AMPERSAND)
+		{
+			waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
+			wait(NULL);
+			if (WEXITSTATUS(config->last_cmd_wstatus) != SUCCESS)
+				*status = CMD_STOP_RUNNING; // NOTE : stop running other process.
+		}
 		/** (1-4) if [|| : waitpid] */
+		else if (tok->type == E_TYPE_DOUBLE_PIPE)
+		{
+			waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
+			wait(NULL);
+			if (WEXITSTATUS(config->last_cmd_wstatus) == SUCCESS)
+				*status = CMD_STOP_RUNNING; // NOTE : stop running other process.
+		}
 		return ;
 	}
 	else if (expand_tokens(node->token, config) == ERROR \
@@ -289,12 +319,6 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	char	**cmd_argv = get_cmd_argv(node->token);
 
 
-	/** --------------------------------------- */
-	print_strs(cmd_argv);
-
-
-
-	/** --------------------------------------- */
 
 	if (cmd_argv != NULL && node->is_pipeline == false && is_builtin_func(cmd_argv[0]))
 		*status = exec_exceptions(node, cmd_argv, config);
@@ -324,7 +348,7 @@ void	inorder_recur(t_tree *node, int *status, t_callback_func callback, t_shell_
 		return ;
 
 	/** (1) if status == CMD_STOP_SHELL (ex. calling exit) then stop all */
-	if (callback != delete_tree_node && *status == CMD_SUCCEESS)
+	if (callback != delete_tree_node && *status == CMD_KEEP_RUNNING)
 	{
 		inorder_recur(node->left, status, callback, shell_config);
 		callback(node, status, shell_config);
@@ -343,13 +367,13 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 {
 	int	status;
 
-	status = CMD_SUCCEESS;
+	status = CMD_KEEP_RUNNING;
 
-	printf("\n");
-	printf("------------------------------------------\n");
-	printf("|     Execution (inorder recursive)      |\n");
-	printf("------------------------------------------\n\n");
-
+	/** printf("\n"); */
+	/** printf("------------------------------------------\n"); */
+	/** printf("|     Execution (inorder recursive)      |\n"); */
+	/** printf("------------------------------------------\n\n"); */
+    /**  */
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
 	
@@ -363,10 +387,10 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 
 
 
-	printf("\n");
-	printf("\033[90mexecute() : waiting pid %d\033[0m\n", config->last_cmd_pid);
-	printf("\033[90mexecute() : child's exit code = %d\033[0m\n", WEXITSTATUS(config->last_cmd_wstatus));
-	printf("\n\n");
+	/** printf("\n"); */
+	/** printf("\033[90mexecute() : waiting pid %d\033[0m\n", config->last_cmd_pid); */
+	/** printf("\033[90mexecute() : child's exit code = %d\033[0m\n", WEXITSTATUS(config->last_cmd_wstatus)); */
+	/** printf("\n\n"); */
 
 	/** 모든 노드 삭제 */
 	inorder_recur(syntax_tree, &status, delete_tree_node, config);

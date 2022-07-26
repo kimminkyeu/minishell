@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 00:51:36 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 17:49:53 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,17 +30,13 @@ int	run_shell(char *line, t_shell_config *config)
 
 	tokens = tokenize(line);
 	if (tokens == NULL)
-	{
-		free(line);
-		return (CMD_FAILURE);
-	}
+		return (CMD_KEEP_RUNNING);
 	print_tokens(tokens); // TODO : delete later
 	syntax_tree = parse(tokens);
 	if (syntax_tree == NULL)
 	{
-		free(line);
 		free(tokens);
-		return (CMD_FAILURE);
+		return (CMD_KEEP_RUNNING);
 	}
 	print_tree(syntax_tree); // TODO : delete later
 	return (execute(syntax_tree, config));
@@ -51,7 +47,7 @@ void	shell_loop(t_shell_config *config)
 	int		status;
 	char	*line;
 
-	status = CMD_SUCCEESS;
+	status = CMD_KEEP_RUNNING;
 	while (status != CMD_STOP_SHELL)
 	{
 		line = readline_prompt(config);
@@ -62,12 +58,12 @@ void	shell_loop(t_shell_config *config)
 		}
 		else if (line != NULL && *line != '\0')
 			add_history(line);
-		else
-		{
-			free(line);
-			line = NULL;
-			continue ;
-		}
+		/** else
+		  * {
+		  *     free(line);
+		  *     line = NULL;
+		  *     continue ;
+		  * } */
 		status = run_shell(line, config);
 		free(line);
 		line = NULL;
@@ -81,6 +77,7 @@ int main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
+
 	/* (1) Load config files, Environ, set data etc... */
 	shell_config.envp = ft_calloc(1, sizeof(size_t));
 	*shell_config.envp = new_environ(env); // load envp

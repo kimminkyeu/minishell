@@ -3,15 +3,15 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
+#    By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/25 22:07:42 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/26 22:45:49 by han-yeseul       ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			= minishell
-CC				= cc
+CC				= cc -g
 CFLAGS			= -Wall -Wextra -Werror
 INCLUDE			= include
 
@@ -31,7 +31,7 @@ ITERATOR_DIR	= $(SRC_DIR)/iterator/
 
 # NOTE : Add Source files here
 # ------------------------------------------------------ #
-MAIN_SRC		= minishell prompt helper
+MAIN_SRC		= minishell prompt helper heredoc
 
 LEXER_SRC		= token_create token_modify \
 				  scanner_main scanner_create scanner_function_ptr \
@@ -93,7 +93,7 @@ WHITE = \033[0;97m
 $(NAME): $(OBJ)
 	@make bonus -C $(LIBFT_DIR)
 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT_DIR)libft.a -lreadline
-	
+
 %.o: %.c
 	@${CC} ${CFLAGS} -c $< -o $@
 	@echo "$(RED)Compiling... \t$< $(DEF_COLOR)"

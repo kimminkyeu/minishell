@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 20:11:35 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 22:50:15 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,12 +62,6 @@ void	shell_loop(t_shell_config *config)
 		}
 		else if (line != NULL && *line != '\0')
 			add_history(line);
-		/** else
-		  * {
-		  *     free(line);
-		  *     line = NULL;
-		  *     continue ;
-		  * } */
 		status = run_shell(line, config);
 		free(line);
 		line = NULL;

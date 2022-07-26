@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 22:20:22 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/24 20:54:12 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 22:49:22 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/22 16:08:57 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -117,7 +117,6 @@ void	print_tree_recur(t_tree *root, int space)
 		return ;
 	space += COUNT;
 	print_tree_recur(root->right, space);
-
 	print_whitespace(COUNT, space);
 	if (root->token != NULL)
 		printf("type : %s\n", get_token_type(((t_token *)root->token->content)->type));
@@ -125,17 +124,11 @@ void	print_tree_recur(t_tree *root, int space)
 		printf("type : E_TYPE_DEFAULT\n");
 	print_each_attr(root->token, space, "token: ");
 	print_each_attr(root->redirection, space, "redir: ");
-
 	print_whitespace(COUNT, space);
-	printf("fork : %d\n", root->is_pipeline);
+	printf("is_pipe : %d\n", root->is_pipeline);
 	print_whitespace(COUNT, space);
 	printf("last_pipe_cmd : %d\n", root->is_last_pipe_cmd);
-
-
-
-
 	printf("\n\n");
-
 	print_tree_recur(root->left, space);
 }
 

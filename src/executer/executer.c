@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 20:17:01 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 22:47:10 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,17 +103,24 @@ int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 	int		pipe_fd[2];
 	int		status;
 
-	/** printf("\033[90mcalling exec_exceptions() : %s\033[0m\n\n", cmd_argv[0]); */
+	pipe_fd[READ] = config->stdin_backup;
+	pipe_fd[WRITE] = config->stdout_backup;
 	status = open_redirection(pipe_fd, node->redirection);
-	dup2(pipe_fd[READ], STDIN_FILENO);
-	close(pipe_fd[READ]);
-	dup2(pipe_fd[WRITE], STDOUT_FILENO);
-	close(pipe_fd[WRITE]);
-	if (status != 0)
-		return (status);
+	if (pipe_fd[READ] != config->stdin_backup)
+	{
+		dup2(pipe_fd[READ], STDIN_FILENO);
+		close(pipe_fd[READ]);
+	}
+	if (pipe_fd[WRITE] != config->stdout_backup)
+	{
+		dup2(pipe_fd[WRITE], STDOUT_FILENO);
+		close(pipe_fd[WRITE]);
+	}
 	status = exec_builtin(cmd_argv, config->envp);
-	dup2(config->stdin_backup, STDIN_FILENO);
-	dup2(config->stdout_backup, STDOUT_FILENO);
+	if (pipe_fd[READ] != config->stdin_backup)
+		dup2(config->stdin_backup, STDIN_FILENO);
+	if (pipe_fd[WRITE] != config->stdout_backup)
+		dup2(config->stdout_backup, STDOUT_FILENO);
 	return (status);
 }
 
@@ -126,8 +133,7 @@ void	run_child_process(char **cmd_argv, t_shell_config *config)
 		exit(SUCCESS);
 	if (is_builtin_func(cmd_argv[0]) == true)
 	{
-		int status = exec_builtin(cmd_argv, config->envp);
-		exit(status);
+		exit(exec_builtin(cmd_argv, config->envp));
 	}
 	if (cmd_argv[0] != NULL && ft_strchr(cmd_argv[0], '/') == NULL)
 		full_path = get_full_path(cmd_argv[0], *config->envp);
@@ -216,8 +222,10 @@ int	exec_subshell(t_tree *node, t_string *str, t_shell_config *config)
 
 	/** (1) set_up new_config */
 	load_shell_config(&new_config, *(config->envp));
+
 	/** (2) delete bracket ( ) */
 	line = ft_substr(str->text, 1, ft_strlen(str->text) - 2);
+
 	/** (3) fork and run Subshell */
 	if (pipe(pipe_fd) == PIPE_ERROR)
 	{
@@ -257,6 +265,8 @@ int	exec_subshell(t_tree *node, t_string *str, t_shell_config *config)
 		close(pipe_fd[WRITE]);
 		close(pipe_fd[READ]);
 	}
+	/** FIXME : 여기서 free해주면 자식에게 영향이 가지 않을까? --> 문제 가능성 (1) */
+	free(line);
 	return (SUCCESS);
 }
 
@@ -344,11 +354,6 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 
 	status = CMD_KEEP_RUNNING;
 
-	/** printf("\n"); */
-	/** printf("------------------------------------------\n"); */
-	/** printf("|     Execution (inorder recursive)      |\n"); */
-	/** printf("------------------------------------------\n\n"); */
-    /**  */
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
 	
@@ -358,11 +363,6 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 	 * 이게 꼬여서 결국 실행되지 않는 거였어...*/
 	waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
 	wait(NULL);
-
-	/** printf("\n"); */
-	/** printf("\033[90mexecute() : waiting pid %d\033[0m\n", config->last_cmd_pid); */
-	/** printf("\033[90mexecute() : child's exit code = %d\033[0m\n", WEXITSTATUS(config->last_cmd_wstatus)); */
-	/** printf("\n\n"); */
 
 	/** 모든 노드 삭제 */
 	inorder_recur(syntax_tree, &status, delete_tree_node, config);

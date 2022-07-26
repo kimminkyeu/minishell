@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 16:31:18 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/26 17:35:40 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ static void	expand_quote(t_string *str, t_iterator *iter, char quote_type)
 	}
 }
 
-static void	expand_token(t_token *tok)
+void	expand_token(t_token *tok)
 {
 	t_iterator	iter;
 	t_string	*expanded_str;
@@ -61,12 +61,72 @@ static void	expand_token(t_token *tok)
 	tok->str = expanded_str;
 }
 
+/*********************************************/
+
+static bool	is_limiter(const char *line, const char *limiter)
+{
+	if (ft_strlen(line)/* - 1*/ == ft_strlen(limiter)//newline을 제거하고 들어오네?
+		&& !ft_strncmp(line, limiter, ft_strlen(limiter)))
+		return (true);
+	else
+		return (false);
+}
+
+static char	*readline_prompt_heredoc(void)
+{
+	t_string	*prompt;
+	static char	*line;
+
+	prompt = new_string(64);
+	prompt->f_append(prompt, "\033[31m");
+	prompt->f_append(prompt, "heredoc");
+	prompt->f_append(prompt, "\033[0m");
+	prompt->f_append(prompt, "$ ");
+	line = readline(prompt->text);
+	delete_string(&prompt);
+	return (line);
+}
+
+#include <fcntl.h>
+void	open_temp_file(t_token *tok, int num)
+{
+	char	*filename;
+	int		fd;
+	char	*line;
+	char	*limiter;
+	char	*temp;
+
+	temp = ft_itoa(num);
+	filename = ft_strjoin("heredoc_tempfile_", temp);
+	free(temp);
+	fd = open(filename, O_WRONLY | O_CREAT, 0644);
+	limiter = tok->str->text;
+	while (1)
+	{
+		line = readline_prompt_heredoc();
+		if (is_limiter(line, limiter) == true)
+			break ;
+		else
+		{
+			write(fd, line, ft_strlen(line));
+			free(line);
+		}
+	}
+	free(line);
+	free(tok->str->text);
+	tok->str->text = filename;
+	close(fd);
+}
+
+/*************************************************/
+
 void	set_heredoc(t_list *tokens)
 {
 	t_list	*cur;
 	t_token	*tok;
-	int		status;
+	int		num;
 
+	num = 1;
 	cur = tokens;
 	while (cur)
 	{
@@ -74,10 +134,14 @@ void	set_heredoc(t_list *tokens)
 		if (tok->type == E_TYPE_REDIR_ARG)
 		{
 			expand_token(tok);
+			open_temp_file(tok, num);
+			num++;
 		}
 		cur = cur->next;
 	}
 }
+
+/***************************************/
 
 int	run_shell(char *line, t_shell_config *config)
 {

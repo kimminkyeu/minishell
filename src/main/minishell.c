@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 00:51:36 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 16:31:18 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,22 +19,83 @@
 #include "minishell.h"
 
 #include "../../include/execute.h"
-/** (2) helper functions for Visualization. 
+#include "../lexer/token.h"
+/** (2) helper functions for Visualization.
  * TODO : Delete helper files later! */
 #include "helper.h"
+
+static void	expand_quote(t_string *str, t_iterator *iter, char quote_type)
+{
+	char	c;
+
+	while (iter->f_has_next(iter))
+	{
+		c = iter->f_next(iter);
+		if (c == quote_type)
+			return ;
+		else
+			str->f_push_back(str, c);
+	}
+}
+
+static void	expand_token(t_token *tok)
+{
+	t_iterator	iter;
+	t_string	*expanded_str;
+	char		c;
+
+	init_iterator(&iter, tok->str->text);
+	expanded_str = new_string(tok->str->capacity);
+	while (iter.f_has_next(&iter))
+	{
+		c = iter.f_next(&iter);
+		if (c == '\'' || c == '\"')
+		{
+			expand_quote(expanded_str, &iter, c);
+			tok->type = E_TYPE_REDIR_ARG_QUOTED;
+		}
+		else
+			expanded_str->f_push_back(expanded_str, c);
+	}
+	delete_string(&tok->str);
+	tok->str = expanded_str;
+}
+
+void	set_heredoc(t_list *tokens)
+{
+	t_list	*cur;
+	t_token	*tok;
+	int		status;
+
+	cur = tokens;
+	while (cur)
+	{
+		tok = cur->content;
+		if (tok->type == E_TYPE_REDIR_ARG)
+		{
+			expand_token(tok);
+		}
+		cur = cur->next;
+	}
+}
 
 int	run_shell(char *line, t_shell_config *config)
 {
 	t_list	*tokens;
 	t_tree	*syntax_tree;
 
-	tokens = tokenize(line);
+	tokens = tokenize(line);//syntax error check done
 	if (tokens == NULL)
 	{
 		free(line);
 		return (CMD_FAILURE);
 	}
 	print_tokens(tokens); // TODO : delete later
+
+	set_heredoc(tokens);//quote removal + open temp file
+
+	print_tokens(tokens); // TODO : delete later
+
 	syntax_tree = parse(tokens);
 	if (syntax_tree == NULL)
 	{
@@ -43,6 +104,7 @@ int	run_shell(char *line, t_shell_config *config)
 		return (CMD_FAILURE);
 	}
 	print_tree(syntax_tree); // TODO : delete later
+
 	return (execute(syntax_tree, config));
 }
 
@@ -76,7 +138,7 @@ void	shell_loop(t_shell_config *config)
 }
 
 int main(int ac, char **av, char **env)
-{	
+{
 	t_shell_config	shell_config;
 
 	(void)ac;

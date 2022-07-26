@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 21:40:33 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/26 14:31:52 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,7 @@ typedef enum e_token_type {
 	E_TYPE_REDIR_APPEND,
 	E_TYPE_REDIR_HEREDOC,
 	E_TYPE_REDIR_ARG,
+	E_TYPE_REDIR_ARG_QUOTED,
 
 	E_TYPE_WHITESPACE,
 	E_TYPE_DEFAULT,

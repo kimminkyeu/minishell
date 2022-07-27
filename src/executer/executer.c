@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 10:44:26 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/26 02:06:43 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,42 +166,42 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 	int		pipe_fd[2];
 
 
-	// /** 파이프 열기. */
-	// if (pipe(pipe_fd) == PIPE_ERROR)
-	// {
-	// 	perror("pipe()");
-	// 	return (ERROR);
-	// }
+	/** 파이프 열기. */
+	if (pipe(pipe_fd) == PIPE_ERROR)
+	{
+		perror("pipe()");
+		return (ERROR);
+	}
 
 
-	// /** 파이프 열고 포크를 뜨면, 두 프로세스가 같은 파이프를 같게 된다.  */
-	// pid = fork();
-	// if (pid == FORK_ERROR)
-	// {
-	// 	perror("fork()");
-	// 	return (ERROR);
-	// }
+	/** 파이프 열고 포크를 뜨면, 두 프로세스가 같은 파이프를 같게 된다.  */
+	pid = fork();
+	if (pid == FORK_ERROR)
+	{
+		perror("fork()");
+		return (ERROR);
+	}
 
 
-	/**
+	/** 
 	 * -------------------------------------------------------------------------------
 	 * | FIXME BOARD                                                                 |
 	 * -------------------------------------------------------------------------------
 	 *
 	 * @ FIXME [ <in cat ] cat으로 <in이 전달이 안됨.
-	 * 수정완료 --> | 자식프로세스에서 dup2()로 덮어쓰니 된다.
+	 * 수정완료 --> | 자식프로세스에서 dup2()로 덮어쓰니 된다. 
 	 *
-	 * @ FIXME [ <in ls >out | <in grep minishell ] : core dumpe 에러.
+	 * @ FIXME [ <in ls >out | <in grep minishell ] : core dumpe 에러.  
 	 * 수정완료 --> | 다음에 <가 등장해도 되므로 토큰상 에러처리 하면 안됨. (원래 했었음)
 	 *
 	 * @ FIXME [ ls -al | grep minishell ] 을 여러번 치면 readline에 그 내용이 들어갈까?
-	 * 수정완료 --> wait(NULL) 로 모든 자식프로세스를 기다리게 하니 해결됬다.
+	 * 수정완료 --> wait(NULL) 로 모든 자식프로세스를 기다리게 하니 해결됬다. 
 	 *
 	 * ------------------------------------------------------------------------------*/
 
-	// if (pid == CHILD) /* child */
-	// {
-
+	if (pid == CHILD) /* child */
+	{
+	
 		/** 마지막 커맨드라면, 파이프의 쓰기 기본값은 표준출력이여야 한다. */
 		if (node->is_last_pipe_cmd)
 			dup2(config->stdout_backup, pipe_fd[WRITE]);
@@ -209,7 +209,7 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 		int	tmp1 = pipe_fd[READ];
 
 
-		/** NOTE : 애먹은 부분이다.
+		/** NOTE : 애먹은 부분이다.  
 		 * 만약 open_redirection으로 pipe_fd[READ]가 바뀌었다면,
 		 * redirection_in이 있다는 이야기이므로 이때만 dup2로 stdin을 변조시킨다.
 		 * 만약 바뀌지 않았다면 dup2를 실행하면 안된다. */
@@ -229,26 +229,26 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 
 		/** 최종 설정된 stdin stdout을 그대로 실행한다. */
 		run_child_process(cmd_argv, config);
-	// }
-	// else /* parent */
-	// {
-	// 	if (node->is_last_pipe_cmd)
-	// 	{
-	// 		/* 마지막 커맨드의 부모에서 변조된 표준입출력을 복구한다. */
-	// 		config->last_cmd_pid = pid;
-	// 		dup2(config->stdin_backup, STDIN_FILENO);
-	// 		dup2(config->stdout_backup, STDOUT_FILENO);
-	// 		close(pipe_fd[WRITE]);
-	// 		close(pipe_fd[READ]);
-	// 	}
-	// 	if (!node->is_last_pipe_cmd)
-	// 	{
-	// 		/** 마지막 커맨드가 아니라면, 부모는 항상 다음 커맨드의 STDIN을 연결해준다.  */
-	// 		dup2(pipe_fd[READ], STDIN_FILENO);
-	// 		close(pipe_fd[WRITE]);
-	// 		close(pipe_fd[READ]);
-	// 	}
-	// }
+	}
+	else /* parent */
+	{
+		if (node->is_last_pipe_cmd)
+		{
+			/* 마지막 커맨드의 부모에서 변조된 표준입출력을 복구한다. */
+			config->last_cmd_pid = pid;
+			dup2(config->stdin_backup, STDIN_FILENO);
+			dup2(config->stdout_backup, STDOUT_FILENO);
+			close(pipe_fd[WRITE]);
+			close(pipe_fd[READ]);
+		}
+		if (!node->is_last_pipe_cmd)
+		{
+			/** 마지막 커맨드가 아니라면, 부모는 항상 다음 커맨드의 STDIN을 연결해준다.  */
+			dup2(pipe_fd[READ], STDIN_FILENO);
+			close(pipe_fd[WRITE]);
+			close(pipe_fd[READ]);
+		}
+	}
 	return (SUCCESS);
 }
 
@@ -281,7 +281,7 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	else
 		*status = exec_general(node, cmd_argv, config); //  무조건 fork를 하는 애들.
 
-
+	
 	delete_strs(&cmd_argv);
 
 	/** NOTE : if success, then set status to ... CMD_SUCCESS
@@ -331,10 +331,10 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
+	
 
-
-	/** 0726 NOTE :
-	 * 가장 중요한 문제.
+	/** 0726 NOTE : 
+	 * 가장 중요한 문제. 
 	 * wait을 모두 해주지 않아 자식 프로세스의 응답이 늦게 stdin으로 출력되고
 	 * 이게 꼬여서 결국 실행되지 않는 거였어...*/
 	waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);

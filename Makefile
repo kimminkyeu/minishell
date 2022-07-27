@@ -6,13 +6,13 @@
 #    By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/26 22:49:14 by han-yeseul       ###   ########.fr        #
+#    Updated: 2022/07/26 22:45:49 by han-yeseul       ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			= minishell
 CC				= cc -g
-CFLAGS			= -Wall -Wextra #-Werror
+CFLAGS			= -Wall -Wextra -Werror
 INCLUDE			= include
 
 # NOTE : Add Source directory here

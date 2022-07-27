@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_expand.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:44:57 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 14:55:41 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/25 01:13:08 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,25 +138,6 @@ int	expand_tokens(t_list *tokens, t_shell_config *config)
 	while (cur != NULL && status == SUCCESS)
 	{
 		tok = cur->content;
-		status = expand_token_each(tok, config);
-		cur = cur->next;
-	}
-	return (status);
-}
-
-int	expand_tokens_redirection(t_list *tokens, t_shell_config *config)
-{
-	t_list	*cur;
-	t_token *tok;
-	int		status;
-
-	cur = tokens;
-	status = SUCCESS;
-	while (cur != NULL && status == SUCCESS)
-	{
-		tok = cur->content;
-		if (tok->type == E_TYPE_REDIR_LESS || tok->type == E_TYPE_REDIR_GREATER
-			|| tok->type == E_TYPE_REDIR_APPEND)
 		status = expand_token_each(tok, config);
 		cur = cur->next;
 	}

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   prompt.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 21:55:15 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 10:17:57 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/25 22:06:08 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	sig_ctrl_c(int signal)
 
 	rl_on_new_line();
 	ft_putstr_fd("\n", STDOUT_FILENO);
-	// rl_replace_line("", 1);
+	rl_replace_line("", 1);
 	rl_redisplay();
 }
 

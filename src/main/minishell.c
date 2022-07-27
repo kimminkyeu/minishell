@@ -6,9 +6,11 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 22:50:15 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 14:00:30 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <stdio.h>
 
 /** Readline library */
 #include <readline/readline.h>

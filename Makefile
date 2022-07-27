@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/25 22:07:42 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/27 14:05:02 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,16 +15,18 @@ CC				= cc
 CFLAGS			= -Wall -Wextra -Werror
 INCLUDE			= include
 
+# GNU readline Flag for MAC
+READLINE_COMFILE_FLAGS		= -lreadline -L${HOME}/.brew/opt/readline/lib
+READLINE_OBJ_FLAGS			= -I${HOME}/.brew/opt/readline/include
+
 # NOTE : Add Source directory here
 # ------------------------------------------------------ #
 SRC_DIR			= src
-
 MAIN_DIR		= $(SRC_DIR)/main/
 LEXER_DIR		= $(SRC_DIR)/lexer/
 PARSER_DIR		= $(SRC_DIR)/parser/
 EXECUTER_DIR	= $(SRC_DIR)/executer/
 BUILTIN_DIR		= $(SRC_DIR)/builtin/
-
 LIBFT_DIR		= $(SRC_DIR)/libft/
 STRING_DIR		= $(SRC_DIR)/string/
 ITERATOR_DIR	= $(SRC_DIR)/iterator/
@@ -71,31 +73,18 @@ MAGENTA = \033[0;95m
 CYAN = \033[0;96m
 WHITE = \033[0;97m
 
-	# @echo "$(RED)===========================================================================$(DEF_COLOR)"
-	# @echo "$(RED)|                                                                         |$(DEF_COLOR)"
-	# @echo "$(RED)|   Welcome to 42 minishell project.                                      |$(DEF_COLOR)"
-	# @echo "$(RED)|                                                                         |$(DEF_COLOR)"
-	# @echo "$(RED)|                                                                         |$(DEF_COLOR)"
-	# @echo "$(RED)|   ██╗     ███████╗███████╗    ███████╗██╗  ██╗███████╗██╗     ██╗       |$(DEF_COLOR)"
-	# @echo "$(RED)|   ██║     ██╔════╝██╔════╝    ██╔════╝██║  ██║██╔════╝██║     ██║       |$(DEF_COLOR)"
-	# @echo "$(RED)|   ██║     █████╗  █████╗      ███████╗███████║█████╗  ██║     ██║       |$(DEF_COLOR)"
-	# @echo "$(RED)|   ██║     ██╔══╝  ██╔══╝      ╚════██║██╔══██║██╔══╝  ██║     ██║       |$(DEF_COLOR)"
-	# @echo "$(RED)|   ███████╗███████╗███████╗    ███████║██║  ██║███████╗███████╗███████╗  |$(DEF_COLOR)"
-	# @echo "$(RED)|   ╚══════╝╚══════╝╚══════╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝  |$(DEF_COLOR)"
-	# @echo "$(RED)|                                                                         |$(DEF_COLOR)"
-	# @echo "$(RED)|                                                                         |$(DEF_COLOR)"
-	# @echo "$(RED)|                                          .created by yehan & minkyeki   |$(DEF_COLOR)"
-	# @echo "$(RED)|                                                                         |$(DEF_COLOR)"
-	# @echo "$(RED)===========================================================================$(DEF_COLOR)"
-	# @echo "\n"
-
-
 $(NAME): $(OBJ)
 	@make bonus -C $(LIBFT_DIR)
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT_DIR)libft.a -lreadline
-	
+	$(CC) $(CFLAGS) $(READLINE_COMFILE_FLAGS) $(LIBFT_DIR)libft.a $(OBJ) -o $(NAME)
+	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
+	@echo "$(RED)|       Minishell compile finished.        |$(DEF_COLOR)"
+	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
+	@echo "$(RED)|                                          |$(DEF_COLOR)"
+	@echo "$(RED)|                        Have fun!         |$(DEF_COLOR)"
+	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
+
 %.o: %.c
-	@${CC} ${CFLAGS} -c $< -o $@
+	${CC} ${CFLAGS} $(READLINE_OBJ_FLAGS) -c $< -o $@
 	@echo "$(RED)Compiling... \t$< $(DEF_COLOR)"
 
 clean:

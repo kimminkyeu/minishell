@@ -6,13 +6,9 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 21:55:15 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 22:06:08 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 13:58:11 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-/** Readline library */
-#include <readline/readline.h>
-#include <readline/history.h>
 
 /** Standard library */
 #include <stdio.h>
@@ -20,6 +16,10 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <signal.h>
+
+/** Readline library */
+#include <readline/readline.h>
+#include <readline/history.h>
 
 #include "minishell.h"
 #include "helper.h"

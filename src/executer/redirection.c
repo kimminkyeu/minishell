@@ -6,18 +6,19 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 01:06:01 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 13:59:34 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-/** Readline library */
-#include <readline/readline.h>
-#include <readline/history.h>
-
+#include <stdio.h>
 #include <fcntl.h>//open
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>//strerror
+				   //
+/** Readline library */
+#include <readline/readline.h>
+#include <readline/history.h>
 
 #include "../main/minishell.h"
 #include "../lexer/token.h"

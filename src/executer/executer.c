@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 23:13:03 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 13:59:09 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -129,6 +129,7 @@ void	run_child_process(char **cmd_argv, t_shell_config *config)
 {
 	char	*full_path;
 
+	full_path = NULL;
 	if (cmd_argv == NULL)
 		exit(SUCCESS);
 	if (is_builtin_func(cmd_argv[0]) == true)

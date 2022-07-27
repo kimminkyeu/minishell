@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 18:59:12 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 18:59:20 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:24:01 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 t_token	*new_token(char *str_input)
 {
-	t_token *token;
+	t_token	*token;
 
 	token = ft_calloc(1, sizeof(*token));
 	token->type = E_TYPE_DEFAULT;

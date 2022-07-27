@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 14:00:30 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:25:24 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,14 @@ int	run_shell(char *line, t_shell_config *config)
 	tokens = tokenize(line);
 	if (tokens == NULL)
 		return (CMD_KEEP_RUNNING);
-	/** print_tokens(tokens); // TODO : delete later */
+	print_tokens(tokens); // TODO : delete later
 	syntax_tree = parse(tokens);
 	if (syntax_tree == NULL)
 	{
 		free(tokens);
 		return (CMD_KEEP_RUNNING);
 	}
-	/** print_tree(syntax_tree); // TODO : delete later */
+	print_tree(syntax_tree); // TODO : delete later
 	return (execute(syntax_tree, config));
 }
 

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:24:31 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/22 23:14:23 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:12:10 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,15 @@
 # include <errno.h>
 # include "../../include/libft.h"
 
-typedef struct s_iterator t_iterator;
+typedef struct s_iterator	t_iterator;
 
+/* line     : the input text */
+/* line_len : size of the input text */
+/* curpos   : iterator position is line */
 typedef struct s_iterator {
-	char	*line;		/* the input text */
-	long	line_len;	/* size of the input text */
-	long	curpos;		/* iterator position is line */
-
+	char	*line;
+	long	line_len;
+	long	curpos;
 	int		(*f_has_next)(t_iterator *iter);
 	char	(*f_next)(t_iterator *iter);
 	void	(*f_unget)(t_iterator *iter);

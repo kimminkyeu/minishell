@@ -6,13 +6,13 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:55:44 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 17:56:02 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:16:53 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "scanner.h"
 
-int		scanner_has_next(t_scanner *scan)
+int	scanner_has_next(t_scanner *scan)
 {
 	return (scan->iter.f_has_next(&(scan->iter)));
 }

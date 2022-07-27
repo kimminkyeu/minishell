@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:22:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 17:22:57 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 14:08:19 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static int	is_n_option(char *str)
 		while (str[i] == 'n')
 			i++;
 		if (str[i] == '\0')
-				return (true);
+			return (true);
 	}
 	return (false);
 }

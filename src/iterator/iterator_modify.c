@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:23:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 17:48:47 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:32:18 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 int	iter_has_next(t_iterator *iter)
 {
-	char next_char;
-	
+	char	next_char;
+
 	next_char = iter->f_peek(iter);
 	if (next_char != '\n' && next_char != '\0' && next_char != EOF)
 		return (1);
@@ -23,9 +23,9 @@ int	iter_has_next(t_iterator *iter)
 		return (0);
 }
 
-char iter_next(t_iterator *iter)
+char	iter_next(t_iterator *iter)
 {
-	char c1;
+	char	c1;
 
 	c1 = '\0';
 	if (!iter || !(iter->line))
@@ -44,14 +44,14 @@ char iter_next(t_iterator *iter)
 	return (c1);
 }
 
-void iter_unget(t_iterator *iter)
+void	iter_unget(t_iterator *iter)
 {
 	if (iter->curpos < 0)
-		return;
+		return ;
 	iter->curpos--;
 }
 
-char iter_peek(t_iterator *iter)
+char	iter_peek(t_iterator *iter)
 {
 	long	pos;
 
@@ -75,6 +75,10 @@ void	iter_skip_white_space(t_iterator *iter)
 
 	if (!iter || !iter->line)
 		return ;
-	while (((c = iter->f_peek(iter)) != EOF) && (ft_isspace(c)))
+	c = iter->f_peek(iter);
+	while ((c != EOF) && (ft_isspace(c)))
+	{
 		iter->f_next(iter);
+		c = iter->f_peek(iter);
+	}
 }

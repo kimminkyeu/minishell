@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:52:12 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 01:42:19 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:19:15 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,11 @@
 #include "../main/helper.h"
 #include "scanner.h"
 
+/** FIXME : if is_syntax_error doens't check properly, change here */
 bool	is_meta_token_type(t_token_type type)
 {
 	if (type != E_TYPE_PIPE && type != E_TYPE_DOUBLE_PIPE && \
-			/* type != E_TYPE_REDIRECT && */ type != E_TYPE_DOUBLE_AMPERSAND)
+			type != E_TYPE_DOUBLE_AMPERSAND)
 		return (false);
 	else
 		return (true);
@@ -66,7 +67,8 @@ bool	is_bracket_unclosed(t_token *tok_1)
 	if (c != ')' && c != '(')
 	{
 		tok_1->str->text[tok_1->str->text_len - 1] = '\0';
-		print_error("lesh: syntax error near unexpected token", tok_1->str->text + 1);
+		print_error("lesh: syntax error near unexpected token", \
+				tok_1->str->text + 1);
 		return (true);
 	}
 	tmp = &(tok_1->str->text[1]);
@@ -95,18 +97,20 @@ bool	is_last_token_meta(t_list *token_list)
 	tok_1 = cur->content;
 	if (tok_1->type == E_TYPE_REDIRECT)
 	{
-		ft_putstr_fd("lesh: syntax error near unexpected token `newline'\n", STDERR_FILENO);
+		ft_putstr_fd("lesh: syntax error near unexpected token \
+				`newline'\n", STDERR_FILENO);
 		return (true);
 	}
 	else if (is_meta_token_type(tok_1->type))
 	{
-		ft_putstr_fd("lesh: syntax error near unexpected token \'", STDERR_FILENO);
+		ft_putstr_fd("lesh: syntax error near unexpected \
+				token \'", STDERR_FILENO);
 		ft_putstr_fd(tok_1->str->text, STDERR_FILENO);
 		ft_putstr_fd("\'\n", STDERR_FILENO);
 		return (true);
 	}
 	else if (tok_1->type == E_TYPE_BRACKET && is_bracket_unclosed(tok_1))
-		return (true);	
+		return (true);
 	else
 		return (false);
 }

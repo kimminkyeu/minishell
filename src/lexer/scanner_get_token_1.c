@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:59:12 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 18:00:36 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:17:19 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,13 +48,12 @@ void	get_bracket(t_token *tok, t_scanner *scan)
 
 void	get_cmd_or_arg(t_token *tok, t_scanner *scan)
 {
-	char	c; 
+	char	c;
 
 	tok->type = E_TYPE_SIMPLE_CMD;
 	while (scan->f_has_next(scan))
 	{
 		c = scan->f_peek(scan);
-
 		if (c == '\'')
 			get_single_quote(tok, scan);
 		else if (c == '\"')

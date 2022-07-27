@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 18:06:35 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 18:30:52 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:23:07 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,20 @@ int	is_syntax_error(t_list *token_list)
 	return (false);
 }
 
+static void	get_token(t_token *token, t_scanner *scanner, char c)
+{
+	if (c == '|')
+		get_pipe(token, scanner);
+	else if (c == '&')
+		get_double_ampersand(token, scanner);
+	else if (c == '<' || c == '>')
+		get_redirection(token, scanner);
+	else if (c == '(')
+		get_bracket(token, scanner);
+	else
+		get_cmd_or_arg(token, scanner);
+}
+
 t_list	*create_initial_tokens(char *line)
 {
 	t_scanner	scanner;
@@ -46,23 +60,14 @@ t_list	*create_initial_tokens(char *line)
 	init_scanner(&scanner, line);
 	while (scanner.f_has_next(&scanner))
 	{
-		if (ft_isspace(scanner.f_peek(&scanner)))
+		c = scanner.f_peek(&scanner);
+		if (ft_isspace(c))
 		{
 			scanner.f_skip_white_space(&scanner);
 			continue ;
 		}
-		c = scanner.f_peek(&scanner);
 		token = new_token("");
-		if (c == '|')
-			get_pipe(token, &scanner);
-		else if (c == '&')
-			get_double_ampersand(token, &scanner);
-		else if (c == '<' || c == '>')
-			get_redirection(token, &scanner);
-		else if (c == '(')
-			get_bracket(token, &scanner);
-		else
-			get_cmd_or_arg(token, &scanner);
+		get_token(token, &scanner, c);
 		ft_lstadd_back(&token_list, ft_lstnew(token));
 	}
 	return (token_list);

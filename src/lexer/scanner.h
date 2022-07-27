@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:04:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 18:31:21 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:16:39 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,14 +20,12 @@ typedef struct s_scanner	t_scanner;
 
 typedef struct s_scanner {
 	t_iterator	iter;
-
-	int		(*f_has_next)(t_scanner *scan);
-	char	(*f_next)(t_scanner *scan);
-	void	(*f_unget)(t_scanner *scan);
-	char	(*f_peek)(t_scanner *scan);
-	void	(*f_skip_white_space)(t_scanner *scan);
+	int			(*f_has_next)(t_scanner *scan);
+	char		(*f_next)(t_scanner *scan);
+	void		(*f_unget)(t_scanner *scan);
+	char		(*f_peek)(t_scanner *scan);
+	void		(*f_skip_white_space)(t_scanner *scan);
 }	t_scanner;
-
 
 t_list	*tokenize(char *line);
 

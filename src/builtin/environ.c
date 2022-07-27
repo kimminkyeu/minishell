@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 12:46:16 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 17:25:21 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:09:23 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,13 +55,37 @@ int	exec_env(char **arglist, char **our_envp)
 	return (SUCCESS);
 }
 
-int	exec_unset(char **arglist, char ***our_envp_ptr)
+static void	copy_to_envp(size_t	strs_count, char **arglist, \
+		char **new_envp, char ***our_envp_ptr)
 {
-	char	**str_split;
-	char	**new_envp;
-	size_t	strs_count;
 	size_t	i;
 	size_t	j;
+	char	**str_split;
+
+	i = 0;
+	j = i;
+	str_split = NULL;
+	strs_count = get_strs_count(*our_envp_ptr);
+	while (i < strs_count)
+	{
+		str_split = ft_split((*our_envp_ptr)[i], '=');
+		if (ft_strncmp(str_split[0], arglist[1], \
+					ft_strlen(str_split[0]) + 1) != 0)
+		{
+			new_envp[j] = (*our_envp_ptr)[i];
+			j++;
+		}
+		else
+			free((*our_envp_ptr)[i]);
+		delete_strs(&str_split);
+		i++;
+	}
+}
+
+int	exec_unset(char **arglist, char ***our_envp_ptr)
+{
+	char	**new_envp;
+	size_t	strs_count;
 
 	if (arglist[1] != NULL && arglist[1][0] == '-')
 	{
@@ -71,25 +95,9 @@ int	exec_unset(char **arglist, char ***our_envp_ptr)
 	}
 	else if (arglist[1] != NULL)
 	{
-		i = 0;
-		j = i;
 		strs_count = get_strs_count(*our_envp_ptr);
 		new_envp = ft_calloc(strs_count + 1, sizeof(*new_envp));
-		while (i < strs_count)
-		{
-			str_split = ft_split((*our_envp_ptr)[i], '=');
-			if (ft_strncmp(str_split[0], arglist[1], ft_strlen(str_split[0]) + 1) != 0)
-			{
-				new_envp[j] = (*our_envp_ptr)[i];
-				j++;
-			}
-			else
-			{
-				free((*our_envp_ptr)[i]);
-			}
-			delete_strs(&str_split);
-			i++;
-		}
+		copy_to_envp(strs_count, arglist, new_envp, our_envp_ptr);
 		free(*our_envp_ptr);
 		*our_envp_ptr = new_envp;
 	}

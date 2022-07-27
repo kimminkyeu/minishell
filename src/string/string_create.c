@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:40:50 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 17:43:31 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:42:41 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	delete_string(t_string **address_of_string)
 	address_of_string = NULL;
 }
 
-int str_reserve(t_string *str, size_t new_capacity)
+int	str_reserve(t_string *str, size_t new_capacity)
 {
 	char	*new_text;
 
@@ -66,4 +66,3 @@ int str_reserve(t_string *str, size_t new_capacity)
 	str->capacity = new_capacity;
 	return (SUCCESS);
 }
-

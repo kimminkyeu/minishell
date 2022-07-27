@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 19:44:18 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:36:20 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ t_list	*collect_redirection_node(t_list *tokens)
 	t_list	*target;
 	t_list	*redir_list;
 	t_list	*cur;
-	
+
 	target = find_target_token(tokens, E_TYPE_REDIRECT);
 	redir_list = target;
 	cur = redir_list;
@@ -44,12 +44,13 @@ t_list	*collect_redirection_node(t_list *tokens)
 }
 
 /** Parse to tree function's divided for NORMINETTE */
-void	cut_node_and_do_recur(t_tree *parent, t_list *tokens, t_list *target_token, int *flag)
+void	cut_node_and_do_recur(t_tree *parent, t_list *tokens, \
+		t_list *target_token, int *flag)
 {
 	t_list	*left_tokens;
 	t_list	*right_tokens;
 	t_list	*target_prev;
-	t_token *target_token_ptr;
+	t_token	*target_token_ptr;
 
 	left_tokens = tokens;
 	right_tokens = target_token->next;
@@ -92,26 +93,26 @@ void	set_node_flag(t_tree *parent, t_token *target_token_ptr, int *flag)
 		parent->is_last_pipe_cmd = 1;
 	}
 	else if (flag[NEED_FORK] == 1 && \
-			(target_token_ptr->type == E_TYPE_SIMPLE_CMD || target_token_ptr->type == E_TYPE_BRACKET))
+			(target_token_ptr->type == E_TYPE_SIMPLE_CMD \
+			|| target_token_ptr->type == E_TYPE_BRACKET))
 	{
 		parent->is_pipeline = 1;
 		if (flag[IS_LAST_PIPE_CMD] == 1)
 			parent->is_last_pipe_cmd = 1;
 	}
 	else if (flag[NEED_FORK] == 0 && \
-			(target_token_ptr->type == E_TYPE_SIMPLE_CMD || target_token_ptr->type == E_TYPE_BRACKET))
+			(target_token_ptr->type == E_TYPE_SIMPLE_CMD \
+			|| target_token_ptr->type == E_TYPE_BRACKET))
 	{
 		parent->is_last_pipe_cmd = 1;
 	}
-	else
-		return ;
 }
 
-t_tree *parse_to_tree_recur(t_list *tokens, int *flag)
+t_tree	*parse_to_tree_recur(t_list *tokens, int *flag)
 {
 	t_tree	*parent;
 	t_list	*target_token;
-	t_token *target_token_ptr;
+	t_token	*target_token_ptr;
 
 	if (tokens == NULL)
 		return (NULL);
@@ -130,7 +131,7 @@ t_tree *parse_to_tree_recur(t_list *tokens, int *flag)
 	return (parent);
 }
 
-t_tree *parse(t_list *tokens)
+t_tree	*parse(t_list *tokens)
 {
 	int	flag[2];
 

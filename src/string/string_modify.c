@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:42:10 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 17:44:16 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:44:20 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ int	str_push_back(t_string *str, char c)
 	return (SUCCESS);
 }
 
-int		str_pop_back(t_string *str)
+int	str_pop_back(t_string *str)
 {
 	if (str->text_len > 0)
 	{
@@ -54,9 +54,8 @@ int	str_append(t_string *str, const char *str2)
 	return (SUCCESS);
 }
 
-/** Replaces the portion of the string that begins at character pos and spans len characters 
- * (or the part of the string in the range between [i1,i2)) by new contents: */
-int	str_replace(t_string *str, size_t pos, size_t len, const char *str_to_replace)
+int	str_replace(t_string *str, size_t pos, size_t len, \
+		const char *str_to_replace)
 {
 	size_t	replace_len;
 	char	*backup;
@@ -82,25 +81,23 @@ int	str_replace(t_string *str, size_t pos, size_t len, const char *str_to_replac
 	return (SUCCESS);
 }
 
-/** Edit string with all matches of a pattern replaced by a replacement 
- *  (ex. INPUT ["hi kyeu. hi again!"] 
- *  --> str_replace_all(str, "hi", "hello")
- *  --> OUTPUT["hello kyeu. hello again!")]
- * */
-int	str_replace_all(t_string *str, const char *substr_old, const char *substr_new)
+int	str_replace_all(t_string *str, const char *substr_old, \
+		const char *substr_new)
 {
 	char	*replace_location;
 	size_t	replace_idx;
 	size_t	replace_len;
-	
+
 	if (substr_old == NULL || substr_new == NULL)
 		return (NO_ACTION);
 	replace_len = ft_strlen(substr_old);
-	while ((replace_location = ft_strnstr(str->text, substr_old, str->text_len)))
+	replace_location = ft_strnstr(str->text, substr_old, str->text_len);
+	while (replace_location != NULL)
 	{
 		replace_idx = replace_location - str->text;
 		if (str_replace(str, replace_idx, replace_len, substr_new) == ERROR)
 			return (ERROR);
+		replace_location = ft_strnstr(str->text, substr_old, str->text_len);
 	}
 	return (SUCCESS);
 }

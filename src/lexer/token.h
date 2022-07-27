@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 21:40:33 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 15:23:45 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,13 +23,11 @@ typedef enum e_token_type {
 	E_TYPE_PIPE,
 	E_TYPE_BRACKET,
 	E_TYPE_SIMPLE_CMD,
-
 	E_TYPE_REDIR_GREATER,
 	E_TYPE_REDIR_LESS,
 	E_TYPE_REDIR_APPEND,
 	E_TYPE_REDIR_HEREDOC,
 	E_TYPE_REDIR_ARG,
-
 	E_TYPE_WHITESPACE,
 	E_TYPE_DEFAULT,
 	E_TYPE_REDIRECT
@@ -40,10 +38,10 @@ typedef struct s_token	t_token;
 typedef struct s_token {
 	t_token_type	type;
 	t_string		*str;
-	void	(*f_reset)(t_token *token);
-	void	(*f_push_back)(t_token *token, char c);
-	void	(*f_pop_back)(t_token *token);
-	void	(*f_append)(t_token *token, const char *str_in);
+	void			(*f_reset)(t_token *token);
+	void			(*f_push_back)(t_token *token, char c);
+	void			(*f_pop_back)(t_token *token);
+	void			(*f_append)(t_token *token, const char *str_in);
 }	t_token;
 
 t_token	*new_token(char *str_input);

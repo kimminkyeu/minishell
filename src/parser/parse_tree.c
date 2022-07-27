@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_tree.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 21:38:25 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 10:57:27 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ t_list	*collect_redirection_node(t_list *tokens)
 	t_list	*target;
 	t_list	*redir_list;
 	t_list	*cur;
-	
+
 	target = find_target_token(tokens, E_TYPE_REDIRECT);
 	redir_list = target;
 	cur = redir_list;
@@ -28,7 +28,8 @@ t_list	*collect_redirection_node(t_list *tokens)
 	while (target != NULL && target->next != NULL)
 	{
 		if (target != NULL && target->next != NULL \
-				&& ((t_token *)target->next->content)->type == E_TYPE_REDIR_ARG)
+				&& (((t_token *)target->next->content)->type == E_TYPE_REDIR_ARG
+				|| ((t_token *)target->next->content)->type == E_TYPE_REDIR_ARG_HEREDOC_QUOTED))
 		{
 			target = target->next;
 			cur->next = target;

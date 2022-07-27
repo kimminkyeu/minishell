@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 23:56:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 20:01:42 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 20:20:04 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ typedef struct s_shell_config {
 	int		stdout_backup;
 	pid_t	last_cmd_pid;
 	int		last_cmd_wstatus;
+	int		num_of_child_process;
 } t_shell_config;
 
 void	load_shell_config(t_shell_config *shell_config, char **env);

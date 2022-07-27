@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 19:14:38 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 20:20:34 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ void	load_shell_config(t_shell_config *shell_config, char **env)
 	shell_config->stdout_backup = dup(STDOUT_FILENO); // save STDOUT
 	shell_config->last_cmd_pid = 0;
 	shell_config->last_cmd_wstatus = 0;
+	shell_config->num_of_child_process = 0; // wait를 걸어줄 총 개수
 }
 
 int main(int ac, char **av, char **env)

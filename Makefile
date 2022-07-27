@@ -6,12 +6,13 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/27 19:22:47 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/27 20:22:24 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			= minishell
 CC				= cc
+										#-g3d 옵션 붙이면 오류가 뜬 파일 위치와 줄번호까지.
 CFLAGS			= -Wall -Wextra -Werror -g3 -fsanitize=address
 INCLUDE			= include
 
@@ -40,7 +41,7 @@ LEXER_SRC		= token_create token_modify \
 				  scanner_helper scanner_get_token_1 scanner_get_token_2
 
 PARSER_SRC		= parse_tree parse_tree_utils
-EXECUTER_SRC	= executer token_expand get_full_path redirection
+EXECUTER_SRC	= executer token_expand get_full_path redirection subshell
 
 BUILTIN_SRC		= environ environ_utils environ_helper cd echo pwd exit
 STRING_SRC		= string_create string_modify string_utils

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 13:40:51 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/23 14:47:33 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 21:32:37 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include <sys/types.h>
 #include <dirent.h>
 
+#include "../builtin/environ.h"
 #include "../../include/libft.h"
 #include "../main/minishell.h"
 #include "../string/string.h"
@@ -66,10 +67,12 @@ int	is_valid_path(char *path, char *name)
 	struct dirent	*file;
 	int				is_valid_path;
 
+	/** if (name == NULL) */
+		/** return (false); */
 	is_valid_path = false;
 	if((dir_ptr = opendir(path)) == NULL)
 		return (is_valid_path);
-	while ((file = readdir(dir_ptr)) != NULL && is_valid_path == false)
+	while (is_valid_path == false && (file = readdir(dir_ptr)) != NULL)
 	{
 		/*  struct dirent *의 구조체에서 d_name 이외에는
 		 *  시스템마다 항목이 없을 수 있으므로 무시하고 이름만 사용합니다. */
@@ -89,10 +92,19 @@ char	*get_full_path(char *name, char **envp)
 	char		*cmd_full_path;
 	size_t		i;
 
+	i = -1;
+	buffer = new_string(20);
+	cmd_full_path = get_environ_value("PWD", envp);
+	if (ft_strchr(name, '/') != NULL && is_valid_path(cmd_full_path, ft_strchr(name, '/') + 1))
+	{
+		buffer->f_append(buffer, name);
+		buffer->f_replace_all(buffer, ".", cmd_full_path);
+		cmd_full_path = ft_strdup(buffer->text);
+		delete_string(&buffer);
+		return (cmd_full_path);
+	}
 	cmd_full_path = NULL;
 	env_path = get_environ_path(envp);
-	buffer = new_string(20);
-	i = -1;
 	while (env_path[++i])
 	{
 		buffer->f_append(buffer, env_path[i]);

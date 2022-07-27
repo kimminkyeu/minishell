@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 23:13:35 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 20:49:29 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,11 +48,17 @@ char	**get_cmd_argv(t_list *token);
  * @ Set file descripters to pipe_fd[2] from redirection_list.
  * - src/executer/redirection.c
  **/
-int 	open_redirection(int *pipe_fd, t_list *redir_list);
 
+/* get_full_path */
+int		is_valid_path(char *path, char *name);
+
+int 	open_redirection(int *pipe_fd, t_list *redir_list);
 void	delete_tree_node(t_tree *node, int *status, t_shell_config *config);
 void	execute_node(t_tree *node, int *status, t_shell_config *config);
 void	inorder_recur(t_tree *node, int *status, void (*f)(t_tree *node, int *status, t_shell_config *config), t_shell_config *config);
 int		execute(t_tree *syntax_tree, t_shell_config *config);
+
+/* Subshell.c */
+int		exec_subshell(t_tree *node, t_string *str, t_shell_config *config);
 
 #endif /* EXECUTER_H */

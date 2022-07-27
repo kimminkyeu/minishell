@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 15:39:32 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/27 16:26:45 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,7 +101,7 @@ static void	expand_line_each(char *line, t_shell_config *config)
 	}
 	free(line);
 	line = ft_strdup(expanded_str->text);
-	delete_string(expanded_str);
+	delete_string(&expanded_str);
 }
 
 static void	expand_file(t_token *tok, t_shell_config *config)
@@ -112,6 +112,7 @@ static void	expand_file(t_token *tok, t_shell_config *config)
 	int		pipefd[2];
 
 	//token->heredoc_fd에 기존 fd 있음.
+	(void)fd_old;
 
 	// 1. 새 파이프를 하나 열고
 	if (pipe(pipefd) == -1)
@@ -200,21 +201,29 @@ void	open_redirection(int *pipe_fd, t_list *redir_list, t_shell_config *config)
 		while (cur != NULL)
 		{
 			tok = cur->content;
-			if (tok->type == E_TYPE_REDIR_LESS)//<in
+			if (tok->type == E_TYPE_REDIR_LESS) /* <in */
+			{
 				if (open_file_less(cur, pipe_fd, &status) != SUCCESS)
 					break ;
-			else if (tok->type == E_TYPE_REDIR_HEREDOC)//<<in
+			}
+			else if (tok->type == E_TYPE_REDIR_HEREDOC) /* <<in */
+			{
 				if (open_file_heredoc(cur, pipe_fd, &status, config) != SUCCESS)
 					break ;
-			else if (tok->type == E_TYPE_REDIR_GREATER) // > out
+			}
+			else if (tok->type == E_TYPE_REDIR_GREATER) /* > out */
+			{
 				if (open_file_greater(cur, pipe_fd, &status) != SUCCESS)
 					break ;
-			else if (tok->type == E_TYPE_REDIR_APPEND) // >> out
+			}
+			else if (tok->type == E_TYPE_REDIR_APPEND) /* >> out */
+			{
 				if (open_file_append(cur, pipe_fd, &status) != SUCCESS)
 					break ;
+			}
 			cur = cur->next;
 		}
-		config->last_cmd_wstatus = status;//논의: 저장도 해놓고 exit에도 넣고. 하는 거 맞을까요?
+		/** config->last_cmd_wstatus = status;//논의: 저장도 해놓고 exit에도 넣고. 하는 거 맞을까요? */
 	}
 	if (status != SUCCESS)
 		exit(status);

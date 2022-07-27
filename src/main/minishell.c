@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 22:46:39 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/27 16:44:54 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,13 @@
  * TODO : Delete helper files later! */
 #include "helper.h"
 
+/* run shell에 추가된 set heredoc에서 limiter의 쿼트리무벌 한 다음에 
+ * 파이프 열어서 파이프에 쓰고 파이프의 fd를 토큰에 저장하고 1차 종료 */
+
+/** 실행하기 전에 set redirection할 때 heredoc이면 
+ * open 대신에 이미 열려있는 pipefd[read]를 가져와서 읽어준다. */
+
+/** 이런 식으로 하려고 하는데, 파일에서 파이프로 바꿨다고만 생각했는데, 실행이 이상한데 왜때문인지 모르겠어요. 아무것도 안 되긴 하는데, 실행해서 ls <<LIMIT 해보시면 입력창이 이상해요. */
 int	run_shell(char *line, t_shell_config *config)
 {
 	t_list	*tokens;
@@ -39,7 +46,7 @@ int	run_shell(char *line, t_shell_config *config)
 	print_tokens(tokens); // TODO : delete later
 
 	set_heredoc(tokens);//quote removal + open temp file
-
+						//
 	print_tokens(tokens); // TODO : delete later
 
 	syntax_tree = parse(tokens);
@@ -51,7 +58,9 @@ int	run_shell(char *line, t_shell_config *config)
 	}
 	print_tree(syntax_tree); // TODO : delete later
 
-	return (execute(syntax_tree, config));
+	(void)config;
+	/** return (execute(syntax_tree, config)); */
+	return (0);
 }
 
 void	shell_loop(t_shell_config *config)

@@ -74,6 +74,7 @@ void	open_heredoc(t_token *tok, int num)
 	pid_t	pid;
 	char	*line;
 
+	(void)num;
 	pipe(pipefd);
 	pid = fork();
 	if (pid == CHILD)

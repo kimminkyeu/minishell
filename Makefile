@@ -6,7 +6,7 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/28 01:39:31 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/28 03:31:52 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,7 +37,7 @@ ITERATOR_DIR	= $(SRC_DIR)/iterator/
 
 # NOTE : Add Source files here
 # ------------------------------------------------------ #
-MAIN_SRC		= minishell prompt helper
+MAIN_SRC		= minishell prompt helper signal_handle
 
 LEXER_SRC		= token_create token_modify \
 				  scanner_main scanner_create scanner_function_ptr \
@@ -77,9 +77,12 @@ MAGENTA = \033[0;95m
 CYAN = \033[0;96m
 WHITE = \033[0;97m
 
+#-----------------------------------------------------------------------
+#    linux compile option                                              |
+#-----------------------------------------------------------------------
 $(NAME): $(OBJ)
 	@make bonus -C $(LIBFT_DIR)
-	$(CC) $(CFLAGS) $(READLINE_COMFILE_FLAGS) $(LIBFT_DIR)libft.a $(OBJ) -o $(NAME)
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT_DIR)libft.a -lreadline
 	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
 	@echo "$(RED)|       Minishell compile finished.        |$(DEF_COLOR)"
 	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
@@ -88,8 +91,39 @@ $(NAME): $(OBJ)
 	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
 
 %.o: %.c
-	${CC} ${CFLAGS} $(READLINE_OBJ_FLAGS) -c $< -o $@
+	@${CC} ${CFLAGS} -c $< -o $@
 	@echo "$(RED)Compiling... \t$< $(DEF_COLOR)"
+#-----------------------------------------------------------------------
+
+
+
+#-----------------------------------------------------------------------
+#    Mac compile option                                                |
+#-----------------------------------------------------------------------
+#    (1) shell에서 brew install readline 을 입력합니다.                |
+#       (GNU 버전 readline 설치)                                       |
+#                                                                      |
+#    (2) 위 LINUX 컴파일 코드를 주석처리하신뒤                         |
+#        아래의 컴파일 옵션으로 makefile을 변경하면 됩니다.            |
+#-----------------------------------------------------------------------
+# $(NAME): $(OBJ)
+#     @make bonus -C $(LIBFT_DIR)
+#     @$(CC) $(CFLAGS) $(READLINE_COMFILE_FLAGS) $(LIBFT_DIR)libft.a $(OBJ) -o $(NAME)
+#     @echo "$(RED)--------------------------------------------$(DEF_COLOR)"
+#     @echo "$(RED)|       Minishell compile finished.        |$(DEF_COLOR)"
+#     @echo "$(RED)--------------------------------------------$(DEF_COLOR)"
+#     @echo "$(RED)|                                          |$(DEF_COLOR)"
+#     @echo "$(RED)|                        Have fun!         |$(DEF_COLOR)"
+#     @echo "$(RED)--------------------------------------------$(DEF_COLOR)"
+#
+# %.o: %.c
+#     @${CC} ${CFLAGS} $(READLINE_OBJ_FLAGS) -c $< -o $@
+#     @echo "$(RED)Compiling... \t$< $(DEF_COLOR)"
+#-----------------------------------------------------------------------
+
+
+
+
 
 clean:
 	@make clean -C $(LIBFT_DIR)

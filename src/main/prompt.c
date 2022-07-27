@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 21:55:15 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 22:22:02 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/28 03:51:47 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,28 +50,13 @@ void	show_shell_logo(void)
 	printf("\n");
 }
 
-void	sig_ctrl_c(int signal)
-{
-	(void)signal;
-
-	rl_on_new_line();
-	ft_putstr_fd("\n", STDOUT_FILENO);
-	rl_replace_line("", 1);
-	rl_redisplay();
-}
-
-void	set_signal(void)
-{
-	signal(SIGINT, sig_ctrl_c);		// FIXME : CTRL + C --> $?가 1로 바뀌어야 한다.
-	signal(SIGQUIT, SIG_IGN);		// CTRL + / -> SIG_IGN = signal 무시.
-}
-
 /** show prompt_messege + readline */
 char	*readline_prompt(t_shell_config *config)
 {
 	t_string	*prompt;
-	static char	*line;
+	char		*line;
 
+	line = NULL;
 	prompt = new_string(64);
 	prompt->f_append(prompt, "\033[31m");
 	prompt->f_append(prompt, get_environ_value("LOGNAME", *config->envp));

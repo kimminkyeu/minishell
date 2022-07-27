@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 20:20:34 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/28 03:28:26 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,10 @@
 /** (2) helper functions for Visualization. 
  * TODO : Delete helper files later! */
 #include "helper.h"
+#include "signal.h"
+
+/** NOTE: Global Variable */
+int	g_is_sig_interupt = false;
 
 int	run_shell(char *line, t_shell_config *config)
 {
@@ -33,14 +37,18 @@ int	run_shell(char *line, t_shell_config *config)
 	tokens = tokenize(line);
 	if (tokens == NULL)
 		return (CMD_KEEP_RUNNING);
-	print_tokens(tokens); // TODO : delete later
+
+	/** print_tokens(tokens); // TODO : delete later */
+
 	syntax_tree = parse(tokens);
 	if (syntax_tree == NULL)
 	{
 		free(tokens);
 		return (CMD_KEEP_RUNNING);
 	}
-	print_tree(syntax_tree); // TODO : delete later
+
+	/** print_tree(syntax_tree); // TODO : delete later */
+
 	return (execute(syntax_tree, config));
 }
 
@@ -85,7 +93,9 @@ void	load_shell_config(t_shell_config *shell_config, char **env)
 	shell_config->stdout_backup = dup(STDOUT_FILENO); // save STDOUT
 	shell_config->last_cmd_pid = 0;
 	shell_config->last_cmd_wstatus = 0;
-	shell_config->num_of_child_process = 0; // wait를 걸어줄 총 개수
+
+	/** shell_config->num_of_child_process = 0; // ctrl+c 입력시 모두 kill 하기 위해 pid_list로 저장.*/
+	shell_config->pid_list = NULL; // 이렇게 변경.
 }
 
 int main(int ac, char **av, char **env)

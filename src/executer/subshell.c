@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/27 20:21:34 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 20:22:03 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/28 03:32:18 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "../builtin/environ.h"
 #include "../main/minishell.h"
 #include "../lexer/token.h"
+#include "../main/signal_handle.h"
 
 # define PIPE_ERROR		(1)
 # define FORK_ERROR		(-1)
@@ -68,6 +69,7 @@ int	exec_subshell(t_tree *node, t_string *str, t_shell_config *config)
 	}
 	else /* parent */
 	{
+		ft_lstadd_back(&config->pid_list, ft_lstnew(new_pid(pid)));
 		if (node->is_last_pipe_cmd)
 		{
 			config->last_cmd_pid = pid;

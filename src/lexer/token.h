@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 15:23:45 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/28 01:51:09 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,10 @@ typedef enum e_token_type {
 	E_TYPE_REDIR_ARG,
 	E_TYPE_WHITESPACE,
 	E_TYPE_DEFAULT,
-	E_TYPE_REDIRECT
+	E_TYPE_REDIRECT,
+	/* NOTE: 타입 추가는 밑에 해주세요. (위 순서가 바뀌면 안됨) */
+	/* E_TYPE_... */
+
 }	t_token_type;
 
 typedef struct s_token	t_token;

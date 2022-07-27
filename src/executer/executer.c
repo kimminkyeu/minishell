@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 22:51:17 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/28 03:32:07 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@
 #include "../builtin/environ.h"
 #include "../main/minishell.h"
 #include "../lexer/token.h"
+#include "../main/signal_handle.h"
 
 # define PIPE_ERROR		(1)
 # define FORK_ERROR		(-1)
@@ -25,6 +26,8 @@
 # define WRITE			(1)
 
 # define EXIT_COMMAND_NOT_FOUND (127)
+
+extern int	g_is_sig_interupt;
 
 void	delete_tree_node(t_tree *node, int *status, t_shell_config *config)
 {
@@ -169,7 +172,8 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 		perror("pipe()");
 		return (ERROR);
 	}
-	config->num_of_child_process += 1;
+
+	
 	pid = fork();
 	if (pid == FORK_ERROR)
 	{
@@ -199,6 +203,8 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 	}
 	else /* parent */
 	{
+		/** ctrl+c 시그널 발생시 모든 자식 프로세스 종료를 위해 리스트로 변경함. */
+		ft_lstadd_back(&config->pid_list, ft_lstnew(new_pid(pid)));
 		if (node->is_last_pipe_cmd)
 		{
 			/* 마지막 커맨드의 부모에서 변조된 표준입출력을 복구한다. */
@@ -222,8 +228,6 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
  * */
 void	exec_priority_operator(t_tree *node, t_token *tok, int *status, t_shell_config *config)
 {
-	int	i;
-
 	/** printf("here\n"); */
 	/** (1-1) if [() : subshell] */
 	if (tok->type == E_TYPE_BRACKET)
@@ -231,24 +235,14 @@ void	exec_priority_operator(t_tree *node, t_token *tok, int *status, t_shell_con
 	/** (1-3) if [&& : waitpid] */
 	else if (tok->type == E_TYPE_DOUBLE_AMPERSAND)
 	{
-		printf("wstatus : %d\n", config->last_cmd_wstatus);
-		waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
-
-		// 만약 모든 프로세스가 fork없이 돌았다면...
-		i = -1;
-		while (++i < config->num_of_child_process - 1)
-			wait(NULL);
+		wait_every_pid(config);
 		if (WEXITSTATUS(config->last_cmd_wstatus) != SUCCESS)
 			*status = CMD_STOP_RUNNING; // NOTE : stop running other process.
 	}
 	/** (1-4) if [|| : waitpid] */
 	else if (tok->type == E_TYPE_DOUBLE_PIPE)
 	{
-		printf("wstatus : %d\n", config->last_cmd_wstatus);
-		waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
-		i = -1;
-		while (++i < config->num_of_child_process - 1)
-			wait(NULL);
+		wait_every_pid(config);
 		if (WEXITSTATUS(config->last_cmd_wstatus) == SUCCESS)
 			*status = CMD_STOP_RUNNING; // NOTE : stop running other process.
 	}
@@ -257,10 +251,6 @@ void	exec_priority_operator(t_tree *node, t_token *tok, int *status, t_shell_con
 
 void	execute_node(t_tree *node, int *status, t_shell_config *config)
 {
-
-	print_tokens(node->token);
-	printf("cmd status : %d\n", *status);
-
 	t_token *tok;
 	char	**cmd_argv;
 
@@ -274,10 +264,8 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	/** (1) if | or && or || or ( ) parenthethis for priority */
 	if (tok != NULL && tok->type != E_TYPE_SIMPLE_CMD)
 	{
-		printf("node is now operator\n");
 		return (exec_priority_operator(node, tok, status, config));
 	}
-
 	else if (expand_tokens(node->token, config) == ERROR \
 			|| expand_tokens(node->redirection, config) == ERROR)
 		return ;
@@ -319,17 +307,13 @@ void	inorder_recur(t_tree *node, int *status, t_callback_func callback, t_shell_
 int	execute(t_tree *syntax_tree, t_shell_config *config)
 {
 	int	status;
-	int	i;
 
 	status = CMD_KEEP_RUNNING;
 
 	//inorder_recur(syntax_tree, &status, count_node, config);
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
-	waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
-	i = -1;
-	while (++i < config->num_of_child_process - 1)
-		wait(NULL);
+	wait_every_pid(config);
 
 	/** FIXME : 모든 노드 삭제 --> 문제 발생.  */
 	inorder_recur(syntax_tree, &status, delete_tree_node, config);

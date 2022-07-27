@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:44:57 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 17:00:29 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/28 03:25:25 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
  *         As a result [grep] only finds word [my].
  *         Inorder to fix this problem, I changed "ft_split" logic.
  **/
+
+extern int	g_is_sig_interupt;
+
 char	**get_cmd_argv(t_list *token)
 {
 	t_list		*cur;
@@ -55,7 +58,10 @@ void	expand_dollar_sign(t_string *str, t_iterator *iter, t_shell_config *config)
 
 	if (iter->f_peek(iter) == '?')
 	{
-		str->f_append(str, ft_itoa(WEXITSTATUS(config->last_cmd_wstatus)));
+		if (g_is_sig_interupt == true)
+			str->f_append(str, "130"); // NOTE : signal 2 + 128 로 130이 된다.
+		else
+			str->f_append(str, ft_itoa(WEXITSTATUS(config->last_cmd_wstatus)));
 		iter->f_next(iter);
 	}
 	else

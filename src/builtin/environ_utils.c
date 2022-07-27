@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:23:45 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 15:10:35 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 22:05:56 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ void	delete_strs(char ***strs)
 {
 	size_t	i;
 
+	if (strs == NULL || *strs == NULL || **strs == NULL)
+		return ;
 	i = 0;
 	while ((*strs)[i] != NULL)
 	{

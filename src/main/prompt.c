@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 21:55:15 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 13:58:11 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 22:22:02 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	sig_ctrl_c(int signal)
 
 void	set_signal(void)
 {
-	signal(SIGINT, sig_ctrl_c);		// CTRL + C
+	signal(SIGINT, sig_ctrl_c);		// FIXME : CTRL + C --> $?가 1로 바뀌어야 한다.
 	signal(SIGQUIT, SIG_IGN);		// CTRL + / -> SIG_IGN = signal 무시.
 }
 

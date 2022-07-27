@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:22:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 14:08:19 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 22:48:44 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 ** 1-2) if -n && only n detected -> -n option on
 ** 2) print from 3th to last
 */
+#define SUCCESS (0)
 
 static int	is_n_option(char *str)
 {
@@ -49,7 +50,7 @@ static void	write_arguments(char **arglist, size_t i)
 	}
 }
 
-void	exec_echo(char **arglist, char **our_envp)
+int	exec_echo(char **arglist, char **our_envp)
 {
 	int		n_option;
 
@@ -63,4 +64,5 @@ void	exec_echo(char **arglist, char **our_envp)
 	}
 	if (n_option == false)
 		ft_putchar_fd('\n', STDOUT_FILENO);
+	return (SUCCESS);
 }

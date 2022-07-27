@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 21:22:09 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 22:51:17 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,33 +98,6 @@ int	exec_builtin(char **cmd_argv, char ***envp)
 	return (status);
 }
 
-/** no fork. */
-int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
-{
-	int		pipe_fd[2];
-	int		status;
-
-	pipe_fd[READ] = config->stdin_backup;
-	pipe_fd[WRITE] = config->stdout_backup;
-	status = open_redirection(pipe_fd, node->redirection);
-	if (pipe_fd[READ] != config->stdin_backup)
-	{
-		dup2(pipe_fd[READ], STDIN_FILENO);
-		close(pipe_fd[READ]);
-	}
-	if (pipe_fd[WRITE] != config->stdout_backup)
-	{
-		dup2(pipe_fd[WRITE], STDOUT_FILENO);
-		close(pipe_fd[WRITE]);
-	}
-	status = exec_builtin(cmd_argv, config->envp);
-	if (pipe_fd[READ] != config->stdin_backup)
-		dup2(config->stdin_backup, STDIN_FILENO);
-	if (pipe_fd[WRITE] != config->stdout_backup)
-		dup2(config->stdout_backup, STDOUT_FILENO);
-	return (status);
-}
-
 /** Function for exec_general */
 void	run_child_process(char **cmd_argv, t_shell_config *config)
 {
@@ -154,8 +127,39 @@ void	run_child_process(char **cmd_argv, t_shell_config *config)
 	}
 }
 
+/** no fork. */
+int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
+{
+	/** printf("exec exeption\n"); */
+
+	int		pipe_fd[2];
+	int		status;
+
+	pipe_fd[READ] = config->stdin_backup;
+	pipe_fd[WRITE] = config->stdout_backup;
+	status = open_redirection(pipe_fd, node->redirection);
+	if (pipe_fd[READ] != config->stdin_backup)
+	{
+		dup2(pipe_fd[READ], STDIN_FILENO);
+		close(pipe_fd[READ]);
+	}
+	if (pipe_fd[WRITE] != config->stdout_backup)
+	{
+		dup2(pipe_fd[WRITE], STDOUT_FILENO);
+		close(pipe_fd[WRITE]);
+	}
+	status = exec_builtin(cmd_argv, config->envp);
+	if (pipe_fd[READ] != config->stdin_backup)
+		dup2(config->stdin_backup, STDIN_FILENO);
+	if (pipe_fd[WRITE] != config->stdout_backup)
+		dup2(config->stdout_backup, STDOUT_FILENO);
+	return (status);
+}
+
 int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 {
+	/** printf("exec general\n"); */
+
 	pid_t	pid;
 	int		pipe_fd[2];
 	int		tmp_fd;
@@ -220,13 +224,17 @@ void	exec_priority_operator(t_tree *node, t_token *tok, int *status, t_shell_con
 {
 	int	i;
 
+	/** printf("here\n"); */
 	/** (1-1) if [() : subshell] */
 	if (tok->type == E_TYPE_BRACKET)
 		*status = exec_subshell(node, tok->str, config);
 	/** (1-3) if [&& : waitpid] */
 	else if (tok->type == E_TYPE_DOUBLE_AMPERSAND)
 	{
+		printf("wstatus : %d\n", config->last_cmd_wstatus);
 		waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
+
+		// 만약 모든 프로세스가 fork없이 돌았다면...
 		i = -1;
 		while (++i < config->num_of_child_process - 1)
 			wait(NULL);
@@ -236,6 +244,7 @@ void	exec_priority_operator(t_tree *node, t_token *tok, int *status, t_shell_con
 	/** (1-4) if [|| : waitpid] */
 	else if (tok->type == E_TYPE_DOUBLE_PIPE)
 	{
+		printf("wstatus : %d\n", config->last_cmd_wstatus);
 		waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
 		i = -1;
 		while (++i < config->num_of_child_process - 1)
@@ -248,18 +257,27 @@ void	exec_priority_operator(t_tree *node, t_token *tok, int *status, t_shell_con
 
 void	execute_node(t_tree *node, int *status, t_shell_config *config)
 {
+
+	print_tokens(node->token);
+	printf("cmd status : %d\n", *status);
+
 	t_token *tok;
 	char	**cmd_argv;
 
 	if (*status != CMD_KEEP_RUNNING || node == NULL)
 		return ;
+
 	tok = NULL;
 	if (node->token != NULL)
 		tok = node->token->content;
 
 	/** (1) if | or && or || or ( ) parenthethis for priority */
 	if (tok != NULL && tok->type != E_TYPE_SIMPLE_CMD)
+	{
+		printf("node is now operator\n");
 		return (exec_priority_operator(node, tok, status, config));
+	}
+
 	else if (expand_tokens(node->token, config) == ERROR \
 			|| expand_tokens(node->redirection, config) == ERROR)
 		return ;

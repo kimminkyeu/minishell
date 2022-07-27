@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 13:40:51 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 21:32:37 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 21:43:43 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,8 @@ char	*get_full_path(char *name, char **envp)
 	i = -1;
 	buffer = new_string(20);
 	cmd_full_path = get_environ_value("PWD", envp);
+
+	/** ./minishell 도 처리하기 위함. */
 	if (ft_strchr(name, '/') != NULL && is_valid_path(cmd_full_path, ft_strchr(name, '/') + 1))
 	{
 		buffer->f_append(buffer, name);

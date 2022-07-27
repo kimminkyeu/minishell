@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 10:33:08 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/27 13:19:11 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,40 +104,37 @@ static void	expand_line_each(char *line, t_shell_config *config)
 	delete_string(expanded_str);
 }
 
-static int	get_expanded_file(t_token *tok, t_shell_config *config)
+static void	expand_file(t_token *tok, t_shell_config *config)
 {
 	int		fd_old;
-	int		fd_new;
-	char	*filename_new;
 	char	*line;
+	pid_t	pid;
+	int		pipefd[2];
 
-	// 1. 원래 파일과 새 파일을 모두 열고
-	fd_old = open(tok->str->text, O_RDONLY);
-	if (fd_old == -1)
-		perror("open(oldfile)");
-	filename_new = ft_strjoin(tok->str->text, "_expanded");
-	fd_new = open(filename_new, O_WRONLY | O_CREAT, 0600);
-	if (fd_old == -1)
-		perror("open(newfile)");
+	//token->heredoc_fd에 기존 fd 있음.
 
-	// 2. 한 줄씩 읽어오며 $ 확장해서 새 파일에 써넣기
-	while (1)
+	// 1. 새 파이프를 하나 열고
+	if (pipe(pipefd[2]) == -1)
+		perror("pipe fail");
+	pid = fork();
+	if (pid == CHILD)
 	{
-		line = get_next_line(fd_old);
-		if (line == NULL)
-			break ;
-		expand_line_each(line, config);
-		write(fd_new, line, ft_strlen(line));
-		free(line);
+		close(pipefd[READ]);
+		// 2. 한 줄씩 읽어오며 $ 확장해서 새 파이프에 써넣기
+		while (1)
+		{
+			line = get_next_line(tok->heredoc_fd);
+			if (line == NULL)
+				break ;
+			expand_line_each(line, config);
+			write(pipefd[WRITE], line, ft_strlen(line));
+			free(line);
+		}
 	}
-
-	// 3. 원래 파일 지우고 새 fd 반환하기
-	close(fd_old);
-	close(fd_new);
-	unlink(tok->str->text);
-	free(tok->str->text);
-	tok->str->text = filename_new;
-	return (fd_new);
+	// 3. 새 파이프 read 저장
+	close(tok->heredoc_fd);
+	close(pipefd[WRITE]);
+	tok->heredoc_fd = pipefd[READ];
 }
 
 int	open_file_heredoc(t_list *cur, int *pipe_fd, int *status, t_shell_config *config)
@@ -148,9 +145,8 @@ int	open_file_heredoc(t_list *cur, int *pipe_fd, int *status, t_shell_config *co
 	tok = cur->content;
 
 	if (tok->type == E_TYPE_REDIR_ARG_HEREDOC_QUOTED)
-		pipe_fd[READ] = get_expanded_file(tok, config);
-	else
-		pipe_fd[READ] = open(tok->str->text, O_RDONLY);
+		expand_file(tok, config);
+	pipe_fd[READ] = tok->heredoc_fd;
 	if (pipe_fd[READ] == -1)
 	{
 		*status = errno;

@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 13:59:09 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 19:31:32 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,7 @@ void	delete_tree_node(t_tree *node, int *status, t_shell_config *config)
 		if ((node)->token != NULL)
 			ft_lstclear(&node->token, delete_token);
 		free(node);
+		node = NULL;
 	}
 }
 
@@ -352,9 +353,12 @@ void	inorder_recur(t_tree *node, int *status, t_callback_func callback, t_shell_
 int	execute(t_tree *syntax_tree, t_shell_config *config)
 {
 	int	status;
+	//int	i;
 
+	//i = 0;
 	status = CMD_KEEP_RUNNING;
 
+	//inorder_recur(syntax_tree, &status, count_node, config);
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
 	
@@ -363,10 +367,14 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 	 * wait을 모두 해주지 않아 자식 프로세스의 응답이 늦게 stdin으로 출력되고
 	 * 이게 꼬여서 결국 실행되지 않는 거였어...*/
 	waitpid(config->last_cmd_pid, &config->last_cmd_wstatus, 0);
-	wait(NULL);
+	waitpid(0, NULL, 0);waitpid(0, NULL, 0);waitpid(0, NULL, 0);
+
+	// FIXME : waitpid 이 부분 총 fork 개수만큼 해주기.
+	// config 에 fork 개수 등록하기 -> 나중에 이 개수만큼 wait 해주기. . 
 
 	/** 모든 노드 삭제 */
-	inorder_recur(syntax_tree, &status, delete_tree_node, config);
+	/** inorder_recur(syntax_tree, &status, delete_tree_node, config); */
+	// FIXME : free 해준 거를 누군가가 참조하고 있음. 
 
 	return (WEXITSTATUS(config->last_cmd_wstatus));
 }

@@ -6,13 +6,13 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/27 14:05:02 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/27 19:22:47 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			= minishell
 CC				= cc
-CFLAGS			= -Wall -Wextra -Werror
+CFLAGS			= -Wall -Wextra -Werror -g3 -fsanitize=address
 INCLUDE			= include
 
 # GNU readline Flag for MAC

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:52:12 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 15:19:15 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/27 19:13:05 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,8 @@ bool	is_meta_token_overlap(t_list *token_list)
 	t_token	*tok_2;
 	char	c;
 
+	if (token_list == NULL)
+		return (false);
 	cur = token_list;
 	while (cur->next != NULL)
 	{

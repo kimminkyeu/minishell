@@ -6,15 +6,14 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/03/16 15:31:26 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/15 22:08:40 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/27 19:10:13 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME            = libft.a
 
-CC              = gcc
-CFLAGS          = -Werror -Wextra -Wall -I
-
+CC              = cc
+CFLAGS          = -Werror -Wextra -Wall -I 
 # -I option으로 헤더의 위치가 바뀌더라도 .c파일 내부에서 경로를 바꿀 필요 없음. 
 INCLUDE         = include
 SRC_DIR         = src/

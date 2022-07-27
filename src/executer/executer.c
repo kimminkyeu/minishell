@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 10:44:26 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/27 14:10:54 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,21 +166,21 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 	int		pipe_fd[2];
 
 
-	// /** 파이프 열기. */
-	// if (pipe(pipe_fd) == PIPE_ERROR)
-	// {
-	// 	perror("pipe()");
-	// 	return (ERROR);
-	// }
+	/** 파이프 열기. */
+	if (pipe(pipe_fd) == PIPE_ERROR)
+	{
+		perror("pipe()");
+		return (ERROR);
+	}
 
 
-	// /** 파이프 열고 포크를 뜨면, 두 프로세스가 같은 파이프를 같게 된다.  */
-	// pid = fork();
-	// if (pid == FORK_ERROR)
-	// {
-	// 	perror("fork()");
-	// 	return (ERROR);
-	// }
+	/** 파이프 열고 포크를 뜨면, 두 프로세스가 같은 파이프를 같게 된다.  */
+	pid = fork();
+	if (pid == FORK_ERROR)
+	{
+		perror("fork()");
+		return (ERROR);
+	}
 
 
 	/**
@@ -199,8 +199,8 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 	 *
 	 * ------------------------------------------------------------------------------*/
 
-	// if (pid == CHILD) /* child */
-	// {
+	if (pid == CHILD) /* child */
+	{
 
 		/** 마지막 커맨드라면, 파이프의 쓰기 기본값은 표준출력이여야 한다. */
 		if (node->is_last_pipe_cmd)
@@ -229,26 +229,26 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 
 		/** 최종 설정된 stdin stdout을 그대로 실행한다. */
 		run_child_process(cmd_argv, config);
-	// }
-	// else /* parent */
-	// {
-	// 	if (node->is_last_pipe_cmd)
-	// 	{
-	// 		/* 마지막 커맨드의 부모에서 변조된 표준입출력을 복구한다. */
-	// 		config->last_cmd_pid = pid;
-	// 		dup2(config->stdin_backup, STDIN_FILENO);
-	// 		dup2(config->stdout_backup, STDOUT_FILENO);
-	// 		close(pipe_fd[WRITE]);
-	// 		close(pipe_fd[READ]);
-	// 	}
-	// 	if (!node->is_last_pipe_cmd)
-	// 	{
-	// 		/** 마지막 커맨드가 아니라면, 부모는 항상 다음 커맨드의 STDIN을 연결해준다.  */
-	// 		dup2(pipe_fd[READ], STDIN_FILENO);
-	// 		close(pipe_fd[WRITE]);
-	// 		close(pipe_fd[READ]);
-	// 	}
-	// }
+	}
+	else /* parent */
+	{
+		if (node->is_last_pipe_cmd)
+		{
+			/* 마지막 커맨드의 부모에서 변조된 표준입출력을 복구한다. */
+			config->last_cmd_pid = pid;
+			dup2(config->stdin_backup, STDIN_FILENO);
+			dup2(config->stdout_backup, STDOUT_FILENO);
+			close(pipe_fd[WRITE]);
+			close(pipe_fd[READ]);
+		}
+		if (!node->is_last_pipe_cmd)
+		{
+			/** 마지막 커맨드가 아니라면, 부모는 항상 다음 커맨드의 STDIN을 연결해준다.  */
+			dup2(pipe_fd[READ], STDIN_FILENO);
+			close(pipe_fd[WRITE]);
+			close(pipe_fd[READ]);
+		}
+	}
 	return (SUCCESS);
 }
 

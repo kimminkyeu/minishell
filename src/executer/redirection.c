@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 13:19:11 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/27 15:39:32 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,7 +114,7 @@ static void	expand_file(t_token *tok, t_shell_config *config)
 	//token->heredoc_fd에 기존 fd 있음.
 
 	// 1. 새 파이프를 하나 열고
-	if (pipe(pipefd[2]) == -1)
+	if (pipe(pipefd) == -1)
 		perror("pipe fail");
 	pid = fork();
 	if (pid == CHILD)
@@ -163,7 +163,7 @@ int	open_file_greater(t_list *cur, int *pipe_fd, int *status)
 
 	cur = cur->next;
 	tok = cur->content;
-	pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_TRUNC | O_CREAT, 0644);
+	pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_TRUNC | O_CREAT, 0600);
 	if (pipe_fd[WRITE] == -1)
 	{
 		*status = errno;
@@ -178,7 +178,7 @@ int	open_file_append(t_list *cur, int *pipe_fd, int *status)
 
 	cur = cur->next;
 	tok = cur->content;
-	pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_APPEND | O_CREAT, 0644);
+	pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_APPEND | O_CREAT, 0600);
 	if (pipe_fd[WRITE] == -1)
 	{
 		*status = errno;
@@ -187,32 +187,35 @@ int	open_file_append(t_list *cur, int *pipe_fd, int *status)
 	return (*status);
 }
 
-int	open_redirection(int *pipe_fd, t_list *redir_list, t_shell_config *config)
+void	open_redirection(int *pipe_fd, t_list *redir_list, t_shell_config *config)
 {
 	int				status;
 	t_token			*tok;
 	t_list			*cur;
 
 	status = 0;
-	if (redir_list == NULL)
-		return (status);
-	cur = redir_list;
-	while (cur != NULL)
+	if (redir_list != NULL)
 	{
-		tok = cur->content;
-		if (tok->type == E_TYPE_REDIR_LESS)//<in
-			if (open_file_less(cur, pipe_fd, &status) != SUCCESS)
-				break ;
-		else if (tok->type == E_TYPE_REDIR_HEREDOC)//<<in
-			if (open_file_heredoc(cur, pipe_fd, &status, config) != SUCCESS)
-				break ;
-		else if (tok->type == E_TYPE_REDIR_GREATER) // > out
-			if (open_file_greater(cur, pipe_fd, &status) != SUCCESS)
-				break ;
-		else if (tok->type == E_TYPE_REDIR_APPEND) // >> out
-			if (open_file_append(cur, pipe_fd, &status) != SUCCESS)
-				break ;
-		cur = cur->next;
+		cur = redir_list;
+		while (cur != NULL)
+		{
+			tok = cur->content;
+			if (tok->type == E_TYPE_REDIR_LESS)//<in
+				if (open_file_less(cur, pipe_fd, &status) != SUCCESS)
+					break ;
+			else if (tok->type == E_TYPE_REDIR_HEREDOC)//<<in
+				if (open_file_heredoc(cur, pipe_fd, &status, config) != SUCCESS)
+					break ;
+			else if (tok->type == E_TYPE_REDIR_GREATER) // > out
+				if (open_file_greater(cur, pipe_fd, &status) != SUCCESS)
+					break ;
+			else if (tok->type == E_TYPE_REDIR_APPEND) // >> out
+				if (open_file_append(cur, pipe_fd, &status) != SUCCESS)
+					break ;
+			cur = cur->next;
+		}
+		config->last_cmd_wstatus = status;//논의: 저장도 해놓고 exit에도 넣고. 하는 거 맞을까요?
 	}
-	return (status);
+	if (status != SUCCESS)
+		exit(status);
 }

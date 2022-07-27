@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/26 22:44:21 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/27 12:03:56 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ typedef struct s_token	t_token;
 typedef struct s_token {
 	t_token_type	type;
 	t_string		*str;
+	int				heredoc_fd;//heredoc에서: str->text 대신 사용
 	void	(*f_reset)(t_token *token);
 	void	(*f_push_back)(t_token *token, char c);
 	void	(*f_pop_back)(t_token *token);

@@ -6,14 +6,17 @@
 #    By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/27 20:22:24 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/28 01:39:31 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			= minishell
 CC				= cc
-										#-g3d 옵션 붙이면 오류가 뜬 파일 위치와 줄번호까지.
-CFLAGS			= -Wall -Wextra -Werror -g3 -fsanitize=address
+
+				#-g3d 옵션 붙이면 오류가 뜬 파일 위치와 줄번호까지 뜸
+# CFLAGS		= -Wall -Wextra -Werror -g3 -fsanitize=address
+
+CFLAGS			= -Wall -Wextra -Werror
 INCLUDE			= include
 
 # GNU readline Flag for MAC

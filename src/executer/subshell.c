@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/27 20:21:34 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 16:39:00 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/28 14:25:26 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,14 +18,14 @@
 #include "../lexer/token.h"
 #include "../main/signal_handle.h"
 
-#define PIPE_ERROR		(1)
-#define FORK_ERROR		(-1)
-#define CHILD			(0)
+# define PIPE_ERROR		(1)
+# define FORK_ERROR		(-1)
+# define CHILD			(0)
 
-#define READ			(0)
-#define WRITE			(1)
+# define READ			(0)
+# define WRITE			(1)
 
-#define EXIT_COMMAND_NOT_FOUND (127)
+# define EXIT_COMMAND_NOT_FOUND (127)
 
 int	exec_subshell(t_tree *node, t_string *str, t_shell_config *config)
 {

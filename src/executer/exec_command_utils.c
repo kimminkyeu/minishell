@@ -1,22 +1,10 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   exec_command_utils.c                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/07/28 17:07:30 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/07/28 17:29:41 by han-yeseul       ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../main/minishell.h"
 #include "../parser/parse_tree.h"
 #include "../main/signal_handle.h"
 #include "exec_command.h"
 #include "executer.h"
 
-#define EXIT_COMMAND_NOT_FOUND (127)
+# define EXIT_COMMAND_NOT_FOUND (127)
 
 int	is_cd_or_exit_or_export(char *cmd)
 {
@@ -37,9 +25,9 @@ int	is_builtin_func(char *cmd)
 	size_t	len;
 
 	len = ft_strlen(cmd);
-	if (ft_strncmp("cd", cmd, len + 1) != 0 \
+	if (ft_strncmp("cd", cmd, len + 1) != 0\
 			&& ft_strncmp("exit", cmd, len + 1) != 0 \
-			&& ft_strncmp("export", cmd, len + 1) != 0 \
+			&& ft_strncmp("export", cmd, len + 1) != 0\
 			&& ft_strncmp("env", cmd, len + 1) != 0 \
 			&& ft_strncmp("echo", cmd, len + 1) != 0 \
 			&& ft_strncmp("pwd", cmd, len + 1) != 0 \
@@ -49,8 +37,9 @@ int	is_builtin_func(char *cmd)
 		return (true);
 }
 
+
 /** Function for exec_general */
-static void	exec_command(char **cmd_argv, t_shell_config *config)
+void	exec_command(char **cmd_argv, t_shell_config *config)
 {
 	char	*full_path;
 
@@ -78,8 +67,7 @@ static void	exec_command(char **cmd_argv, t_shell_config *config)
 	}
 }
 
-void	child_process(int *pipe_fd, t_tree *node, char **cmd_argv, \
-			t_shell_config *config)
+void	child_process(int *pipe_fd, t_tree *node, char **cmd_argv, t_shell_config *config)
 {
 	int		tmp_fd;
 
@@ -103,8 +91,7 @@ void	child_process(int *pipe_fd, t_tree *node, char **cmd_argv, \
 	exec_command(cmd_argv, config);
 }
 
-void	parent_process(int *pipe_fd, pid_t pid, t_tree *node, \
-			t_shell_config *config)
+void	parent_process(int *pipe_fd, pid_t pid, t_tree *node, t_shell_config *config)
 {
 	/** ctrl+c 시그널 발생시 모든 자식 프로세스 종료를 위해 리스트로 변경함. */
 	ft_lstadd_back(&config->pid_list, ft_lstnew(new_pid(pid)));

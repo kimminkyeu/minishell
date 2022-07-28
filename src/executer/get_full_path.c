@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_full_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 13:40:51 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 17:29:07 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/27 21:43:43 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,10 +23,10 @@
 #include "../main/minishell.h"
 #include "../string/string.h"
 
-#define COMMAND_NOT_FOUND (127)
+# define COMMAND_NOT_FOUND (127)
 /** # define ERROR		(-1) */
-#define PERROR		(1)
-#define PUTSTR		(0)
+# define PERROR		(1)
+# define PUTSTR		(0)
 
 void	exit_error(char *messege, int is_perror, int exit_code)
 {
@@ -70,14 +70,10 @@ int	is_valid_path(char *path, char *name)
 	/** if (name == NULL) */
 		/** return (false); */
 	is_valid_path = false;
-	dir_ptr = opendir(path);
-	if (dir_ptr == NULL)
+	if((dir_ptr = opendir(path)) == NULL)
 		return (is_valid_path);
-	while (is_valid_path == false)
+	while (is_valid_path == false && (file = readdir(dir_ptr)) != NULL)
 	{
-		file = readdir(dir_ptr);
-		if (file != NULL)
-			break ;
 		/*  struct dirent *의 구조체에서 d_name 이외에는
 		 *  시스템마다 항목이 없을 수 있으므로 무시하고 이름만 사용합니다. */
 		if (ft_strncmp(file->d_name, name, ft_strlen(name) + 1) == 0)
@@ -87,6 +83,8 @@ int	is_valid_path(char *path, char *name)
 	return (is_valid_path);
 }
 
+/** 환경변수를 순회하면서, 프로그램 이름에 전부 붙여준다.
+ * NOTE : 만약 못찾았다면, NULL을 반환한다. */
 char	*get_full_path(char *name, char **envp)
 {
 	t_string	*buffer;

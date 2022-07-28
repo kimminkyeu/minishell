@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal_handle.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 01:57:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 03:56:16 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/28 13:40:14 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	sig_ctrl_c(int signal)
 	if (signal == SIGINT)
 	{
 		g_is_sig_interupt = true;
-		rl_replace_line("", 1);
+		// rl_replace_line("", 1);
 		ft_putstr_fd("\n", STDOUT_FILENO);
 		rl_on_new_line();
 		rl_redisplay();
@@ -77,7 +77,7 @@ void	wait_every_pid(t_shell_config *config)
 	cur = config->pid_list;
 	while (cur != NULL)
 	{
-		cur_pid = *((pid_t *)cur->content);	
+		cur_pid = *((pid_t *)cur->content);
 		if (cur_pid == config->last_cmd_pid)
 			waitpid(cur_pid, &config->last_cmd_wstatus, 0);
 		else

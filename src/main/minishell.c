@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 03:28:26 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/28 12:35:36 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,10 @@
 /* (1) Lexer header */
 #include "minishell.h"
 
+void	set_heredoc(t_list *tokens);//heredoc.h
+
 #include "../../include/execute.h"
-/** (2) helper functions for Visualization. 
+/** (2) helper functions for Visualization.
  * TODO : Delete helper files later! */
 #include "helper.h"
 #include "signal.h"
@@ -38,7 +40,9 @@ int	run_shell(char *line, t_shell_config *config)
 	if (tokens == NULL)
 		return (CMD_KEEP_RUNNING);
 
-	/** print_tokens(tokens); // TODO : delete later */
+	print_tokens(tokens); // TODO : delete later
+
+	set_heredoc(tokens);//quote removal + open temp file
 
 	syntax_tree = parse(tokens);
 	if (syntax_tree == NULL)
@@ -47,7 +51,7 @@ int	run_shell(char *line, t_shell_config *config)
 		return (CMD_KEEP_RUNNING);
 	}
 
-	/** print_tree(syntax_tree); // TODO : delete later */
+	print_tree(syntax_tree); // TODO : delete later
 
 	return (execute(syntax_tree, config));
 }
@@ -59,7 +63,7 @@ void	shell_loop(t_shell_config *config)
 
 	status = CMD_KEEP_RUNNING;
 
-	/** FIXME : CMD_STOP_SHELL 이 필요한가? 
+	/** FIXME : CMD_STOP_SHELL 이 필요한가?
 	 *          필요 없다면 그냥 while(true)로 변경할 것.
 	 **/
 	while (status != CMD_STOP_SHELL)
@@ -99,7 +103,7 @@ void	load_shell_config(t_shell_config *shell_config, char **env)
 }
 
 int main(int ac, char **av, char **env)
-{	
+{
 	t_shell_config	shell_config;
 
 	(void)ac;

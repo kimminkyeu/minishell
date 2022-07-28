@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 01:51:09 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/28 11:57:54 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ typedef enum e_token_type {
 	E_TYPE_REDIRECT,
 	/* NOTE: 타입 추가는 밑에 해주세요. (위 순서가 바뀌면 안됨) */
 	/* E_TYPE_... */
-
+	E_TYPE_REDIR_ARG_HEREDOC_QUOTED,
 }	t_token_type;
 
 typedef struct s_token	t_token;
@@ -41,6 +41,7 @@ typedef struct s_token	t_token;
 typedef struct s_token {
 	t_token_type	type;
 	t_string		*str;
+	int				heredoc_fd;
 	void			(*f_reset)(t_token *token);
 	void			(*f_push_back)(t_token *token, char c);
 	void			(*f_pop_back)(t_token *token);

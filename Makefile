@@ -6,7 +6,7 @@
 #    By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/28 16:11:26 by han-yeseul       ###   ########.fr        #
+#    Updated: 2022/07/28 19:23:32 by han-yeseul       ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -44,7 +44,7 @@ LEXER_SRC		= token_create token_modify \
 				  scanner_helper scanner_get_token_1 scanner_get_token_2
 
 PARSER_SRC		= parse_tree parse_tree_utils
-EXECUTER_SRC	= executer token_expand get_full_path subshell \
+EXECUTER_SRC	= executer token_expand token_expand_utils get_full_path subshell \
 				  redirection redirection_utils exec_command exec_command_utils
 
 BUILTIN_SRC		= environ environ_utils environ_helper cd echo pwd exit

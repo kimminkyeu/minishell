@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:19:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 14:24:25 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/28 16:29:18 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,10 +52,12 @@ char	**get_cmd_argv(t_list *token);
 /* get_full_path */
 int		is_valid_path(char *path, char *name);
 
-int 	open_redirection(int *pipe_fd, t_list *redir_list, t_shell_config *config);
+int		open_redirection(int *pipe_fd, t_list *redir_list, \
+			t_shell_config *config);
 void	delete_tree_node(t_tree *node, int *status, t_shell_config *config);
 void	execute_node(t_tree *node, int *status, t_shell_config *config);
-void	inorder_recur(t_tree *node, int *status, void (*f)(t_tree *node, int *status, t_shell_config *config), t_shell_config *config);
+void	inorder_recur(t_tree *node, int *status, void (*f)(t_tree *node, \
+			int *status, t_shell_config *config), t_shell_config *config);
 int		execute(t_tree *syntax_tree, t_shell_config *config);
 
 /* Subshell.c */

@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   exec_command.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/28 17:07:37 by han-yeseul        #+#    #+#             */
+/*   Updated: 2022/07/28 17:07:38 by han-yeseul       ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <unistd.h>
 
 #include "../main/minishell.h"
@@ -6,12 +18,12 @@
 #include "executer.h"
 #include "exec_command.h"
 
-# define PIPE_ERROR		(1)
-# define FORK_ERROR		(-1)
-# define CHILD			(0)
+#define PIPE_ERROR		(1)
+#define FORK_ERROR		(-1)
+#define CHILD			(0)
 
-# define READ			(0)
-# define WRITE			(1)
+#define READ			(0)
+#define WRITE			(1)
 
 /** TODO : 이 부분 로직 좀 더 효율적인 방법 없나? */
 int	exec_builtin(char **cmd_argv, char ***envp)
@@ -26,11 +38,11 @@ int	exec_builtin(char **cmd_argv, char ***envp)
 		status = exec_exit(cmd_argv, *envp);
 	else if (ft_strncmp("export", cmd_argv[0], len + 1) == 0)
 		status = exec_export(cmd_argv, envp);
-	else if(ft_strncmp("env", cmd_argv[0], len + 1) == 0)
+	else if (ft_strncmp("env", cmd_argv[0], len + 1) == 0)
 		status = exec_env(cmd_argv, *envp);
-	else if(ft_strncmp("echo", cmd_argv[0], len + 1) == 0)
+	else if (ft_strncmp("echo", cmd_argv[0], len + 1) == 0)
 		status = exec_echo(cmd_argv, *envp);
-	else if(ft_strncmp("pwd", cmd_argv[0], len + 1) == 0)
+	else if (ft_strncmp("pwd", cmd_argv[0], len + 1) == 0)
 		status = exec_pwd(cmd_argv, *envp);
 	else if (ft_strncmp("unset", cmd_argv[0], len + 1) == 0)
 		status = exec_unset(cmd_argv, envp);
@@ -42,10 +54,8 @@ int	exec_builtin(char **cmd_argv, char ***envp)
 /** no fork. */
 int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 {
-	/** printf("exec exeption\n"); */
-
-	int		pipe_fd[2];
-	int		status;
+	int	pipe_fd[2];
+	int	status;
 
 	pipe_fd[READ] = config->stdin_backup;
 	pipe_fd[WRITE] = config->stdout_backup;
@@ -70,7 +80,6 @@ int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 
 int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 {
-	/** printf("exec general\n"); */
 	int		pipe_fd[2];
 	pid_t	pid;
 
@@ -94,7 +103,8 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 
 /** exec_subshell은 무조건 fork로 실행. --> 기본 구조는 exec_general 과 코드가 동일.
  * */
-void	exec_priority_operator(t_tree *node, t_token *tok, int *status, t_shell_config *config)
+void	exec_priority_operator(t_tree *node, t_token *tok, int *status, \
+			t_shell_config *config)
 {
 	/** printf("here\n"); */
 	/** (1-1) if [() : subshell] */

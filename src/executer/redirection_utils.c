@@ -1,9 +1,20 @@
-#include <stdio.h>
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   redirection_utils.c                                :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/28 17:08:01 by han-yeseul        #+#    #+#             */
+/*   Updated: 2022/07/28 17:08:02 by han-yeseul       ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
+#include <stdio.h>
 #include "../main/minishell.h"
 #include "../lexer/token.h"
 
-# define CHILD	(0)
+#define CHILD	(0)
 
 static char	*get_environ_value(const char *env_key, char **envp)
 {
@@ -23,7 +34,8 @@ static char	*get_environ_value(const char *env_key, char **envp)
 	return (target);
 }
 
-static void	expand_dollar_sign(t_string *str, t_iterator *iter, t_shell_config *config)
+static void	expand_dollar_sign(t_string *str, \
+	t_iterator *iter, t_shell_config *config)
 {
 	long	start;
 	long	end;
@@ -40,7 +52,7 @@ static void	expand_dollar_sign(t_string *str, t_iterator *iter, t_shell_config *
 	free(env_key);
 }
 
-char	*expand_line_each(char *line, t_shell_config *config)
+static char	*expand_line_each(char *line, t_shell_config *config)
 {
 	t_iterator	iter;
 	t_string	*expanded_str;
@@ -62,10 +74,27 @@ char	*expand_line_each(char *line, t_shell_config *config)
 	return (newline);
 }
 
-void	expand_file(t_token *tok, t_shell_config *config)
+static void	write_to_new_file(int *pipefd, t_token *tok, t_shell_config *config)
 {
 	char	*line;
 	char	*newline;
+
+	close(pipefd[READ]);
+	while (1)
+	{
+		line = get_next_line(tok->heredoc_fd);
+		if (line == NULL)
+			exit(SUCCESS);
+		newline = expand_line_each(line, config);
+		free(line);
+		write(pipefd[WRITE], newline, ft_strlen(newline));
+		write(pipefd[WRITE], "\n", 2);
+		free(newline);
+	}
+}
+
+void	expand_file(t_token *tok, t_shell_config *config)
+{
 	pid_t	pid;
 	int		pipefd[2];
 
@@ -76,22 +105,9 @@ void	expand_file(t_token *tok, t_shell_config *config)
 		perror("pipe fail");
 	pid = fork();
 
+	// 2. 한 줄씩 읽어오며 $ 확장해서 새 파이프에 써넣기
 	if (pid == CHILD)
-	{
-		close(pipefd[READ]);
-		// 2. 한 줄씩 읽어오며 $ 확장해서 새 파이프에 써넣기
-		while (1)
-		{
-			line = get_next_line(tok->heredoc_fd);
-			if (line == NULL)
-				exit(SUCCESS);
-			newline = expand_line_each(line, config);
-			free(line);
-			write(pipefd[WRITE], newline, ft_strlen(newline));
-			write(pipefd[WRITE], "\n", 2);
-			free(newline);
-		}
-	}
+		write_to_new_file(pipefd, tok, config);
 	else//if parent
 	{
 		// 3. 새 파이프 read 저장

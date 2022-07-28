@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_tree.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 15:36:20 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/28 12:08:25 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,8 @@ t_list	*collect_redirection_node(t_list *tokens)
 	while (target != NULL && target->next != NULL)
 	{
 		if (target != NULL && target->next != NULL \
-				&& ((t_token *)target->next->content)->type == E_TYPE_REDIR_ARG)
+				&& ((((t_token *)target->next->content)->type == E_TYPE_REDIR_ARG)
+					|| ((t_token *)target->next->content)->type == E_TYPE_REDIR_ARG_HEREDOC_QUOTED))
 		{
 			target = target->next;
 			cur->next = target;
@@ -74,8 +75,8 @@ void	cut_node_and_do_recur(t_tree *parent, t_list *tokens, \
 }
 
 /** NOTE : Error log.
- *  if command is [ <infile ], then <infile should be 
- *  the last pipe cmd of a cmd-cycle. 
+ *  if command is [ <infile ], then <infile should be
+ *  the last pipe cmd of a cmd-cycle.
  *
  *  [ target_token_ptr == NULL ] means node has only redirection. (no command)
  *  ex. [ <in ] or [ <in | cat ]

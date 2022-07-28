@@ -6,19 +6,18 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 13:59:34 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/28 13:32:44 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
+/** Readline library */
+#include <readline/readline.h>
+#include <readline/history.h>
+
 #include <fcntl.h>//open
 #include <unistd.h>
 #include <sys/wait.h>
 #include <string.h>//strerror
-				   //
-/** Readline library */
-#include <readline/readline.h>
-#include <readline/history.h>
 
 #include "../main/minishell.h"
 #include "../lexer/token.h"
@@ -30,104 +29,226 @@
 # define READ	(0)
 # define WRITE	(1)
 
-int	is_limiter(char *line, const char *limiter)
+
+int	open_file_less(t_list *cur, int *pipe_fd, int *status)
 {
-	/** FIXME : 줄바꿈이 있을 수도 있지 않나? 이부분 어쩌지?  */
-	if (ft_strncmp(line, limiter, ft_strlen(limiter) + 1))
-		return (false);
-	else
-		return (true);
+	t_token	*tok;
+
+	cur = cur->next;
+	tok = cur->content;
+	pipe_fd[READ] = open(tok->str->text, O_RDONLY);
+	if (pipe_fd[READ] == -1)
+	{
+		*status = errno;
+		printf("lesh: %s: %s\n", tok->str->text, strerror(*status));
+	}
+	return (*status);
 }
 
-int	open_heredoc(const char *limiter)
-{
-	// 여기는 pipex heredoc 코드에서 readline 부분만 바꾼 상태예요.
-	// heredoc 관련 내용:
-	// 노션 여기서 봐주세요.
-	// (https://www.notion.so/kyeu/Minishell-110e3b17e97e467eb44e1ef23b9e8882#df7f3307d1ce4456a6d3fbb7ca11e7b7)
-	int			pipe_fd[2];
-	pid_t		pid;
-	char		*line;
+/******** heredoc ***********/
 
-	line = NULL;
-	pipe(pipe_fd);
-	pid = fork();
-	if (pid == CHILD)
+
+static char	*get_environ_value(const char *env_key, char **envp)
+{
+	size_t	i;
+	char	*target;
+
+	i = 0;
+	if (env_key == NULL || envp == NULL)
+		return (NULL);
+	target = NULL;
+	while (envp[i] != NULL)
 	{
-		close(pipe_fd[READ]);
-		while (true)
-		{
-			write(2, "& ", 2);
-			line = readline("\033[31mheredoc> \033[0m");
-			if (is_limiter(line, limiter))
-			{
-				free(line);
-				exit(EXIT_SUCCESS);
-			}
-			else
-				write(pipe_fd[WRITE], line, ft_strlen(line));
-		}
+		if (ft_strncmp(envp[i], env_key, ft_strlen(env_key)) == 0)
+			return (ft_strchr(envp[i], '=') + 1);
+		i++;
+	}
+	return (target);
+}
+
+static void	expand_dollar_sign(t_string *str, t_iterator *iter, t_shell_config *config)
+{
+	long	start;
+	long	end;
+	char	*env_key;
+	char	*env_value;
+
+	start = iter->curpos;
+	while (iter->f_has_next(iter) && ft_isalnum(iter->f_peek(iter)))
+		iter->f_next(iter);
+	end = iter->curpos;
+	env_key = ft_substr(iter->line, start + 1, end - start);
+	env_value = get_environ_value(env_key, *(config->envp));
+	str->f_append(str, env_value);
+	free(env_key);
+}
+
+static void	expand_line_each(char *line, t_shell_config *config)
+{
+	t_iterator	iter;
+	t_string	*expanded_str;
+	char		c;
+
+	init_iterator(&iter, line);
+	expanded_str = new_string(50);
+	while (iter.f_has_next(&iter))
+	{
+		c = iter.f_next(&iter);
+		if (c == '$')
+			expand_dollar_sign(expanded_str, &iter, config);
+		else
+			expanded_str->f_push_back(expanded_str, c);
 	}
 	free(line);
-	close(pipe_fd[WRITE]);
-	wait(NULL);
-	return (pipe_fd[READ]);
+	line = ft_strdup(expanded_str->text);
+	delete_string(&expanded_str);
 }
 
-int	open_redirection(int *pipe_fd, t_list *redir_list /*, t_shell_config *config*/)// [>] [out] [<] [in]
+static void	expand_file(t_token *tok, t_shell_config *config)
+{
+	char	*line;
+	pid_t	pid;
+	int		pipefd[2];
+
+	//0. token->heredoc_fd에 기존 fd 있음.
+
+	// 1. 새 파이프를 하나 열고
+	if (pipe(pipefd) == -1)
+		perror("pipe fail");
+	pid = fork();
+
+	if (pid == CHILD)
+	{
+		close(pipefd[READ]);
+		// 2. 한 줄씩 읽어오며 $ 확장해서 새 파이프에 써넣기
+		while (1)
+		{
+			line = get_next_line(tok->heredoc_fd);
+			if (line == NULL)
+				exit(SUCCESS);
+			expand_line_each(line, config);
+			write(pipefd[WRITE], line, ft_strlen(line));
+			write(pipefd[WRITE], "\n", 2);
+			free(line);
+		}
+	}
+	else//if parent
+	{
+		// 3. 새 파이프 read 저장
+		close(pipefd[WRITE]);
+		wait(NULL);
+		close(tok->heredoc_fd);
+		tok->heredoc_fd = pipefd[READ];
+	}
+}
+
+int	open_file_heredoc(t_list *cur, int *pipe_fd, int *status, t_shell_config *config)
+{
+	t_token	*tok;
+
+	cur = cur->next;
+	tok = cur->content;
+
+	//1. limiter가 쿼트리무벌된 적이 없으면, 내용이 확장된 새로운 파일fd로 교체한다.
+	if (tok->type != E_TYPE_REDIR_ARG_HEREDOC_QUOTED)
+		expand_file(tok, config);
+
+/************          test          ***********/
+		// char *line;
+		// int	fd;
+
+		// fd = open("test", O_WRONLY | O_CREAT, 0600);
+
+		// while (1)
+		// {
+		// 	line = get_next_line(tok->heredoc_fd);
+		// 	if (line == NULL)
+		// 		exit(SUCCESS);
+		// 	expand_line_each(line, config);
+		// 	write(fd, line, ft_strlen(line));
+		// 	free(line);
+		// }
+/************************************************/
+
+	//2. fd를 넣어준다.
+	pipe_fd[READ] = tok->heredoc_fd;
+
+	if (pipe_fd[READ] == -1)
+	{
+		*status = errno;
+		printf("lesh: %s: %s\n", tok->str->text, strerror(*status));
+	}
+	return (*status);
+}
+
+/************** heredoc end *******************/
+
+int	open_file_greater(t_list *cur, int *pipe_fd, int *status)
+{
+	t_token	*tok;
+
+	cur = cur->next;
+	tok = cur->content;
+	pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_TRUNC | O_CREAT, 0600);
+	if (pipe_fd[WRITE] == -1)
+	{
+		*status = errno;
+		printf("lesh: %s: %s\n", tok->str->text, strerror(*status));
+	}
+	return (*status);
+}
+
+int	open_file_append(t_list *cur, int *pipe_fd, int *status)
+{
+	t_token	*tok;
+
+	cur = cur->next;
+	tok = cur->content;
+	pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_APPEND | O_CREAT, 0600);
+	if (pipe_fd[WRITE] == -1)
+	{
+		*status = errno;
+		printf("lesh: %s: %s\n", tok->str->text, strerror(*status));
+	}
+	return (*status);
+}
+
+void	open_redirection(int *pipe_fd, t_list *redir_list, t_shell_config *config)
 {
 	int				status;
 	t_token			*tok;
 	t_list			*cur;
 
-	/** config->pipe_fd[READ] == config->stdin_backup; */
-	/** config->pipe_fd[WRITE] == config->stdout_backup; */
-
 	status = 0;
-	if (redir_list == NULL)
-		return (status);
-	cur = redir_list;
-	while (cur != NULL)
+	if (redir_list != NULL)
 	{
-		tok = cur->content;
-		if (tok->type == E_TYPE_REDIR_LESS) // < in
+		cur = redir_list;
+		while (cur != NULL)
 		{
-			cur = cur->next;
 			tok = cur->content;
-			pipe_fd[READ] = open(tok->str->text, O_RDONLY);
-			if (pipe_fd[READ] == -1)
+			if (tok->type == E_TYPE_REDIR_LESS)
 			{
-				status = errno;
-				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
-				break ;
+				if (open_file_less(cur, pipe_fd, &status) != SUCCESS)
+					break ;
 			}
-		}
-		else if (tok->type == E_TYPE_REDIR_GREATER) // > out
-		{
+			else if (tok->type == E_TYPE_REDIR_HEREDOC)
+			{
+				if (open_file_heredoc(cur, pipe_fd, &status, config) != SUCCESS)
+					break ;
+			}
+			else if (tok->type == E_TYPE_REDIR_GREATER)
+			{
+				if (open_file_greater(cur, pipe_fd, &status) != SUCCESS)
+					break ;
+			}
+			else if (tok->type == E_TYPE_REDIR_APPEND)
+			{
+				if (open_file_append(cur, pipe_fd, &status) != SUCCESS)
+					break ;
+			}
 			cur = cur->next;
-			tok = cur->content;
-			pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_TRUNC | O_CREAT, 0644);
-			if (pipe_fd[WRITE] == -1)
-			{
-				status = errno;
-				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
-				break ;
-			}
 		}
-		else if (tok->type == E_TYPE_REDIR_APPEND) // >> out
-		{
-			cur = cur->next;
-			tok = cur->content;
-			pipe_fd[WRITE] = open(tok->str->text, O_WRONLY | O_APPEND | O_CREAT, 0644);
-			if (pipe_fd[WRITE] == -1)
-			{
-				status = errno;
-				printf("lesh: %s: %s\n", tok->str->text, strerror(status));
-				break ;
-			}
-		}
-		cur = cur->next;
 	}
-
-	return (status);
+	if (status != SUCCESS)
+		exit(status);
 }

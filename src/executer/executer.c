@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 16:05:10 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/28 17:41:30 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,30 +38,26 @@ void	delete_tree_node(t_tree *node, int *status, t_shell_config *config)
 
 void	execute_node(t_tree *node, int *status, t_shell_config *config)
 {
-	t_token *tok;
+	t_token	*tok;
 	char	**cmd_argv;
 
 	if (*status != CMD_KEEP_RUNNING || node == NULL)
 		return ;
-
 	tok = NULL;
 	if (node->token != NULL)
 		tok = node->token->content;
-
 	/** (1) if | or && or || or ( ) parenthethis for priority */
 	if (tok != NULL && tok->type != E_TYPE_SIMPLE_CMD)
-	{
 		return (exec_priority_operator(node, tok, status, config));
-	}
 	else if (expand_tokens(node->token, config) == ERROR \
 			|| expand_tokens(node->redirection, config) == ERROR)
 		return ;
-
 	cmd_argv = get_cmd_argv(node->token);
-	if (cmd_argv != NULL && node->is_pipeline == false && is_builtin_func(cmd_argv[0]))
+	if (cmd_argv != NULL && node->is_pipeline == false \
+		&& is_builtin_func(cmd_argv[0]))
 		*status = exec_exceptions(node, cmd_argv, config);
 	else
-		*status = exec_general(node, cmd_argv, config); //  무조건 fork를 하는 애들.
+		*status = exec_general(node, cmd_argv, config);//  무조건 fork를 하는 애들.
 	if (cmd_argv != NULL)
 		delete_strs(&cmd_argv);
 }
@@ -69,7 +65,8 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 /** 함수 포인터 글자수 줄이는 용도 */
 typedef void(*t_callback_func)(t_tree *, int *, t_shell_config *);
 
-void	inorder_recur(t_tree *node, int *status, t_callback_func callback, t_shell_config *shell_config)
+void	inorder_recur(t_tree *node, int *status, t_callback_func callback, \
+			t_shell_config *shell_config)
 {
 	/** status가 몇일 때 어떤 행동을 할지는 구현할 때 정하기 */
 	if (node == NULL)

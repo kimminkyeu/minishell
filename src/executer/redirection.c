@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 13:32:44 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/28 15:17:16 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 
 #include "../main/minishell.h"
 #include "../lexer/token.h"
+#include "redirection.h"
 
 # define IN		(0)
 # define OUT	(1)
@@ -28,7 +29,6 @@
 
 # define READ	(0)
 # define WRITE	(1)
-
 
 int	open_file_less(t_list *cur, int *pipe_fd, int *status)
 {
@@ -45,130 +45,18 @@ int	open_file_less(t_list *cur, int *pipe_fd, int *status)
 	return (*status);
 }
 
-/******** heredoc ***********/
-
-
-static char	*get_environ_value(const char *env_key, char **envp)
-{
-	size_t	i;
-	char	*target;
-
-	i = 0;
-	if (env_key == NULL || envp == NULL)
-		return (NULL);
-	target = NULL;
-	while (envp[i] != NULL)
-	{
-		if (ft_strncmp(envp[i], env_key, ft_strlen(env_key)) == 0)
-			return (ft_strchr(envp[i], '=') + 1);
-		i++;
-	}
-	return (target);
-}
-
-static void	expand_dollar_sign(t_string *str, t_iterator *iter, t_shell_config *config)
-{
-	long	start;
-	long	end;
-	char	*env_key;
-	char	*env_value;
-
-	start = iter->curpos;
-	while (iter->f_has_next(iter) && ft_isalnum(iter->f_peek(iter)))
-		iter->f_next(iter);
-	end = iter->curpos;
-	env_key = ft_substr(iter->line, start + 1, end - start);
-	env_value = get_environ_value(env_key, *(config->envp));
-	str->f_append(str, env_value);
-	free(env_key);
-}
-
-static void	expand_line_each(char *line, t_shell_config *config)
-{
-	t_iterator	iter;
-	t_string	*expanded_str;
-	char		c;
-
-	init_iterator(&iter, line);
-	expanded_str = new_string(50);
-	while (iter.f_has_next(&iter))
-	{
-		c = iter.f_next(&iter);
-		if (c == '$')
-			expand_dollar_sign(expanded_str, &iter, config);
-		else
-			expanded_str->f_push_back(expanded_str, c);
-	}
-	free(line);
-	line = ft_strdup(expanded_str->text);
-	delete_string(&expanded_str);
-}
-
-static void	expand_file(t_token *tok, t_shell_config *config)
-{
-	char	*line;
-	pid_t	pid;
-	int		pipefd[2];
-
-	//0. token->heredoc_fd에 기존 fd 있음.
-
-	// 1. 새 파이프를 하나 열고
-	if (pipe(pipefd) == -1)
-		perror("pipe fail");
-	pid = fork();
-
-	if (pid == CHILD)
-	{
-		close(pipefd[READ]);
-		// 2. 한 줄씩 읽어오며 $ 확장해서 새 파이프에 써넣기
-		while (1)
-		{
-			line = get_next_line(tok->heredoc_fd);
-			if (line == NULL)
-				exit(SUCCESS);
-			expand_line_each(line, config);
-			write(pipefd[WRITE], line, ft_strlen(line));
-			write(pipefd[WRITE], "\n", 2);
-			free(line);
-		}
-	}
-	else//if parent
-	{
-		// 3. 새 파이프 read 저장
-		close(pipefd[WRITE]);
-		wait(NULL);
-		close(tok->heredoc_fd);
-		tok->heredoc_fd = pipefd[READ];
-	}
-}
-
 int	open_file_heredoc(t_list *cur, int *pipe_fd, int *status, t_shell_config *config)
 {
 	t_token	*tok;
 
+	(void)config;
+
 	cur = cur->next;
 	tok = cur->content;
 
-	//1. limiter가 쿼트리무벌된 적이 없으면, 내용이 확장된 새로운 파일fd로 교체한다.
+	//1. limiter가 쿼트리무벌된 적이 없으면, tok->heredoc_fd를 내용이 확장된 새로운 파일fd로 교체한다.
 	if (tok->type != E_TYPE_REDIR_ARG_HEREDOC_QUOTED)
 		expand_file(tok, config);
-
-/************          test          ***********/
-		// char *line;
-		// int	fd;
-
-		// fd = open("test", O_WRONLY | O_CREAT, 0600);
-
-		// while (1)
-		// {
-		// 	line = get_next_line(tok->heredoc_fd);
-		// 	if (line == NULL)
-		// 		exit(SUCCESS);
-		// 	expand_line_each(line, config);
-		// 	write(fd, line, ft_strlen(line));
-		// 	free(line);
-		// }
-/************************************************/
 
 	//2. fd를 넣어준다.
 	pipe_fd[READ] = tok->heredoc_fd;
@@ -180,8 +68,6 @@ int	open_file_heredoc(t_list *cur, int *pipe_fd, int *status, t_shell_config *co
 	}
 	return (*status);
 }
-
-/************** heredoc end *******************/
 
 int	open_file_greater(t_list *cur, int *pipe_fd, int *status)
 {
@@ -227,28 +113,18 @@ void	open_redirection(int *pipe_fd, t_list *redir_list, t_shell_config *config)
 		{
 			tok = cur->content;
 			if (tok->type == E_TYPE_REDIR_LESS)
-			{
-				if (open_file_less(cur, pipe_fd, &status) != SUCCESS)
-					break ;
-			}
+				open_file_less(cur, pipe_fd, &status);
 			else if (tok->type == E_TYPE_REDIR_HEREDOC)
-			{
-				if (open_file_heredoc(cur, pipe_fd, &status, config) != SUCCESS)
-					break ;
-			}
+				open_file_heredoc(cur, pipe_fd, &status, config);
 			else if (tok->type == E_TYPE_REDIR_GREATER)
-			{
-				if (open_file_greater(cur, pipe_fd, &status) != SUCCESS)
-					break ;
-			}
+				open_file_greater(cur, pipe_fd, &status);
 			else if (tok->type == E_TYPE_REDIR_APPEND)
-			{
-				if (open_file_append(cur, pipe_fd, &status) != SUCCESS)
-					break ;
-			}
-			cur = cur->next;
+				open_file_append(cur, pipe_fd, &status);
+
+			if (status != SUCCESS)
+				exit(status);
+			else
+				cur = cur->next;
 		}
 	}
-	if (status != SUCCESS)
-		exit(status);
 }

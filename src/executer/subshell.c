@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   subshell.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/27 20:21:34 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 03:32:18 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/28 14:25:26 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,13 +52,13 @@ int	exec_subshell(t_tree *node, t_string *str, t_shell_config *config)
 	{
 		perror("fork()");
 		return (ERROR);
-	}	
+	}
 	if (pid == CHILD) /* child */
 	{
 		if (node->is_last_pipe_cmd)
 			dup2(config->stdout_backup, pipe_fd[WRITE]);
 		tmp_fd = pipe_fd[READ];
-		open_redirection(pipe_fd, node->redirection);
+		open_redirection(pipe_fd, node->redirection, config);
 		if (tmp_fd != pipe_fd[READ])
 			dup2(pipe_fd[READ], STDIN_FILENO);
 		dup2(pipe_fd[WRITE], STDOUT_FILENO);

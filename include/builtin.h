@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 21:59:30 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 16:56:52 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/07/29 17:53:30 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,6 @@
 
 # include "../src/builtin/environ.h"
 # include "libft.h"
-
-extern int errno;
 
 /* --------------------------------------------
  * |  NOTE : Environment variable functions   |

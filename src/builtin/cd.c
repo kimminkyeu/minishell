@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 23:15:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 16:58:01 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/07/29 17:53:55 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,6 @@ int	exec_cd(char **arglist, char ***envp_ptr)
 		}
 		else
 		{
-			//errno 사용이 문제가 됨.
 			printf("lesh: cd: %s: %s", arglist[1], strerror(errno));
 			status = NO_SUCH_DIRECTORY;
 		}

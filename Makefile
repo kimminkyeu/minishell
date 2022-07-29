@@ -6,17 +6,15 @@
 #    By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/29 14:32:44 by yehan            ###   ########seoul.kr   #
+#    Updated: 2022/07/29 16:52:24 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			= minishell
 CC				= cc
 
-# 				#-g3d 옵션 붙이면 오류가 뜬 파일 위치와 줄번호까지 뜸
-CFLAGS		= -Wall -Wextra -Werror -g3 -fsanitize=address
-
-# CFLAGS			= -Wall -Wextra -Werror
+# CFLAGS		= -Wall -Wextra -Werror -g3 -fsanitize=address
+CFLAGS			= -Wall -Wextra -Werror
 INCLUDE			= include
 
 # GNU readline Flag for MAC
@@ -37,13 +35,13 @@ ITERATOR_DIR	= $(SRC_DIR)/iterator/
 
 # NOTE : Add Source files here
 # ------------------------------------------------------ #
-MAIN_SRC		= minishell prompt helper signal_handle heredoc heredoc_utils
+MAIN_SRC		= minishell prompt signal_handle heredoc heredoc_utils helper helper2 
 
 LEXER_SRC		= token_create token_modify \
 				  scanner_main scanner_create scanner_function_ptr \
 				  scanner_helper scanner_get_token_1 scanner_get_token_2
 
-PARSER_SRC		= parse_tree parse_tree_utils
+PARSER_SRC		= parse_tree parse_tree_utils parse_tree_helper
 EXECUTER_SRC	= executer token_expand token_expand_utils get_full_path subshell \
 				  redirection redirection_utils exec_command exec_command_utils
 

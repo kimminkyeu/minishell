@@ -6,13 +6,12 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 14:35:42 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/07/29 17:31:37 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <stdio.h>
-
 /** Readline library */
+#include <stdio.h>
 #include <readline/readline.h>
 #include <readline/history.h>
 
@@ -47,23 +46,23 @@ int	open_file_less(t_list *cur, int *pipe_fd, int *status)
 	return (*status);
 }
 
+/* open_file_heredoc():
+** STEPS:
+** 1) if limiter has never been moved,
+** replace tok->heredoc_fd with a new file with expanded contents.
+** 2) set pipe_fd[READ] with heredoc_fd
+*/
 int	open_file_heredoc(t_list *cur, int *pipe_fd, int *status, \
 		t_shell_config *config)
 {
 	t_token	*tok;
 
 	(void)config;
-
 	cur = cur->next;
 	tok = cur->content;
-
-	//1. limiter가 쿼트리무벌된 적이 없으면, tok->heredoc_fd를 내용이 확장된 새로운 파일fd로 교체한다.
 	if (tok->type != E_TYPE_REDIR_ARG_HEREDOC_QUOTED)
 		expand_file(tok, config);
-
-	//2. fd를 넣어준다.
 	pipe_fd[READ] = tok->heredoc_fd;
-
 	if (pipe_fd[READ] == -1)
 	{
 		*status = errno;

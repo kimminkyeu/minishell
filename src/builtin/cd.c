@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 23:15:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 22:16:59 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/29 16:58:01 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,16 @@
 #include <unistd.h>
 /** free() */
 #include <stdlib.h>
-/** perror() */
-#include <stdio.h>
+/** strerror() */
+#include <string.h>
+#include <sys/errno.h>
 
 #include "../libft/include/libft.h"
 #include "../../include/builtin.h"
 
-/*
-** cd with only a relative or absolute path.
-** NOTE: chdir() work with both type.
-*/
-
 #define NO_SUCH_DIRECTORY (2)
 
-/**
- * NOTE : if cmd is [cd -] or [cd ~], then substitute arglist[1]. 
+/* NOTE : if cmd is [cd -] or [cd ~], then substitute arglist[1]. 
  * [ cd ~/minishell/include ] should work to. */
 void	set_environ_directory_to_arglist(char **arglist, char ***envp_ptr)
 {
@@ -45,7 +40,7 @@ void	set_environ_directory_to_arglist(char **arglist, char ***envp_ptr)
 		path = get_environ_value("OLDPWD", *envp_ptr);
 		arglist[1] = ft_strdup(path);
 	}
-	else if (arglist[1][0] == '~' 
+	else if (arglist[1][0] == '~' \
 			&& (arglist[1][1] == '\0' || arglist[1][1] == '/'))
 	{
 		path = get_environ_value("HOME", *envp_ptr);
@@ -55,8 +50,8 @@ void	set_environ_directory_to_arglist(char **arglist, char ***envp_ptr)
 	}
 }
 
-/** before cd, set OLDPWD to current directory */
-void	update_old_pwd(char **arglist, char ***envp_ptr)
+/**  before cd, set OLDPWD to current directory  **/
+static void	update_old_pwd(char **arglist, char ***envp_ptr)
 {
 	char	*message;
 	char	*path;
@@ -73,7 +68,7 @@ void	update_old_pwd(char **arglist, char ***envp_ptr)
 	arglist[1] = tmp;
 }
 
-void	reset_pwd(char ***envp_ptr)
+static void	reset_pwd(char ***envp_ptr)
 {
 	char	*path_old;
 	char	*path_new;
@@ -88,40 +83,47 @@ void	reset_pwd(char ***envp_ptr)
 	free(arglist_new[1]);
 	arglist_new[1] = path_new;
 	exec_export(arglist_new, envp_ptr);
-
-	/** FIXME : Possible Memory Leak. */
 	free(arglist_new[0]);
 	free(arglist_new[1]);
 	free(arglist_new);
 }
 
-/** change current directory path. */
+static char	*get_current_directory(char **arglist)
+{
+	char	*path;
+	char	*buf;
+
+	buf = ft_calloc(1, MAXPATHLEN);
+	getcwd(buf, MAXPATHLEN);
+	path = ft_strjoin("PWD=", buf);
+	free(buf);
+	free(arglist[1]);
+	return (path);
+}
+
 int	exec_cd(char **arglist, char ***envp_ptr)
 {
-	char	*message;
-	char	*path;
+	int		status;
 
+	status = SUCCESS;
 	if (arglist[1] == NULL)
-	{
 		reset_pwd(envp_ptr);
-		return (SUCCESS);
-	}
-	if (arglist[1][0] == '-' || arglist[1][0] == '~')
-		set_environ_directory_to_arglist(arglist, envp_ptr);
-	update_old_pwd(arglist, envp_ptr);
-	if (chdir(arglist[1]) == -1)
+	else
 	{
-		message = ft_strjoin("lesh: cd: ", arglist[1]);
-		perror(message);
-		free(message);
-		return (NO_SUCH_DIRECTORY);
+		if (arglist[1][0] == '-' || arglist[1][0] == '~')
+			set_environ_directory_to_arglist(arglist, envp_ptr);
+		update_old_pwd(arglist, envp_ptr);
+		if (chdir(arglist[1]) == SUCCESS)
+		{
+			arglist[1] = get_current_directory(arglist);
+			exec_export(arglist, envp_ptr);
+		}
+		else
+		{
+			//errno 사용이 문제가 됨.
+			printf("lesh: cd: %s: %s", arglist[1], strerror(errno));
+			status = NO_SUCH_DIRECTORY;
+		}
 	}
-	message = ft_calloc(1, MAXPATHLEN);
-	getcwd(message, MAXPATHLEN);
-	path = ft_strjoin("PWD=", message);
-	free(message);
-	free(arglist[1]);
-	arglist[1] = path;
-	exec_export(arglist, envp_ptr);
-	return (SUCCESS);
+	return (status);
 }

@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 21:55:15 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 16:39:02 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/29 17:50:59 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,44 +25,59 @@
 #include "helper.h"
 #include "../../include/builtin.h"
 
-void	show_shell_logo(void)
+void	show_logo_2(void)
 {
 	const char	*red;
 	const char	*white;
 
 	red = "\033[31m";
 	white = "\033[0m";
-	printf("%s=============================================================\
-			==============%s\n", red, white);
-	printf("%s|                                                            \
-			|%s\n", red, white);
-	printf("%s|   Welcome to 42 minishell project.                         \
-			|%s\n", red, white);
-	printf("%s|                                                            \
-			|%s\n", red, white);
-	printf("%s|                                                            \
-			|%s\n", red, white);
-	printf("%s|   ██╗     ███████╗███████╗    ███████╗██╗  ██╗███████╗██╗  \
-			██╗       |%s\n", red, white);
-	printf("%s|   ██║     ██╔════╝██╔════╝    ██╔════╝██║  ██║██╔════╝██║  \
-			██║       |%s\n", red, white);
-	printf("%s|   ██║     █████╗  █████╗      ███████╗███████║█████╗  ██║  \
-			██║       |%s\n", red, white);
-	printf("%s|   ██║     ██╔══╝  ██╔══╝      ╚════██║██╔══██║██╔══╝  ██║  \
-			██║       |%s\n", red, white);
-	printf("%s|   ███████╗███████╗███████╗    ███████║██║  ██║███████╗█████\
-			██╗███████╗  |%s\n", red, white);
-	printf("%s|   ╚══════╝╚══════╝╚══════╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚════\
-			══╝╚══════╝  |%s\n", red, white);
-	printf("%s|                                                            \
-			|%s\n", red, white);
-	printf("%s|                                          .created by yehan \
-			& minkyeki   |%s\n", red, white);
-	printf("%s|                                                            \
-			|%s\n", red, white);
-	printf("%s=============================================================\
-			==============%s\n", red, white);
+	printf("%s|   ██║     █████╗  █████╗      ███████╗███████║█████╗  ██║  "\
+			"   ██║       |%s\n", red, white);
+	printf("%s|   ██║     ██╔══╝  ██╔══╝      ╚════██║██╔══██║██╔══╝  ██║  "\
+			"   ██║       |%s\n", red, white);
+	printf("%s|   ███████╗███████╗███████╗    ███████║██║  ██║███████╗█████"\
+			"██╗███████╗  |%s\n", red, white);
+	printf("%s|   ╚══════╝╚══════╝╚══════╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚════"\
+			"══╝╚══════╝  |%s\n", red, white);
+	printf("%s|                                                            "\
+			"             |%s\n", red, white);
+	printf("%s|                                          .created by yehan "\
+			"& minkyeki   |%s\n", red, white);
+	printf("%s|                                                            "\
+			"             |%s\n", red, white);
+	printf("%s============================================================="\
+			"==============%s\n", red, white);
 	printf("\n");
+}
+
+void	show_logo_1(void)
+{
+	const char	*red;
+	const char	*white;
+
+	red = "\033[31m";
+	white = "\033[0m";
+	printf("%s============================================================="\
+			"==============%s\n", red, white);
+	printf("%s|                                                            "\
+			"             |%s\n", red, white);
+	printf("%s|   Welcome to 42 minishell project.                         "\
+			"             |%s\n", red, white);
+	printf("%s|                                                            "\
+			"             |%s\n", red, white);
+	printf("%s|                                                            "\
+			"             |%s\n", red, white);
+	printf("%s|   ██╗     ███████╗███████╗    ███████╗██╗  ██╗███████╗██╗  "\
+			"   ██╗       |%s\n", red, white);
+	printf("%s|   ██║     ██╔════╝██╔════╝    ██╔════╝██║  ██║██╔════╝██║  "\
+			"   ██║       |%s\n", red, white);
+}
+
+void	show_shell_logo(void)
+{
+	show_logo_1();
+	show_logo_2();
 }
 
 /** show prompt_messege + readline */

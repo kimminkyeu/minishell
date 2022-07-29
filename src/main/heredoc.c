@@ -1,11 +1,24 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2022/07/29 16:20:24 by minkyeki          #+#    #+#             */
+/*   Updated: 2022/07/29 16:22:12 by minkyeki         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include <stdio.h>
 #include <readline/readline.h>
 #include <fcntl.h>
+
 #include "minishell.h"
 #include "heredoc.h"
 #include "../lexer/token.h"
 
-# define CHILD (0)
+#define CHILD (0)
 
 void	expand_token(t_token *tok)
 {
@@ -41,7 +54,7 @@ void	open_heredoc(t_token *tok)
 	if (pid == CHILD)
 	{
 		close(pipefd[READ]);
-		while (1)
+		while (true)
 		{
 			line = readline_prompt_heredoc();
 			if (is_limiter(line, tok->str->text) == true)
@@ -51,13 +64,10 @@ void	open_heredoc(t_token *tok)
 			free(line);
 		}
 	}
-	else
-	{
-		close(pipefd[WRITE]);
-		if (wait(NULL) == -1)
-			perror("wait fail");
-		tok->heredoc_fd = pipefd[READ];
-	}
+	close(pipefd[WRITE]);
+	if (wait(NULL) == -1)
+		perror("wait fail");
+	tok->heredoc_fd = pipefd[READ];
 }
 
 void	set_heredoc(t_list *tokens)

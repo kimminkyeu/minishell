@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 01:57:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 15:43:46 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/07/29 16:43:47 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,11 +27,14 @@
 #include "../../include/builtin.h"
 #include "../../include/libft.h"
 
-extern int g_is_sig_interupt;
+extern int	g_is_sig_interupt;
 
+/** NOTE : Use of waitpid() is to make sure
+ *         sig_handler run only at main process. 
+ **/
 void	sig_ctrl_c(int signal)
 {
-	int pid;
+	int	pid;
 
 	pid = waitpid(-1, NULL, WNOHANG);
 	if (signal == SIGINT)
@@ -51,10 +54,9 @@ void	sig_ctrl_c(int signal)
 
 void	set_signal(void)
 {
-	signal(SIGINT, sig_ctrl_c);		// FIXME : CTRL + C --> $?가 1로 바뀌어야 한다.
-	signal(SIGQUIT, SIG_IGN);		// CTRL + / -> SIG_IGN = signal 무시.
+	signal(SIGINT, sig_ctrl_c);
+	signal(SIGQUIT, SIG_IGN);
 }
-
 
 void	*new_pid(pid_t pid)
 {
@@ -70,7 +72,8 @@ void	del_pid(void *content)
 	free(content);
 }
 
-/** Waits every pids, and set last process pid's wstatus to config->last_cmd_status */
+/** Waits every pids, and set last process pid's 
+ *  wstatus to config->last_cmd_status. */
 void	wait_every_pid(t_shell_config *config)
 {
 	t_list	*cur;

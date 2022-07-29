@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 23:56:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 03:02:39 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/29 16:36:39 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,14 @@
 # define READ	(0)
 # define WRITE	(1)
 
-/* ctrl+c 처리를 위한 전역 변수 1개. */
-// FIXME : 초기화를 여기서 해도 되나? (NORM)
-
 typedef struct s_shell_config {
 	char	***envp;
 	int		stdin_backup;
 	int		stdout_backup;
 	pid_t	last_cmd_pid;
 	int		last_cmd_wstatus;
-
-	t_list	*pid_list; // 자식 프로세스 pid 리스트. --> CTRL+C를 누르면 모두 kill해야 함.
-
-} t_shell_config;
+	t_list	*pid_list;
+}	t_shell_config;
 
 void	load_shell_config(t_shell_config *shell_config, char **env);
 int		run_shell(char *line, t_shell_config *config);

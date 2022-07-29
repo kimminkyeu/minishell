@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 21:55:15 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 03:51:47 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/29 16:39:02 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,26 +27,41 @@
 
 void	show_shell_logo(void)
 {
-	const char *red;
-	const char *white;
+	const char	*red;
+	const char	*white;
 
 	red = "\033[31m";
 	white = "\033[0m";
-	printf("%s===========================================================================%s\n", red, white);
-	printf("%s|                                                                         |%s\n", red, white);
-	printf("%s|   Welcome to 42 minishell project.                                      |%s\n", red, white);
-	printf("%s|                                                                         |%s\n", red, white);
-	printf("%s|                                                                         |%s\n", red, white);
-	printf("%s|   ██╗     ███████╗███████╗    ███████╗██╗  ██╗███████╗██╗     ██╗       |%s\n", red, white);
-	printf("%s|   ██║     ██╔════╝██╔════╝    ██╔════╝██║  ██║██╔════╝██║     ██║       |%s\n", red, white);
-	printf("%s|   ██║     █████╗  █████╗      ███████╗███████║█████╗  ██║     ██║       |%s\n", red, white);
-	printf("%s|   ██║     ██╔══╝  ██╔══╝      ╚════██║██╔══██║██╔══╝  ██║     ██║       |%s\n", red, white);
-	printf("%s|   ███████╗███████╗███████╗    ███████║██║  ██║███████╗███████╗███████╗  |%s\n", red, white);
-	printf("%s|   ╚══════╝╚══════╝╚══════╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝  |%s\n", red, white);
-	printf("%s|                                                                         |%s\n", red, white);
-	printf("%s|                                          .created by yehan & minkyeki   |%s\n", red, white);
-	printf("%s|                                                                         |%s\n", red, white);
-	printf("%s===========================================================================%s\n", red, white);
+	printf("%s=============================================================\
+			==============%s\n", red, white);
+	printf("%s|                                                            \
+			|%s\n", red, white);
+	printf("%s|   Welcome to 42 minishell project.                         \
+			|%s\n", red, white);
+	printf("%s|                                                            \
+			|%s\n", red, white);
+	printf("%s|                                                            \
+			|%s\n", red, white);
+	printf("%s|   ██╗     ███████╗███████╗    ███████╗██╗  ██╗███████╗██╗  \
+			██╗       |%s\n", red, white);
+	printf("%s|   ██║     ██╔════╝██╔════╝    ██╔════╝██║  ██║██╔════╝██║  \
+			██║       |%s\n", red, white);
+	printf("%s|   ██║     █████╗  █████╗      ███████╗███████║█████╗  ██║  \
+			██║       |%s\n", red, white);
+	printf("%s|   ██║     ██╔══╝  ██╔══╝      ╚════██║██╔══██║██╔══╝  ██║  \
+			██║       |%s\n", red, white);
+	printf("%s|   ███████╗███████╗███████╗    ███████║██║  ██║███████╗█████\
+			██╗███████╗  |%s\n", red, white);
+	printf("%s|   ╚══════╝╚══════╝╚══════╝    ╚══════╝╚═╝  ╚═╝╚══════╝╚════\
+			══╝╚══════╝  |%s\n", red, white);
+	printf("%s|                                                            \
+			|%s\n", red, white);
+	printf("%s|                                          .created by yehan \
+			& minkyeki   |%s\n", red, white);
+	printf("%s|                                                            \
+			|%s\n", red, white);
+	printf("%s=============================================================\
+			==============%s\n", red, white);
 	printf("\n");
 }
 
@@ -64,7 +79,8 @@ char	*readline_prompt(t_shell_config *config)
 	prompt->f_append(prompt, get_environ_value("NAME", *config->envp));
 	prompt->f_append(prompt, ":");
 	prompt->f_append(prompt, get_environ_value("PWD", *config->envp));
-	prompt->f_replace_all(prompt, get_environ_value("HOME", *config->envp), "~");
+	prompt->f_replace_all(prompt, \
+			get_environ_value("HOME", *config->envp), "~");
 	prompt->f_append(prompt, "\033[0m");
 	prompt->f_append(prompt, "$ ");
 	line = readline(prompt->text);

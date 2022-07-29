@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 14:21:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 12:08:25 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/29 16:50:46 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,7 @@ t_list	*collect_redirection_node(t_list *tokens)
 	while (target != NULL && target->next != NULL)
 	{
 		if (target != NULL && target->next != NULL \
-				&& ((((t_token *)target->next->content)->type == E_TYPE_REDIR_ARG)
-					|| ((t_token *)target->next->content)->type == E_TYPE_REDIR_ARG_HEREDOC_QUOTED))
+				&& is_type_redir_arg(target->next))
 		{
 			target = target->next;
 			cur->next = target;

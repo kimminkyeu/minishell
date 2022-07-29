@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_full_path.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 13:40:51 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 18:29:10 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/29 17:42:28 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@
 #include "../string/string.h"
 
 #define COMMAND_NOT_FOUND (127)
-/** # define ERROR		(-1) */
 #define PERROR		(1)
 #define PUTSTR		(0)
 
@@ -60,15 +59,17 @@ char	**get_environ_path(char	**envp)
 	return (p_path_split);
 }
 
-/** 만약 그 경로에 프로그램이 있다면, true를 반환 */
+/* is_valid_path():
+** NOTES: 
+** 1) If there is a program in that path, return true.
+** 2) struct dirent *file: we only use entry [d_name]. 
+*/
 int	is_valid_path(char *path, char *name)
 {
 	DIR				*dir_ptr;
 	struct dirent	*file;
 	int				is_valid_path;
 
-	/** if (name == NULL) */
-		/** return (false); */
 	is_valid_path = false;
 	dir_ptr = opendir(path);
 	if (dir_ptr == NULL)
@@ -78,8 +79,6 @@ int	is_valid_path(char *path, char *name)
 		file = readdir(dir_ptr);
 		if (file == NULL)
 			break ;
-		/*  struct dirent *의 구조체에서 d_name 이외에는
-		 *  시스템마다 항목이 없을 수 있으므로 무시하고 이름만 사용합니다. */
 		if (ft_strncmp(file->d_name, name, ft_strlen(name) + 1) == 0)
 			is_valid_path = true;
 	}
@@ -106,13 +105,17 @@ char	*get_cmd_full_path(t_string *buffer, char *name, char **env_path)
 		}
 		buffer->f_clear(buffer);
 	}
-	free(env_path);//이중 프리해주어야 되지 않을까?
+	free(env_path);
 	delete_string(&buffer);
 	return (cmd_full_path);
 }
 
-/** 환경변수를 순회하면서, 프로그램 이름에 전부 붙여준다.
- * NOTE : 만약 못찾았다면, NULL을 반환한다. */
+/** get_full_path()
+ ** NOTES:
+ ** 1) It iterates through the environment variables and appends them to [name].
+ ** 2) if it fail to find, return NULL.
+ ** 3) it also supports: ./minishell
+ */
 char	*get_full_path(char *name, char **envp)
 {
 	t_string	*buffer;
@@ -121,8 +124,6 @@ char	*get_full_path(char *name, char **envp)
 
 	buffer = new_string(20);
 	cmd_full_path = get_environ_value("PWD", envp);
-
-	/** ./minishell 도 처리하기 위함. */
 	if (ft_strchr(name, '/') != NULL \
 		&& is_valid_path(cmd_full_path, ft_strchr(name, '/') + 1))
 	{

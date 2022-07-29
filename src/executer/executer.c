@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 15:22:12 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/07/29 17:09:22 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ void	delete_tree_node(t_tree *node, int *status, t_shell_config *config)
 {
 	(void)status;
 	(void)config;
-
 	if (node != NULL)
 	{
 		if ((node)->redirection != NULL)
@@ -37,6 +36,10 @@ void	delete_tree_node(t_tree *node, int *status, t_shell_config *config)
 	}
 }
 
+/** execute_node():
+ ** STEPS:
+ ** 1) if | or && or || or ( ), run exec_priority_operator()
+ **/
 void	execute_node(t_tree *node, int *status, t_shell_config *config)
 {
 	t_token	*tok;
@@ -47,7 +50,6 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	tok = NULL;
 	if (node->token != NULL)
 		tok = node->token->content;
-	/** (1) if | or && or || or ( ) parenthethis for priority */
 	if (tok != NULL && tok->type != E_TYPE_SIMPLE_CMD)
 		return (exec_priority_operator(node, tok, status, config));
 	else if (expand_tokens(node->token, config) == ERROR \
@@ -58,22 +60,27 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 		&& is_builtin_func(cmd_argv[0]))
 		*status = exec_exceptions(node, cmd_argv, config);
 	else
-		*status = exec_general(node, cmd_argv, config);//  무조건 fork를 하는 애들.
+		*status = exec_general(node, cmd_argv, config);
 	if (cmd_argv != NULL)
 		delete_strs(&cmd_argv);
 }
 
-/** 함수 포인터 글자수 줄이는 용도 */
+/** inorder_recur():
+ ** NOTES:
+ ** 1) this function can do both execute and delete node.
+ ** 2) if status == CMD_STOP_SHELL (ex. calling exit) then stop all
+ ** STEPS:
+ ** 1) if no callback argument, execute every node
+ ** 2) if delete node function comes in, delete every node
+ **/
+
 typedef void(*t_callback_func)(t_tree *, int *, t_shell_config *);
 
 void	inorder_recur(t_tree *node, int *status, t_callback_func callback, \
 			t_shell_config *shell_config)
 {
-	/** status가 몇일 때 어떤 행동을 할지는 구현할 때 정하기 */
 	if (node == NULL)
 		return ;
-
-	/** (1) if status == CMD_STOP_SHELL (ex. calling exit) then stop all */
 	if (callback != delete_tree_node && *status == CMD_KEEP_RUNNING)
 	{
 		inorder_recur(node->left, status, callback, shell_config);
@@ -88,22 +95,20 @@ void	inorder_recur(t_tree *node, int *status, t_callback_func callback, \
 	}
 }
 
-/** Executer function. make traversing */
+/** execute():
+ ** NOTES:
+ ** 1) Executer function. make traversing.
+ ** STEPS:
+ ** 1) execute every node
+ ** 2) delete every node
+ **/
 int	execute(t_tree *syntax_tree, t_shell_config *config)
 {
 	int	status;
 
 	status = CMD_KEEP_RUNNING;
-
-	//inorder_recur(syntax_tree, &status, count_node, config);
-	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
 	wait_every_pid(config);
-
-	//heredoc fd 닫기
-
-	/** FIXME : 모든 노드 삭제 --> 문제 발생.  */
 	inorder_recur(syntax_tree, &status, delete_tree_node, config);
-
 	return (WEXITSTATUS(config->last_cmd_wstatus));
 }

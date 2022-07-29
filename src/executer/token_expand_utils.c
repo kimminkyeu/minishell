@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_expand_utils.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 19:20:29 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/07/28 19:20:29 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/29 17:12:29 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,9 @@
 
 extern int	g_is_sig_interupt;
 
-
 char	**get_cmd_argv(t_list *token)
 {
+	t_token		*tok;
 	t_list		*cur;
 	char		**arglist;
 	size_t		word_cnt;
@@ -36,7 +36,7 @@ char	**get_cmd_argv(t_list *token)
 	word_cnt = 0;
 	while (cur != NULL)
 	{
-		t_token *tok = cur->content;
+		tok = cur->content;
 		arglist[word_cnt] = ft_strdup(tok->str->text);
 		word_cnt++;
 		cur = cur->next;
@@ -44,7 +44,9 @@ char	**get_cmd_argv(t_list *token)
 	return (arglist);
 }
 
-void	expand_dollar_sign(t_string *str, t_iterator *iter, t_shell_config *config)
+// NOTE : if g_is_sig_interupt == true, signal: 2 + 128
+void	expand_dollar_sign(t_string *str, t_iterator *iter, \
+			t_shell_config *config)
 {
 	long	start;
 	long	end;
@@ -54,7 +56,7 @@ void	expand_dollar_sign(t_string *str, t_iterator *iter, t_shell_config *config)
 	if (iter->f_peek(iter) == '?')
 	{
 		if (g_is_sig_interupt == true)
-			str->f_append(str, "130"); // NOTE : signal 2 + 128 로 130이 된다.
+			str->f_append(str, "130");
 		else
 			str->f_append(str, ft_itoa(WEXITSTATUS(config->last_cmd_wstatus)));
 		iter->f_next(iter);

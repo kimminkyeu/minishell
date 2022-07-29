@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   subshell.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/27 20:21:34 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 19:17:32 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/29 17:23:38 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,32 +74,36 @@ static void	parent_process(int *pipe_fd, t_tree *node, \
 	close(pipe_fd[READ]);
 }
 
+/* exec_subshell()
+** NOTES:
+** 1) char *line: input for subshell
+** STEPS:
+** 1) set_up new_config
+** 2) delete bracket ( )
+** 3) fork and run subshell
+** 4) get subshell's exit status and exit
+*/
+
 int	exec_subshell(t_tree *node, t_string *str, t_shell_config *config)
 {
 	t_shell_config	new_config;
 	pid_t			pid;
 	int				pipe_fd[2];
-	char			*line; // 입력 라인.
+	char			*line;
 
-	/** (1) set_up new_config */
 	load_shell_config(&new_config, *(config->envp));
-	/** (2) delete bracket ( ) */
 	line = ft_substr(str->text, 1, ft_strlen(str->text) - 2);
-	/** (3) fork and run Subshell */
 	if (pipe_and_fork(pipe_fd, &pid) == ERROR)
 		return (ERROR);
-	if (pid == CHILD) /* child */
+	if (pid == CHILD)
 	{
 		child_process(pipe_fd, node, config);
-		/** SubShell 의 실행결과를 exit으로 전달.  */
 		exit(run_shell(line, &new_config));
 	}
-	else /* parent */
+	else
 	{
 		parent_process(pipe_fd, node, config, pid);
 		free(line);
 		return (SUCCESS);
 	}
-	/** FIXME : 여기서 free해주면 자식에게 영향이 가지 않을까? --> 문제 가능성 (1)
-	 * -> 자식은 다른 메모리를 쓰므로 부모프로세스에 넣어도 될 것 같아서 우선 넣었습니다! */
 }

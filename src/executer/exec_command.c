@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 17:38:17 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/07/29 15:39:26 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/07/29 17:47:45 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@
 #define READ			(0)
 #define WRITE			(1)
 
-/** TODO : 이 부분 로직 좀 더 효율적인 방법 없나? */
 int	exec_builtin(char **cmd_argv, char ***envp)
 {
 	size_t	len;
@@ -96,33 +95,35 @@ int	exec_general(t_tree *node, char **cmd_argv, t_shell_config *config)
 	}
 	if (pid == CHILD)
 		child_process(pipe_fd, node, cmd_argv, config);
-	else /* parent */
+	else
 		parent_process(pipe_fd, pid, node, config);
 	return (SUCCESS);
 }
 
-/** exec_subshell은 무조건 fork로 실행. --> 기본 구조는 exec_general 과 코드가 동일.
- * */
+/* exec_priority_operator():
+** NOTES:
+** 1) CMD_STOP_RUNNING stop running other process.
+** STEPS:
+** 1) if (), execute subshell.
+** 2) if &&, waitpid.
+** 3) if ||, waitpid.
+*/
 void	exec_priority_operator(t_tree *node, t_token *tok, int *status, \
 			t_shell_config *config)
 {
-	/** printf("here\n"); */
-	/** (1-1) if [() : subshell] */
 	if (tok->type == E_TYPE_BRACKET)
 		*status = exec_subshell(node, tok->str, config);
-	/** (1-3) if [&& : waitpid] */
 	else if (tok->type == E_TYPE_DOUBLE_AMPERSAND)
 	{
 		wait_every_pid(config);
 		if (WEXITSTATUS(config->last_cmd_wstatus) != SUCCESS)
-			*status = CMD_STOP_RUNNING; // NOTE : stop running other process.
+			*status = CMD_STOP_RUNNING;
 	}
-	/** (1-4) if [|| : waitpid] */
 	else if (tok->type == E_TYPE_DOUBLE_PIPE)
 	{
 		wait_every_pid(config);
 		if (WEXITSTATUS(config->last_cmd_wstatus) == SUCCESS)
-			*status = CMD_STOP_RUNNING; // NOTE : stop running other process.
+			*status = CMD_STOP_RUNNING;
 	}
 	return ;
 }

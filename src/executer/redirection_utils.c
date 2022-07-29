@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection_utils.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 18:33:46 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/07/28 18:34:56 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/29 17:27:33 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,25 +94,26 @@ static void	write_to_new_file(int *pipefd, t_token *tok, t_shell_config *config)
 	}
 }
 
+/* expand_file():
+** NOTES:
+** 1) token->heredoc_fd has before-expanded-fd.
+** STEPS:
+** 1) open pipe.
+** 2) read line by line. expand $ and write to pipe_fd[WRITE].
+** 3) update tok->heredoc_fd .
+*/
 void	expand_file(t_token *tok, t_shell_config *config)
 {
 	pid_t	pid;
 	int		pipefd[2];
 
-	//0. token->heredoc_fd에 기존 fd 있음.
-
-	// 1. 새 파이프를 하나 열고
 	if (pipe(pipefd) == -1)
 		perror("pipe fail");
 	pid = fork();
-
-	// 2. 한 줄씩 읽어오며 $ 확장해서 새 파이프에 써넣기
 	if (pid == CHILD)
 		write_to_new_file(pipefd, tok, config);
-
-	else//if parent
+	else
 	{
-		// 3. 새 파이프 read 저장
 		close(pipefd[WRITE]);
 		wait(NULL);
 		close(tok->heredoc_fd);

@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 01:57:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 13:40:14 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/29 15:00:24 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,19 +81,7 @@ void	wait_every_pid(t_shell_config *config)
 		if (cur_pid == config->last_cmd_pid)
 			waitpid(cur_pid, &config->last_cmd_wstatus, 0);
 		else
-			wait(NULL);
-		if (g_is_sig_interupt == true)
-		{
-			cur = config->pid_list;
-			while (cur != NULL)
-			{
-				cur_pid = *((pid_t *)cur->content);
-				kill(cur_pid, SIGTERM);
-				cur = cur->next;
-			}
-			g_is_sig_interupt = false;
-			break ;
-		}
+			waitpid(cur_pid, NULL, 0);
 		cur = cur->next;
 	}
 	g_is_sig_interupt = false;

@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <readline/readline.h>
 #include <fcntl.h>
 #include "minishell.h"

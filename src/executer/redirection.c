@@ -6,9 +6,11 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 12:56:37 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/07/29 14:35:42 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
+
+#include <stdio.h>
 
 /** Readline library */
 #include <readline/readline.h>

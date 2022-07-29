@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   redirection.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 18:55:57 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/29 12:56:37 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,7 @@ void	open_redirection(int *pipe_fd, t_list *redir_list, \
 	t_list			*cur;
 
 	status = 0;
-	if (redir_list != NULL)
+	if (redir_list == NULL)
 		return ;
 	cur = redir_list;
 	while (cur != NULL)

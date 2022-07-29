@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   signal_handle.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 01:57:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 15:00:24 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/29 15:43:46 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,19 +31,21 @@ extern int g_is_sig_interupt;
 
 void	sig_ctrl_c(int signal)
 {
-	/** FIXME :
-	 * (1) cat 혹은 sleep 10만 쳤을 때, Ctrl+C를 누르면 프롬프트가 두번 뜸...
-	 * 대체 왜일까?
-	 * */
+	int pid;
 
-
+	pid = waitpid(-1, NULL, WNOHANG);
 	if (signal == SIGINT)
 	{
-		g_is_sig_interupt = true;
-		// rl_replace_line("", 1);
-		ft_putstr_fd("\n", STDOUT_FILENO);
-		rl_on_new_line();
-		rl_redisplay();
+		if (pid == -1)
+		{
+			g_is_sig_interupt = true;
+			rl_replace_line("", 1);
+			ft_putstr_fd("\n", STDOUT_FILENO);
+			rl_on_new_line();
+			rl_redisplay();
+		}
+		else
+			ft_putstr_fd("\n", STDOUT_FILENO);
 	}
 }
 

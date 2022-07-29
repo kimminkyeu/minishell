@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executer.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 17:41:30 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/29 15:22:12 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,11 +25,12 @@ void	delete_tree_node(t_tree *node, int *status, t_shell_config *config)
 {
 	(void)status;
 	(void)config;
+
 	if (node != NULL)
 	{
 		if ((node)->redirection != NULL)
 			ft_lstclear(&node->redirection, delete_token);
-		if ((node)->token != NULL)
+		if (node->token != NULL)
 			ft_lstclear(&node->token, delete_token);
 		free(node);
 		node = NULL;
@@ -98,6 +99,8 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
 	wait_every_pid(config);
+
+	//heredoc fd 닫기
 
 	/** FIXME : 모든 노드 삭제 --> 문제 발생.  */
 	inorder_recur(syntax_tree, &status, delete_tree_node, config);

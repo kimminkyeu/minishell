@@ -3,13 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   token_modify.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:03:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 15:24:26 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/29 15:21:50 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <unistd.h>
 #include "token.h"
 
 void	token_reset(t_token *token)
@@ -50,6 +51,8 @@ void	delete_token(void *_token)
 	t_token	*token;
 
 	token = _token;
+	if (token->heredoc_fd != -1)
+		close(token->heredoc_fd);
 	if (token->str != NULL)
 		delete_string(&token->str);
 	free(token);

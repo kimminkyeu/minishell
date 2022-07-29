@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executer.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/28 17:41:30 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/07/29 13:19:25 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 #include "../main/minishell.h"
 #include "../lexer/token.h"
 #include "../main/signal_handle.h"
+#include "../parser/parse_tree.h"
 
 extern int	g_is_sig_interupt;
 
@@ -35,6 +36,24 @@ void	delete_tree_node(t_tree *node, int *status, t_shell_config *config)
 		node = NULL;
 	}
 }
+
+// void	close_heredoc_tree_node(t_tree *node, int *status, t_shell_config *config)
+// {
+// 	(void)status;
+// 	(void)config;
+// 	if (node != NULL)
+// 	{
+// 		t_list	*token = node->token;
+// 		token->
+		
+// 		if (-> != NULL)
+// 			ft_lstclear(&node->redirection, delete_token);
+// 		if ((node)->token != NULL)
+// 			ft_lstclear(&node->token, delete_token);
+// 		free(node);
+// 		node = NULL;
+// 	}
+// }
 
 void	execute_node(t_tree *node, int *status, t_shell_config *config)
 {
@@ -98,6 +117,8 @@ int	execute(t_tree *syntax_tree, t_shell_config *config)
 	/** 모든 노드 실행 */
 	inorder_recur(syntax_tree, &status, execute_node, config);
 	wait_every_pid(config);
+
+	//닫아주어야 한다. (lsof -p [pid]) 처음에 부모프로세스에서 set heredoc으로 pipefd[READ] 하나 열고 부모에서 남겨두고 있었던 것.
 
 	/** FIXME : 모든 노드 삭제 --> 문제 발생.  */
 	inorder_recur(syntax_tree, &status, delete_tree_node, config);

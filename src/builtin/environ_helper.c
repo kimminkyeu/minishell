@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:26:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 17:28:10 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/30 18:44:19 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,29 @@ void	copy_strs(char **dst, char **src, size_t strs_count)
 	}
 	dst[strs_count] = NULL;
 }
+
+/** while copying, add declare -x and quote " "  */
+void	copy_strs_for_export(char **dst, char **src, size_t strs_count)
+{
+	size_t	i;
+	t_string	*str;
+
+	i = 0;
+	str = new_string(64);
+	while (i < strs_count)
+	{
+		str->f_clear(str);
+		str->f_append(str, "declare -x ");
+		str->f_append(str, src[i]);
+		str->f_replace(str, ft_strchr(str->text, '=') - str->text, 1, "=\"");
+		str->f_push_back(str, '\"');
+		dst[i] = ft_strdup(str->text);
+		i++;
+	}
+	delete_string(&str);
+	dst[strs_count] = NULL;
+}
+
 
 void	sort_ascii(int len, char **argv)
 {
@@ -84,7 +107,7 @@ void	print_in_order(char **our_envp)
 
 	env_count = get_strs_count(our_envp);
 	ordered_envp = ft_calloc(env_count + 1, sizeof(*ordered_envp));
-	copy_strs(ordered_envp, our_envp, env_count);
+	copy_strs_for_export(ordered_envp, our_envp, env_count);
 	sort_ascii(env_count, ordered_envp);
 	print_strs(ordered_envp);
 	delete_strs(&ordered_envp);

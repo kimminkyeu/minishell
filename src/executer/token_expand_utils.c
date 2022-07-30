@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 19:20:29 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/07/29 17:12:29 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/07/30 20:13:08 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,13 +46,14 @@ char	**get_cmd_argv(t_list *token)
 
 // NOTE : if g_is_sig_interupt == true, signal: 2 + 128
 void	expand_dollar_sign(t_string *str, t_iterator *iter, \
-			t_shell_config *config)
+			bool *is_dollar_expanded, t_shell_config *config)
 {
 	long	start;
 	long	end;
 	char	*env_key;
 	char	*env_value;
 
+	*is_dollar_expanded = true;
 	if (iter->f_peek(iter) == '?')
 	{
 		if (g_is_sig_interupt == true)
@@ -75,7 +76,8 @@ void	expand_dollar_sign(t_string *str, t_iterator *iter, \
 }
 
 /** NOTE : interpret $ARG */
-int	expand_double_quote(t_string *str, t_iterator *iter, t_shell_config *config)
+int	expand_double_quote(t_string *str, t_iterator *iter, \
+		bool *is_dollar_expanded, t_shell_config *config)
 {
 	char	c;
 
@@ -85,7 +87,7 @@ int	expand_double_quote(t_string *str, t_iterator *iter, t_shell_config *config)
 		if (c == '\"')
 			return (SUCCESS);
 		else if (c == '$')
-			expand_dollar_sign(str, iter, config);
+			expand_dollar_sign(str, iter, is_dollar_expanded, config);
 		else
 			str->f_push_back(str, c);
 	}

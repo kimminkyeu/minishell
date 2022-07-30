@@ -6,11 +6,12 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 18:33:46 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/07/29 17:27:33 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/07/30 18:18:44 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <stdio.h>
+#include <sys/wait.h>
 
 #include "../main/minishell.h"
 #include "../lexer/token.h"

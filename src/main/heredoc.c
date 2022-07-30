@@ -6,10 +6,11 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/29 16:20:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 16:22:12 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/30 18:18:21 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include <sys/wait.h>
 #include <stdio.h>
 #include <readline/readline.h>
 #include <fcntl.h>

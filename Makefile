@@ -6,7 +6,7 @@
 #    By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/30 18:17:48 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/30 18:49:52 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -45,7 +45,7 @@ PARSER_SRC		= parse_tree parse_tree_utils parse_tree_helper
 EXECUTER_SRC	= executer token_expand token_expand_utils get_full_path subshell \
 				  redirection redirection_utils exec_command exec_command_utils
 
-BUILTIN_SRC		= environ environ_utils environ_helper cd echo pwd exit
+BUILTIN_SRC		= environ environ_utils environ_helper environ_helper2 cd echo pwd exit
 STRING_SRC		= string_create string_modify string_utils
 ITERATOR_SRC	= iterator_create iterator_modify
 

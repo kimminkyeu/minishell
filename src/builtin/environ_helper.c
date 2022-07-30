@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:26:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/30 18:44:19 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/30 18:46:44 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,29 +40,6 @@ void	copy_strs(char **dst, char **src, size_t strs_count)
 	}
 	dst[strs_count] = NULL;
 }
-
-/** while copying, add declare -x and quote " "  */
-void	copy_strs_for_export(char **dst, char **src, size_t strs_count)
-{
-	size_t	i;
-	t_string	*str;
-
-	i = 0;
-	str = new_string(64);
-	while (i < strs_count)
-	{
-		str->f_clear(str);
-		str->f_append(str, "declare -x ");
-		str->f_append(str, src[i]);
-		str->f_replace(str, ft_strchr(str->text, '=') - str->text, 1, "=\"");
-		str->f_push_back(str, '\"');
-		dst[i] = ft_strdup(str->text);
-		i++;
-	}
-	delete_string(&str);
-	dst[strs_count] = NULL;
-}
-
 
 void	sort_ascii(int len, char **argv)
 {

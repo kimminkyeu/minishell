@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 21:52:20 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 15:10:10 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/30 18:48:41 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,5 +72,6 @@ void	sort_ascii(int len, char **argv);
 void	print_strs(char **strs);
 void	print_in_order(char **our_envp);
 void	add_to_envp(char *str, char ***our_envp_ptr);
+void	copy_strs_for_export(char **dst, char **src, size_t strs_count);
 
 #endif /* ENVIRON_H */

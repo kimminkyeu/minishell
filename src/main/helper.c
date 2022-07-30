@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 22:20:22 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 16:06:23 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/31 00:34:56 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/07/22 16:08:57 by han-yeseul       ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
@@ -52,10 +52,6 @@ void	print_tokens(t_list *tokens)
 	t_token	*tok;
 
 	tmp = tokens;
-	printf("\n");
-	printf("--------------------------------\n");
-	printf("|     Tokenizer Result         |\n");
-	printf("--------------------------------\n");
 	if (tmp == NULL)
 		printf("No data\n");
 	while (tmp != NULL)

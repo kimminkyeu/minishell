@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 12:26:31 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 15:42:09 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 00:24:54 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,8 @@ typedef struct s_string {
 	int			(*f_reserve)(t_string *str, size_t new_capacity);
 	int			(*f_clear)(t_string *str);
 	int			(*f_shrink_to_fit)(t_string *str);
+	int			(*f_insert)(t_string *str, size_t pos, \
+			const char *str_to_insert);
 	int			(*f_replace)(t_string *str, size_t pos, size_t len, \
 			const char *str_to_replace);
 	int			(*f_replace_all)(t_string *str, const char *substr_old, \
@@ -96,5 +98,8 @@ int			str_replace(t_string *str, size_t pos, size_t len, \
  * */
 int			str_replace_all(t_string *str, const char *substr_old, \
 		const char *substr_new);
+
+/* TODO: add description */
+int			str_insert(t_string *str, size_t pos, const char *str_to_insert);
 
 #endif /* STRING_H */

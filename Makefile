@@ -6,15 +6,15 @@
 #    By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/31 01:20:31 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/07/31 18:43:33 by minkyeki         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			= minishell
 CC				= cc
 
-# CFLAGS		= -Wall -Wextra -Werror -g3 -fsanitize=address
-CFLAGS			= -Wall -Wextra -Werror
+CFLAGS			= -Wall -Wextra -Werror -g3 -fsanitize=address
+# CFLAGS			= -Wall -Wextra -Werror
 INCLUDE			= include
 
 # GNU readline Flag for MAC

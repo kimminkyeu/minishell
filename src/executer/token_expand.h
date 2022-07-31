@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:47:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/31 01:16:48 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/07/31 21:26:18 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 # include "../executer/executer.h"
 
-void	expand_wildcard_glob(t_list *tokens, t_shell_config *config);
+int		expand_wildcard_glob(t_list *tokens, t_shell_config *config);
 
 char	**get_arglist(t_list *token);
 

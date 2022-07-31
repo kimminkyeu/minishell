@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/31 00:44:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/31 02:30:29 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 01:12:38 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,25 +28,6 @@
  *
  * */
 
-void	find_path(char *path)
-{
-	DIR				*dir_ptr;
-	struct dirent	*file;
-	/** struct stat		buf; */
-
-	dir_ptr = opendir(path);
-	if (dir_ptr == NULL)
-		return ;
-
-	while (true)
-	{
-		file = readdir(dir_ptr);
-		if (file == NULL)
-			break ;
-		printf("%s\n", file->d_name);
-	}
-	closedir(dir_ptr);
-}
 
 /** Stat을 써야 하는 이유..? : readdir에서 [.] 과 [..]을 걸러내야 한다...? */
 /** struct stat	buf;
@@ -61,95 +42,339 @@ void	find_path(char *path)
 
 /** if redir, then prepare Ambiguous redirection.
  * else, if no wildcards to expand, return NULL */
-t_list	*expand_wildcard_glob_and_return_list(t_list *cur_token, t_shell_config *config)
-{
-	t_token	*tok;
-	t_list	*expanded_tokens;
-	
-	expanded_tokens = NULL;
-	tok = cur_token->content;
 
-	/** if Type REDIRECT 
-	 * FIXME : 이걸 여기서 검사하면 안된다. 로직상 함께 처리해야 함. 하면서 검사. */
-	/** if ((tok->type >= 5 && tok->type <= 9) || tok->type == 13) */
+void	get_prefix(t_iterator *iter, t_string *prefix)
+{
+	int	c;
+
+	while (iter->f_has_next(iter))
+	{
+		c = iter->f_peek(iter);
+		if (c == '*')
+			break ;
+		else
+			prefix->f_push_back(prefix, iter->f_next(iter));
+	}
+}
+
+void	get_suffix(t_iterator *iter, t_string *suffix)
+{
+	int	c;
+
+	while (iter->f_has_next(iter))
+	{
+		c = iter->f_peek(iter);
+		if (c == '/')
+			break ;
+		else
+			suffix->f_push_back(suffix, iter->f_next(iter));
+	}
+}
+
+int	ft_strncmp_reverse(const char *s1, const char *s2, size_t n)
+{
+	char	*s1_uchar;
+	char	*s2_uchar;
+
+	s1_uchar = ft_strrchr(s1, '\0');
+	s2_uchar = ft_strrchr(s2, '\0');
+	while (s1_uchar >= s1 && s2_uchar >= s2 && (*s1_uchar == *s2_uchar) && n > 0)
+	{
+		s1_uchar--;
+		s2_uchar--;
+		n--;
+	}
+	if (n == 0)
+		return (0);
+	else
+		return ((int)(*s1_uchar - *s2_uchar));
+}
+/** 경로를 체크해서 그에 맞는 경로 리스트를 반환 
+ * mode(0) : default. 경로 든 아니든 모두 매칭
+ * mode(1) : 디렉토리만 체크
+ * mode(2) : 파일만 체크 */
+t_list	*match_path_and_return_list(char *path, t_string *prefix, t_string *suffix, t_string *other)
+{
+	t_list			*match;
+	DIR				*dir_ptr;
+	struct dirent	*file;
+	struct stat		buf;
+
+	match = NULL;
+	dir_ptr = opendir(path);
+	if (dir_ptr == NULL)
+		return (NULL);
+	while (true)
+	{
+		file = readdir(dir_ptr);
+		if (file == NULL)
+			break ;
+
+		/** 디렉토리 검색을 위한 stat사용. */
+		stat(file->d_name, &buf);
+
+
+		/** 만약 prefix 혹은 suffix가 빈문자열이면 비교검사 할 필요 없음. + .. 과 .는 제외  */
+		if (prefix->f_is_empty(prefix) && suffix->f_is_empty(suffix))
+		{
+			/** printf("other->text[0]:%c\t\tfile_name[%s]\t\tS_ISDIR:%d\n",other->text[0], file->d_name, S_ISDIR(buf.st_mode)); */
+			/** 모든 와일드카드에서 .. 와 .는 제외*/
+			if (ft_strncmp(file->d_name, "..", 2) != 0 && ft_strncmp(file->d_name, ".", 1) != 0)
+			{
+				/** other가 /라면 경로에 해당하는 것만 리스트에 추가.  */
+				if (other->text[0] == '/' && S_ISDIR(buf.st_mode))
+				{
+					/** printf("file push to list: %s\n", file->d_name); */
+					ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
+				}
+				else if (other->text[0] != '/')
+				{
+					ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
+				}
+			}
+		}
+		/** prefix와 suffix가 빈 문자열이 아니면 검색 시작.  */
+		else if (ft_strncmp(file->d_name, prefix->text, prefix->text_len) == 0 \
+				&& ft_strncmp_reverse(file->d_name, suffix->text, suffix->text_len) == 0)
+		{
+			if (other->text[0] == '/' && S_ISDIR(buf.st_mode))
+			{
+				ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
+			}
+			else if (other->text[0] != '/')
+				ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
+		}
+	}
+
+
+	closedir(dir_ptr);
+	return (match);
+}
+
+t_list	*expand_single_wildcard(t_token *tok, t_shell_config *config)
+{
 	t_iterator iter;
 	char	c;
-	
-	/** [asdasf*ad.c]
-	 * prefix = adsasf
-	 * suffix = ad.c
-	 * 
-	 *  [.*]
-	 *  prefix = .
-	 *  suffix = NULL
-	 *
-	 * */
+	t_string *prefix;
+	t_string *suffix;
+	t_string *other;
+	t_string *path;
 
 	/** 패턴 정보 (1) */
-	t_string *prefix;
 	prefix = new_string(16);
-
 	/** 패턴 정보 (2) */
-	t_string *suffix;
 	suffix = new_string(16);
+	/** 패턴 제외한 남은 정보들. */
+	other = new_string(16);
+	/** 경로 정보.  */
+	path = new_string(16);
+	
 
 	init_iterator(&iter, tok->str->text);
+
+	/** 경로 정보. */
+	path->f_append(path, get_environ_value("PWD", *config->envp));
+	path->f_push_back(path, '/');
+
+	// ls - s* 같은 경우 /가 NULL이기 때문에 경로정보는 없다고 본다. 
+	// ls - src/* 같은 경우 /가 *앞에 있기 때문에 src/는 경로정보이다.
+	if (ft_strchr(tok->str->text, '/') != NULL && ft_strchr(tok->str->text, '*') != NULL)
+		if (ft_strchr(tok->str->text, '/') < ft_strchr(tok->str->text, '*'))
+		{
+			while (iter.f_has_next(&iter))
+			{
+				c = iter.f_peek(&iter);
+				if (c == '*')
+					break ;
+				if (c == '/')
+				{
+					iter.f_next(&iter);
+					/** path->f_push_back(path, iter.f_next(&iter)); */
+					break ;
+				}
+				path->f_push_back(path, iter.f_next(&iter));
+			}
+		}
+
+	
+	int	flag = 0;
 	while (iter.f_has_next(&iter))
 	{
-		int	flag = 0;
-		/** [ls .*] [ls *] [ls *//*] */
-		/** [ls //] 절대경로로 뜸. 하면  */
-		c = iter.f_next(&iter);
-		if (c == '*')
-			flag = 1;
-		else if (flag == 1 && c == '/')
+		// [ls]-[src/*]
+		// [ls /*] [ls *] [ls */*]
+		// [ls /] 절대경로로 뜸. 하면
+		c = iter.f_peek(&iter);
+		if (flag != 2 && c == '*')
 		{
-			// 
-
+			flag = 1;
+			iter.f_next(&iter);
 		}
+		if (c == '/')
+		{
+			flag = 2;
+			other->f_push_back(other, iter.f_next(&iter));
+		}
+		else if (flag == 0)
+			get_prefix(&iter, prefix);
 		else if (flag == 1)
-			suffix->f_push_back(suffix, c);
+			get_suffix(&iter, suffix);
 		else
-			prefix->f_push_back(prefix, c);
+			other->f_push_back(other, iter.f_next(&iter));
 	}
+	/** printf("path: [%s]\n", path->text); */
+	/** printf("prefix: [%s]\n", prefix->text); */
+	/** printf("suffix: [%s]\n", suffix->text); */
+	/** printf("other: [%s]\n", other->text); */
+	/** (2) 탐색한 prefix suffix를 바탕으로 리스트 생성. */
+	/** t_list *expand_tokens = NULL; */
+	/** 먼저 모든 후보군을 문자열로 저장.  */
+	/** ft_lstadd_back(&expand_tokens, ft_lstnew()); */
+	
+	t_list *new;
 
-	find_path(get_environ_value("PWD", *config->envp));
+	new = match_path_and_return_list(path->text, prefix, suffix, other);
+		
+	t_list *cur;
+	t_token *tok2;
 
-	return (expanded_tokens);
-}
-
-void	expand_wildcard_glob(t_list *tokens, t_shell_config *config)
-{
-	t_list	*cur;
-	t_list	*prev;
-
-	prev = NULL;
-	cur = tokens;
+	if (path->text[path->text_len - 1] != '/')
+		path->f_push_back(path, '|');
+	cur = new;
 	while (cur != NULL)
 	{
-		/** expand list */
-		if (prev == NULL) // if first node
-		{
-			/** 고민 아 어떻게 앞에다가 이걸 노드를 추가하지... 요기다 주소 넣으면 터질텐데.  */
-			ft_lstadd_front(&tokens, ...)
+		tok2 = cur->content;
+		/** if (tok2->str->text[tok2->str->text_len - 1] != '/') */
+			/** tok2->str->f_push_back(tok2->str, '/'); */
+		tok2->str->f_insert(tok2->str, 0, ft_strrchr(path->text, '/') + 1);
+		tok2->str->f_replace_all(tok2->str, "|", "/");
 
-		}
-
-		if (cur != NULL)
-		{
-			cur = expand_wildcard_glob_and_return_list(cur, config);
-			while (cur->next != NULL)
-				cur = cur->next;
-			cur->next = tmp;
-		}
-
-
+		/** tok2->str->f_insert(tok2->str, ft_strchr(path->text, '\0') - ft_strrchr(path->text, '/') - 1, "/"); */
+		tok2->str->f_append(tok2->str, other->text);
 		cur = cur->next;
 	}
+	/** printf("\nIn expand_single_wildcard\n"); */
+	/** print_tokens(new); */
+
+
+	delete_string(&prefix);
+	delete_string(&suffix);
+	delete_string(&other);
+	delete_string(&path);
+
+	return (new);
 }
 
-t_list	*ft_lst_get_prev_node(t_list *node, t_list *target)
+int	has_wild_card(t_list *cur_token)
+{
+	t_token *tok;
+
+	if (cur_token == NULL)
+		return (false);
+	tok = cur_token->content;
+	if (ft_strchr(tok->str->text, '*'))
+		return (true);
+	else
+		return (false);
+}
 
 
+t_list	*expand_wildcard_glob_and_return_list(t_list *cur_token, t_shell_config *config, int *is_error)
+{
+	t_token	*tok;
+	t_list	*expanded_token;
+	char	*redir_err_messege;
+	
+	if (cur_token == NULL)
+		return (NULL);
+	expanded_token = NULL;
+	tok = cur_token->content;
+	redir_err_messege = ft_strdup(tok->str->text);
+
+	/** 토큰 확장을 하고, *가 전체 리스트에서 없을 때 까지 재귀적으로 반복.  */
+	expanded_token = expand_single_wildcard(tok, config);
 
 
+	/** NOTE : 만약 리다이렉션에서 확장 후 여러개가 걸린다면. */
+	if ((tok->type >= 5 && tok->type <= 9) || tok->type == 13)
+		if (expanded_token != NULL && expanded_token->next != NULL)
+		{
+			printf("lesh: %s: ambiguous redirect\n", redir_err_messege);
+			ft_lstclear(&expanded_token, delete_token);
+			expanded_token = NULL;
+			*is_error = true;
+		}
+	free(redir_err_messege);
+	return (expanded_token);
+}
+
+/** TODO : ["*"]는 확장이 되면 안되긴 함... 근데 이미 쿼트 리무벌이 됬기 때문에 그걸 감지 못함.
+ * 이거 참 골치아픔. */
+int	expand_wildcard_glob_once(t_list *tokens, t_shell_config *config)
+{
+	t_list	*cur;
+	t_list	*tmp;
+	t_list	*tmp2;
+	int		is_error;
+
+	is_error = false;
+	cur = tokens;
+	if (cur == NULL || cur->next == NULL)
+		return (SUCCESS);
+
+	// [ls] [*/*] [*/.c] [*/.h]
+	while (cur != NULL && cur->next != NULL)
+	{
+		if (has_wild_card(cur->next))
+		{
+			tmp = cur->next->next;
+			tmp2 = expand_wildcard_glob_and_return_list(cur->next, config, &is_error);
+			ft_lstdelone(cur->next, delete_token);
+			cur->next = tmp2;
+			if (is_error == true) // ambiguous redirection error
+				return (ERROR);
+			while (cur->next != NULL)
+			{
+				tmp2 = cur;
+				cur = cur->next;
+			}
+			cur->next = tmp;
+		}
+		else
+		{
+			tmp2 = cur;
+			cur = cur->next;
+		}
+	}
+	/** 이 부분 상당이 난감함. [ls] [*] [*] 는 안됨.   */
+
+	/** if (cur != NULL && has_wild_card(cur))
+	  * {
+	  *     tmp2 = expand_wildcard_glob_and_return_list(cur->next, config, &is_error);
+	  *     ft_lstdelone(cur->next, delete_token);
+	  *     cur->next = tmp;
+	  *     while (cur->next != NULL)
+	  *     {
+	  *         tmp2 = cur;
+	  *         cur = cur->next;
+	  *     }
+	  *     tmp2->next = tmp;
+	  *     if (is_error == true) // ambiguous redirection error
+	  *         return (ERROR);
+	  * } */
+	return (SUCCESS);
+}
+
+int	expand_wildcard_glob(t_list *tokens, t_shell_config *config)
+{
+	int	status;
+
+	status = SUCCESS;
+
+	if (status == SUCCESS)
+		status = expand_wildcard_glob_once(tokens, config);
+
+	if (status == SUCCESS)
+		status = expand_wildcard_glob_once(tokens, config);
+
+	return (status);
+}

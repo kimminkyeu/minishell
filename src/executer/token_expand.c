@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:44:57 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/31 01:17:58 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 01:13:10 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,23 +104,24 @@ int	expand_tokens(t_list *tokens, t_shell_config *config)
 		status = expand_token_each(tok, &is_dollar_expanded, config);
 		cur = cur->next;
 	}
-	if (is_dollar_expanded == true)
+	if (status == SUCCESS && is_dollar_expanded == true)
 		split_via_whitespace(tokens);
 
-	printf("\033[31m  basic expansion result\033[0m\n");
-	print_tokens(tokens);
+	/** printf("\033[31m  basic expansion result\033[0m\n"); */
+	/** print_tokens(tokens); */
 
 
 
 	// .. expand wildcard
-	expand_wildcard_glob(tokens, config);
+	if (status == SUCCESS)
+		status = expand_wildcard_glob(tokens, config);
 
 
 
-	printf("\033[31m  wildcard expanding...\033[0m\n");
-	print_tokens(tokens);
+	/** printf("\033[31m  wildcard expanding...\033[0m\n"); */
+	/** print_tokens(tokens); */
 
-	printf("\n");
+	/** printf("\n"); */
 
 	return (status);
 }

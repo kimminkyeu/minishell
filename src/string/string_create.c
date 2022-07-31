@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:40:50 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 15:42:41 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 00:23:43 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ static void	set_funtion_ptr(t_string *str)
 	str->f_shrink_to_fit = str_shrink_to_fit;
 	str->f_replace = str_replace;
 	str->f_replace_all = str_replace_all;
+	str->f_insert = str_insert;
 }
 
 t_string	*new_string(size_t init_capacity)

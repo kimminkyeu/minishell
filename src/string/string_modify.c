@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:42:10 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 15:44:20 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 00:35:22 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,25 @@ int	str_append(t_string *str, const char *str2)
 	}
 	ft_memmove(&(str->text[str->text_len]), str2, str2_len);
 	str->text_len += str2_len;
+	return (SUCCESS);
+}
+
+int	str_insert(t_string *str, size_t pos, const char *str_to_insert)
+{
+	char	*backup;
+	size_t	i;
+
+	backup = NULL;
+	if (str_to_insert == NULL || pos > str->text_len - 1)
+		return (NO_ACTION);
+	backup = ft_strdup(&(str->text[pos]));
+	i = str->text_len;
+	while (i-- > pos)
+		str_pop_back(str);
+	str_append(str, str_to_insert);
+	str_append(str, backup);
+	if (backup != NULL)
+		free(backup);
 	return (SUCCESS);
 }
 

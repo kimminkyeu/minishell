@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 17:31:37 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 10:09:42 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,8 @@ int	open_file_less(t_list *cur, int *pipe_fd, int *status)
 	if (pipe_fd[READ] == -1)
 	{
 		*status = errno;
-		printf("lesh: %s: %s\n", tok->str->text, strerror(*status));
+		ft_putstr_fd("lesh: ", STDERR_FILENO);
+		perror(tok->str->text);
 	}
 	return (*status);
 }
@@ -66,7 +67,8 @@ int	open_file_heredoc(t_list *cur, int *pipe_fd, int *status, \
 	if (pipe_fd[READ] == -1)
 	{
 		*status = errno;
-		printf("lesh: %s: %s\n", tok->str->text, strerror(*status));
+		ft_putstr_fd("lesh: ", STDERR_FILENO);
+		perror(tok->str->text);
 	}
 	return (*status);
 }
@@ -81,7 +83,8 @@ int	open_file_greater(t_list *cur, int *pipe_fd, int *status)
 	if (pipe_fd[WRITE] == -1)
 	{
 		*status = errno;
-		printf("lesh: %s: %s\n", tok->str->text, strerror(*status));
+		ft_putstr_fd("lesh: ", STDERR_FILENO);
+		perror(tok->str->text);
 	}
 	return (*status);
 }
@@ -96,7 +99,8 @@ int	open_file_append(t_list *cur, int *pipe_fd, int *status)
 	if (pipe_fd[WRITE] == -1)
 	{
 		*status = errno;
-		printf("lesh: %s: %s\n", tok->str->text, strerror(*status));
+		ft_putstr_fd("lesh: ", STDERR_FILENO);
+		perror(tok->str->text);
 	}
 	return (*status);
 }

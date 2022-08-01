@@ -6,7 +6,7 @@
 #    By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/07/30 18:17:48 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/08/01 10:00:29 by yehan            ###   ########seoul.kr   #
 #                                                                              #
 # **************************************************************************** #
 
@@ -79,19 +79,19 @@ WHITE = \033[0;97m
 #-----------------------------------------------------------------------
 #    linux compile option                                              |
 #-----------------------------------------------------------------------
-$(NAME): $(OBJ)
-	@make bonus -C $(LIBFT_DIR)
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT_DIR)libft.a -lreadline
-	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
-	@echo "$(RED)|       Minishell compile finished.        |$(DEF_COLOR)"
-	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
-	@echo "$(RED)|                                          |$(DEF_COLOR)"
-	@echo "$(RED)|                        Have fun!         |$(DEF_COLOR)"
-	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
+# $(NAME): $(OBJ)
+# 	@make bonus -C $(LIBFT_DIR)
+# 	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ) $(LIBFT_DIR)libft.a -lreadline
+# 	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
+# 	@echo "$(RED)|       Minishell compile finished.        |$(DEF_COLOR)"
+# 	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
+# 	@echo "$(RED)|                                          |$(DEF_COLOR)"
+# 	@echo "$(RED)|                        Have fun!         |$(DEF_COLOR)"
+# 	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
 
-%.o: %.c
-	@${CC} ${CFLAGS} -c $< -o $@
-	@echo "$(RED)Compiling... \t$< $(DEF_COLOR)"
+# %.o: %.c
+# 	@${CC} ${CFLAGS} -c $< -o $@
+# 	@echo "$(RED)Compiling... \t$< $(DEF_COLOR)"
 # -----------------------------------------------------------------------
 
 
@@ -105,19 +105,19 @@ $(NAME): $(OBJ)
 #    (2) 위 LINUX 컴파일 코드를 주석처리하신뒤                         |
 #        아래의 컴파일 옵션으로 makefile을 변경하면 됩니다.            |
 #-----------------------------------------------------------------------
-# $(NAME): $(OBJ)
-#     @make bonus -C $(LIBFT_DIR)
-#     @$(CC) $(CFLAGS) $(READLINE_COMFILE_FLAGS) $(LIBFT_DIR)libft.a $(OBJ) -o $(NAME)
-#     @echo "$(RED)--------------------------------------------$(DEF_COLOR)"
-#     @echo "$(RED)|       Minishell compile finished.        |$(DEF_COLOR)"
-#     @echo "$(RED)--------------------------------------------$(DEF_COLOR)"
-#     @echo "$(RED)|                                          |$(DEF_COLOR)"
-#     @echo "$(RED)|                        Have fun!         |$(DEF_COLOR)"
-#     @echo "$(RED)--------------------------------------------$(DEF_COLOR)"
-#
-# %.o: %.c
-#     @${CC} ${CFLAGS} $(READLINE_OBJ_FLAGS) -c $< -o $@
-#     @echo "$(RED)Compiling... \t$< $(DEF_COLOR)"
+$(NAME): $(OBJ)
+	@make bonus -C $(LIBFT_DIR)
+	@$(CC) $(CFLAGS) $(READLINE_COMFILE_FLAGS) $(LIBFT_DIR)libft.a $(OBJ) -o $(NAME)
+	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
+	@echo "$(RED)|       Minishell compile finished.        |$(DEF_COLOR)"
+	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
+	@echo "$(RED)|                                          |$(DEF_COLOR)"
+	@echo "$(RED)|                        Have fun!         |$(DEF_COLOR)"
+	@echo "$(RED)--------------------------------------------$(DEF_COLOR)"
+
+%.o: %.c
+	@${CC} ${CFLAGS} $(READLINE_OBJ_FLAGS) -c $< -o $@
+	@echo "$(RED)Compiling... \t$< $(DEF_COLOR)"
 # #-----------------------------------------------------------------------
 
 

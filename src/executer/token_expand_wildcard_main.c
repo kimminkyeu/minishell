@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/31 00:44:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 20:18:55 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 20:25:36 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,6 +195,17 @@ void	set_pattern(t_token *tok, t_pattern *pattern, t_shell_config *config)
 	}
 }
 
+
+
+
+
+
+
+
+
+
+
+
 t_list	*expand_single_wildcard(t_token *tok, t_shell_config *config)
 {
 	t_pattern	pattern;
@@ -204,9 +215,7 @@ t_list	*expand_single_wildcard(t_token *tok, t_shell_config *config)
 
 	init_pattern(&pattern);
 	set_pattern(tok, &pattern, config);
-	
 	new = match_path_and_return_list(pattern.path->text, pattern.prefix, pattern.suffix, pattern.remainder);
-
 	if (pattern.path->text[pattern.path->text_len - 1] != '/')
 		pattern.path->f_push_back(pattern.path, '|');
 	cur = new;
@@ -243,12 +252,10 @@ t_list	*expand_wildcard_glob_and_return_list(t_list *cur_token, t_shell_config *
 	
 	if (cur_token == NULL)
 		return (NULL);
-
 	expanded_token = NULL;
 	tok = cur_token->content;
 	redir_err_messege = ft_strdup(tok->str->text);
 	expanded_token = expand_single_wildcard(tok, config);
-
 	if ((tok->type >= 5 && tok->type <= 9) || tok->type == 13)
 		if (expanded_token != NULL && expanded_token->next != NULL)
 		{

@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/31 00:44:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 20:25:36 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 20:50:49 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ t_list	*match_path_and_return_list(char *path, t_string *prefix, t_string *suffi
 	DIR				*dir_ptr;
 	struct dirent	*file;
 	struct stat		buf;
+	t_string		*path_joined;
 
 	match = NULL;
 	dir_ptr = opendir(path);
@@ -77,58 +78,100 @@ t_list	*match_path_and_return_list(char *path, t_string *prefix, t_string *suffi
 		file = readdir(dir_ptr);
 		if (file == NULL)
 			break ;
-
-		/** stat(file->d_name, &buf); */
-		/** 디렉토리 검색을 위한 stat사용. */
-		t_string	*path_joined = new_string(64);
-
+		path_joined = new_string(64);
 		path_joined->f_append(path_joined, path);
 		if (path_joined->text[path_joined->text_len - 1] != '/')
 			path_joined->f_push_back(path_joined, '/');
 		path_joined->f_append(path_joined, file->d_name);
-
-		/** printf("path in stat():[%s]\n", path_joined->text); */
 		stat(path_joined->text, &buf);
 		delete_string(&path_joined);
-
-		/** printf("file [%s]\n", file->d_name); */
-
-		/** 만약 prefix 혹은 suffix가 빈문자열이면 비교검사 할 필요 없음. + .. 과 .는 제외  */
 		if (prefix->f_is_empty(prefix) && suffix->f_is_empty(suffix))
 		{
-			/** printf("other->text[0]:%c\t\tfile_name[%s]\t\tS_ISDIR:%d\n",other->text[0], file->d_name, S_ISDIR(buf.st_mode)); */
-			/** 모든 와일드카드에서 .. 와 .는 제외*/
 			if (ft_strncmp(file->d_name, "..", 2) != 0 && ft_strncmp(file->d_name, ".", 1) != 0)
 			{
-				/** other가 /라면 경로에 해당하는 것만 리스트에 추가.  */
 				if (other->text[0] == '/' && S_ISDIR(buf.st_mode))
-				{
-					/** printf("file push to list: %s\n", file->d_name); */
 					ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
-				}
 				else if (other->text[0] != '/')
-				{
 					ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
-				}
 			}
 		}
-		/** prefix와 suffix가 빈 문자열이 아니면 검색 시작.  */
 		else if (ft_strncmp(file->d_name, prefix->text, prefix->text_len) == 0 \
 				&& ft_strncmp_reverse(file->d_name, suffix->text, suffix->text_len) == 0)
 		{
-			/** printf("other->text[0]:%c\t\tfile_name[%s]\t\tS_ISDIR:%d\n",other->text[0], file->d_name, S_ISDIR(buf.st_mode)); */
 			if (other->text[0] == '/' && S_ISDIR(buf.st_mode))
-			{
 				ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
-			}
 			else if (other->text[0] != '/')
 				ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
 		}
 	}
-
-
 	closedir(dir_ptr);
 	return (match);
+}
+
+
+
+void	set_pattern_path(t_token *tok, t_pattern *pattern, t_iterator *iter)
+{
+	char	c;
+
+	if (ft_strchr(tok->str->text, '/') != NULL && ft_strchr(tok->str->text, '*') != NULL)
+	{
+		if (ft_strchr(tok->str->text, '/') < ft_strchr(tok->str->text, '*'))
+		{
+			while (iter->f_has_next(iter))
+			{
+				c = iter->f_peek(iter);
+				if (c == '*')
+					break ;
+				if (c == '/')
+				{
+					iter->f_next(iter);
+					break ;
+				}
+				pattern->path->f_push_back(pattern->path, iter->f_next(iter));
+			}
+		}
+	}
+}
+
+
+void	set_pattern_prefix_suffix_remainder(t_pattern *pattern, t_iterator *iter)
+{
+	char	c;
+	int		flag;
+	
+	flag = 0;
+	while (iter->f_has_next(iter))
+	{
+		c = iter->f_peek(iter);
+		if (flag != 2 && c == '*')
+		{
+			flag = 1;
+			iter->f_next(iter);
+		}
+		if (c == '/')
+		{
+			flag = 2;
+			pattern->remainder->f_push_back(pattern->remainder, iter->f_next(iter));
+		}
+		else if (flag == 0)
+			get_prefix(iter, pattern->prefix);
+		else if (flag == 1)
+			get_suffix(iter, pattern->suffix);
+		else
+			pattern->remainder->f_push_back(pattern->remainder, iter->f_next(iter));
+	}
+}
+
+void	set_pattern(t_token *tok, t_pattern *pattern, t_shell_config *config)
+{
+	t_iterator	iter;
+
+	init_iterator(&iter, tok->str->text);
+	pattern->path->f_append(pattern->path, get_environ_value("PWD", *config->envp));
+	pattern->path->f_push_back(pattern->path, '/');
+	set_pattern_path(tok, pattern, &iter);
+	set_pattern_prefix_suffix_remainder(pattern, &iter);
 }
 
 void	init_pattern(t_pattern *pattern)
@@ -146,65 +189,6 @@ void	delete_pattern(t_pattern *pattern)
 	delete_string(&pattern->suffix);
 	delete_string(&pattern->remainder);
 }
-
-void	set_pattern(t_token *tok, t_pattern *pattern, t_shell_config *config)
-{
-	int			flag;
-	t_iterator	iter;
-	char		c;
-
-	flag = 0;
-	init_iterator(&iter, tok->str->text);
-	pattern->path->f_append(pattern->path, get_environ_value("PWD", *config->envp));
-	pattern->path->f_push_back(pattern->path, '/');
-	if (ft_strchr(tok->str->text, '/') != NULL && ft_strchr(tok->str->text, '*') != NULL)
-		if (ft_strchr(tok->str->text, '/') < ft_strchr(tok->str->text, '*'))
-		{
-			while (iter.f_has_next(&iter))
-			{
-				c = iter.f_peek(&iter);
-				if (c == '*')
-					break ;
-				if (c == '/')
-				{
-					iter.f_next(&iter);
-					break ;
-				}
-				pattern->path->f_push_back(pattern->path, iter.f_next(&iter));
-			}
-		}
-	while (iter.f_has_next(&iter))
-	{
-		c = iter.f_peek(&iter);
-		if (flag != 2 && c == '*')
-		{
-			flag = 1;
-			iter.f_next(&iter);
-		}
-		if (c == '/')
-		{
-			flag = 2;
-			pattern->remainder->f_push_back(pattern->remainder, iter.f_next(&iter));
-		}
-		else if (flag == 0)
-			get_prefix(&iter, pattern->prefix);
-		else if (flag == 1)
-			get_suffix(&iter, pattern->suffix);
-		else
-			pattern->remainder->f_push_back(pattern->remainder, iter.f_next(&iter));
-	}
-}
-
-
-
-
-
-
-
-
-
-
-
 
 t_list	*expand_single_wildcard(t_token *tok, t_shell_config *config)
 {

@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 17:38:17 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/07/29 17:47:45 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 17:06:47 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 #define READ			(0)
 #define WRITE			(1)
 
-int	exec_builtin(char **cmd_argv, char ***envp)
+int	exec_builtin(char **cmd_argv, char ***envp, t_shell_config *config)
 {
 	size_t	len;
 	int		status;
@@ -34,7 +34,7 @@ int	exec_builtin(char **cmd_argv, char ***envp)
 	if (ft_strncmp("cd", cmd_argv[0], len + 1) == 0)
 		status = exec_cd(cmd_argv, envp);
 	else if (ft_strncmp("exit", cmd_argv[0], len + 1) == 0)
-		status = exec_exit(cmd_argv, *envp);
+		status = exec_exit(cmd_argv, *envp, config);
 	else if (ft_strncmp("export", cmd_argv[0], len + 1) == 0)
 		status = exec_export(cmd_argv, envp);
 	else if (ft_strncmp("env", cmd_argv[0], len + 1) == 0)
@@ -69,7 +69,7 @@ int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 		dup2(pipe_fd[WRITE], STDOUT_FILENO);
 		close(pipe_fd[WRITE]);
 	}
-	status = exec_builtin(cmd_argv, config->envp);
+	status = exec_builtin(cmd_argv, config->envp, config);
 	if (pipe_fd[READ] != config->stdin_backup)
 		dup2(config->stdin_backup, STDIN_FILENO);
 	if (pipe_fd[WRITE] != config->stdout_backup)

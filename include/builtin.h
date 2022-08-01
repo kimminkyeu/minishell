@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/20 21:59:30 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 17:53:30 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 17:08:48 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 
 # include "../src/builtin/environ.h"
 # include "libft.h"
+# include "../src/main/minishell.h"
 
 /* --------------------------------------------
  * |  NOTE : Environment variable functions   |
@@ -45,6 +46,6 @@ int		exec_unset(char **arglist, char ***our_envp_ptr);
 int		exec_cd(char **arglist, char ***our_envp_ptr);
 int		exec_echo(char **arglist, char **our_envp);
 int		exec_pwd(char **arglist, char **our_envp);
-int		exec_exit(char **arglist, char **our_envp);
+int		exec_exit(char **arglist, char **our_envp, t_shell_config *config);
 
 #endif /* BUILTIN_H */

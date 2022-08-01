@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 17:09:22 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 17:32:01 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,10 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	cmd_argv = get_cmd_argv(node->token);
 	if (cmd_argv != NULL && node->is_pipeline == false \
 		&& is_builtin_func(cmd_argv[0]))
-		*status = exec_exceptions(node, cmd_argv, config);
+		{
+			*status = exec_exceptions(node, cmd_argv, config);
+			config->last_cmd_wstatus = *status;
+		}
 	else
 		*status = exec_general(node, cmd_argv, config);
 	if (cmd_argv != NULL)

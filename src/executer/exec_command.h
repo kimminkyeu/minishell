@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_command.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 17:38:29 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/07/28 17:38:55 by han-yeseul       ###   ########.fr       */
+/*   Updated: 2022/08/01 17:07:36 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	exec_priority_operator(t_tree *node, t_token *tok, int *status, \
 			t_shell_config *config);
 int		exec_general(t_tree *node, char **cmd_argv, t_shell_config *config);
 int		exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config);
-int		exec_builtin(char **cmd_argv, char ***envp);
+int		exec_builtin(char **cmd_argv, char ***envp, t_shell_config *config);
 
 /*    exec_command_utils.c    */
 //Function for exec_general

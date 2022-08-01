@@ -6,7 +6,8 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 17:35:53 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/08/01 12:54:22 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 21:22:40 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 17:08:03 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +62,7 @@ void	exec_command(char **cmd_argv, t_shell_config *config)
 		exit(SUCCESS);
 	if (is_builtin_func(cmd_argv[0]) == true)
 	{
-		exit(exec_builtin(cmd_argv, config->envp));
+		exit(exec_builtin(cmd_argv, config->envp, config));
 	}
 	if (cmd_argv[0] != NULL)
 		full_path = get_full_path(cmd_argv[0], *config->envp);

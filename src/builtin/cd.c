@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 23:15:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 17:53:55 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 10:05:57 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,8 @@ int	exec_cd(char **arglist, char ***envp_ptr)
 		}
 		else
 		{
-			printf("lesh: cd: %s: %s", arglist[1], strerror(errno));
+			ft_putstr_fd("lesh: cd: ", STDERR_FILENO);
+			perror(arglist[1]);
 			status = NO_SUCH_DIRECTORY;
 		}
 	}

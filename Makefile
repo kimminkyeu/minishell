@@ -6,15 +6,16 @@
 #    By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/08/01 21:16:54 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/08/01 21:23:36 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/08/01 17:07:08 by yehan            ###   ########seoul.kr   #
 #                                                                              #
 # **************************************************************************** #
 
 NAME			= minishell
 CC				= cc
 
-CFLAGS			= -Wall -Wextra -Werror -g3 -fsanitize=address
-# CFLAGS			= -Wall -Wextra -Werror
+# CFLAGS		= -Wall -Wextra -Werror -g3 -fsanitize=address
+CFLAGS			= -Wall -Wextra -Werror
 INCLUDE			= include
 
 # GNU readline Flag for MAC
@@ -96,16 +97,8 @@ WHITE = \033[0;97m
 # 	@echo "$(RED)Compiling... \t$< $(DEF_COLOR)"
 # -----------------------------------------------------------------------
 
-
-
 #-----------------------------------------------------------------------
 #    Mac compile option                                                |
-#-----------------------------------------------------------------------
-#    (1) shell에서 brew install readline 을 입력합니다.                |
-#       (GNU 버전 readline 설치)                                       |
-#                                                                      |
-#    (2) 위 LINUX 컴파일 코드를 주석처리하신뒤                         |
-#        아래의 컴파일 옵션으로 makefile을 변경하면 됩니다.            |
 #-----------------------------------------------------------------------
 $(NAME): $(OBJ)
 	@make bonus -C $(LIBFT_DIR)
@@ -121,10 +114,6 @@ $(NAME): $(OBJ)
 	@${CC} ${CFLAGS} $(READLINE_OBJ_FLAGS) -c $< -o $@
 	@echo "$(RED)Compiling... \t$< $(DEF_COLOR)"
 # #-----------------------------------------------------------------------
-
-
-
-
 
 clean:
 	@make clean -C $(LIBFT_DIR)

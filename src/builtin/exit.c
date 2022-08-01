@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:30:26 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/25 17:32:52 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 17:41:19 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 #include <stdbool.h>
 #include <limits.h>
 #include "../libft/include/libft.h"
+#include "../main/minishell.h"
 
 /* exit [n]: exit with status of n.
 ** 1. no [n]: exit with exit status of last command.
@@ -57,14 +58,16 @@ static bool	get_status(char *str, unsigned char *status)
 	return (false);
 }
 
-int	exec_exit(char **arglist, char **our_envp)
+# include <stdio.h>
+
+int	exec_exit(char **arglist, char **our_envp, t_shell_config *config)
 {
 	unsigned char	status;
 
 	(void)our_envp;
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	if (arglist[1] == NULL)
-		status = 0;
+		status = config->last_cmd_wstatus;
 	else if (get_status(arglist[1], &status) == false)
 	{
 		status = 255;

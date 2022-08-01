@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/29 16:20:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/30 18:18:21 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 23:12:22 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,15 @@
 #include <stdio.h>
 #include <readline/readline.h>
 #include <fcntl.h>
+#include <signal.h>
 
 #include "minishell.h"
 #include "heredoc.h"
 #include "../lexer/token.h"
 
 #define CHILD (0)
+
+extern int	g_is_sig_interupt;
 
 void	expand_token(t_token *tok)
 {

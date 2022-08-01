@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 01:57:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 16:43:47 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 23:02:45 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,8 +72,6 @@ void	del_pid(void *content)
 	free(content);
 }
 
-/** Waits every pids, and set last process pid's 
- *  wstatus to config->last_cmd_status. */
 void	wait_every_pid(t_shell_config *config)
 {
 	t_list	*cur;
@@ -87,8 +85,44 @@ void	wait_every_pid(t_shell_config *config)
 			waitpid(cur_pid, &config->last_cmd_wstatus, 0);
 		else
 			waitpid(cur_pid, NULL, 0);
+		/** NOTE : signal ctrl+c 부분이 없음. */
+		if (g_is_sig_interupt == true)
+		{
+			cur = config->pid_list;
+			while (cur != NULL)
+			{
+				cur_pid = *((pid_t *)cur->content);
+				kill(cur_pid, SIGTERM);
+				cur = cur->next;
+			}
+			g_is_sig_interupt = false;
+			break ;
+		}
 		cur = cur->next;
 	}
 	g_is_sig_interupt = false;
 	ft_lstclear(&config->pid_list, del_pid);
 }
+
+/** Waits every pids, and set last process pid's 
+ *  wstatus to config->last_cmd_status. */
+/** void	wait_every_pid(t_shell_config *config)
+  * {
+  *     t_list	*cur;
+  *     pid_t	cur_pid;
+  *
+  *     cur = config->pid_list;
+  *     [> NOTE : signal ctrl+c 부분이 없음. <]
+  *
+  *     while (cur != NULL)
+  *     {
+  *         cur_pid = *((pid_t *)cur->content);
+  *         if (cur_pid == config->last_cmd_pid)
+  *             waitpid(cur_pid, &config->last_cmd_wstatus, 0);
+  *         else
+  *             waitpid(cur_pid, NULL, 0);
+  *         cur = cur->next;
+  *     }
+  *     g_is_sig_interupt = false;
+  *     ft_lstclear(&config->pid_list, del_pid);
+  * } */

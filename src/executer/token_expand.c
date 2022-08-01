@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:44:57 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 14:34:30 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 19:44:10 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,11 +93,6 @@ int	expand_tokens(t_list *tokens, t_shell_config *config)
 	cur = tokens;
 	status = SUCCESS;
 	is_dollar_expanded = false;
-
-
-	/** printf("\033[31mBefore expansion\033[0m\n"); */
-	/** print_tokens(tokens); */
-
 	while (cur != NULL && status == SUCCESS)
 	{
 		tok = cur->content;
@@ -106,22 +101,7 @@ int	expand_tokens(t_list *tokens, t_shell_config *config)
 	}
 	if (status == SUCCESS && is_dollar_expanded == true)
 		split_via_whitespace(tokens);
-
-	/** printf("\033[31m  basic expansion result\033[0m\n"); */
-	/** print_tokens(tokens); */
-
-
-
-	// .. expand wildcard
 	if (status == SUCCESS)
 		status = expand_wildcard_glob(tokens, config);
-
-
-
-	/** printf("\033[31m  wildcard expanding result\033[0m\n"); */
-	/** print_tokens(tokens); */
-
-	/** printf("\n"); */
-
 	return (status);
 }

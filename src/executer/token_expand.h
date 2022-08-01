@@ -6,7 +6,7 @@
 /*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:47:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/31 21:26:18 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 20:03:58 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,14 @@
 # define TOKEN_EXPAND_H
 
 # include "../executer/executer.h"
+
+/* Pattern for wildcard expansion */
+typedef struct s_pattern {
+	t_string	*prefix;
+	t_string	*suffix;
+	t_string	*remainder;
+	t_string	*path;
+}	t_pattern;
 
 int		expand_wildcard_glob(t_list *tokens, t_shell_config *config);
 

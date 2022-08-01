@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/31 00:44:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 14:51:03 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 16:09:55 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ t_list	*match_path_and_return_list(char *path, t_string *prefix, t_string *suffi
 
 	match = NULL;
 	dir_ptr = opendir(path);
-	if (dir_ptr == NULL)
+	if (path == NULL && dir_ptr == NULL)
 		return (NULL);
 	while (true)
 	{
@@ -110,8 +110,18 @@ t_list	*match_path_and_return_list(char *path, t_string *prefix, t_string *suffi
 		if (file == NULL)
 			break ;
 
+		/** stat(file->d_name, &buf); */
 		/** 디렉토리 검색을 위한 stat사용. */
-		stat(file->d_name, &buf);
+		t_string	*path_joined = new_string(64);
+
+		path_joined->f_append(path_joined, path);
+		if (path_joined->text[path_joined->text_len - 1] != '/')
+			path_joined->f_push_back(path_joined, '/');
+		path_joined->f_append(path_joined, file->d_name);
+
+		/** printf("path in stat():[%s]\n", path_joined->text); */
+		stat(path_joined->text, &buf);
+		delete_string(&path_joined);
 
 		/** printf("file [%s]\n", file->d_name); */
 
@@ -256,6 +266,7 @@ t_list	*expand_single_wildcard(t_token *tok, t_shell_config *config)
 	}
 	/** printf("\nIn expand_single_wildcard\n"); */
 	/** print_tokens(new); */
+	/** printf("\n"); */
 
 
 	delete_string(&prefix);
@@ -302,6 +313,10 @@ t_list	*expand_wildcard_glob_and_return_list(t_list *cur_token, t_shell_config *
 
 	/** 토큰 확장을 하고, *가 전체 리스트에서 없을 때 까지 재귀적으로 반복.  */
 	expanded_token = expand_single_wildcard(tok, config);
+	/** if (expanded_token == NULL) */
+	/** { */
+		/** printf("check. expanded token is null\n"); */
+	/** } */
 
 
 	/** NOTE : 만약 리다이렉션에서 확장 후 여러개가 걸린다면. */
@@ -336,49 +351,62 @@ int	expand_wildcard_glob_once(t_list *tokens, t_shell_config *config)
 
 	while (cur != NULL && cur->next != NULL)
 	{
+
+		/** print_tokens(tokens); */
+		/** printf("\n\n=======================\n\n"); */
+
 		if (has_wild_card(cur->next))
 		{
+			printf("\n\n=======================\n\n");
 			tmp = cur->next->next;
+			t_list *prev = cur->next;
 			tmp2 = expand_wildcard_glob_and_return_list(cur->next, config, &is_error);
 			if (tmp2 != NULL)
 			{
-				ft_lstdelone(cur->next, delete_token);
 				cur->next = tmp2;
-
-			}
-			/** 만약 못찾았다면 단순 연결 복구 */
-			else if (tmp2 == NULL)
+				/** printf("c1\n"); */
+				while (cur != NULL && cur->next != NULL)
+				{
+					tmp2 = cur;
+					cur = cur->next;
+				}
 				cur->next = tmp;
-
-			/** if (is_error == true) // ambiguous redirection error */
-				/** return (ERROR); */
-			while (cur != NULL && cur->next != NULL)
-			{
-				tmp2 = cur;
-				cur = cur->next;
 			}
-			cur->next = tmp;
+			else
+			{
+				cur->next = tmp;
+				printf("expand is null\n");
+			}
+			ft_lstdelone(prev, delete_token);
+			/** 만약 못찾았다면 단순 연결 복구 */
+			/** else if (tmp2 == NULL) */
+				/** cur->next = tmp; */
+
+			/** printf("c2\n"); */
+			/** printf("c3\n"); */
+			/** cur = cur->next; */
 		}
 		else
 		{
-			tmp2 = cur;
-			cur = cur->next;
+			/** printf("hehehehehe-------------\n"); */
+			/** tmp2 = cur; */
 		}
+		cur = cur->next;
 	}
 	/** printf("\n\ncheck\n"); */
 	/** print_tokens(tmp2); */
 
 	if (tmp2 != NULL && tokens->next != cur && has_wild_card(cur))
 	{
-		/** printf("\n\n------------------------------------\n\n"); */
+		printf("\n\n------------------------------------\n\n");
 		tmp = cur; // 마지막 노드
 		tmp2->next = expand_wildcard_glob_and_return_list(cur, config, &is_error);
 		if (tmp2->next != NULL)
 		{
 			ft_lstdelone(tmp, delete_token);
 		}
-		/** else if (tmp2->next == NULL) */
-			/** tmp2->next = cur; */
+		else if (tmp2->next == NULL)
+			tmp2->next = cur;
 	}
 
 

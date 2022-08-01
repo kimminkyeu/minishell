@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:44:57 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 11:09:50 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 14:34:30 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,7 +118,7 @@ int	expand_tokens(t_list *tokens, t_shell_config *config)
 
 
 
-	/** printf("\033[31m  wildcard expanding...\033[0m\n"); */
+	/** printf("\033[31m  wildcard expanding result\033[0m\n"); */
 	/** print_tokens(tokens); */
 
 	/** printf("\n"); */

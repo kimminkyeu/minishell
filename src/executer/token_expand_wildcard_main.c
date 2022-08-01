@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/31 00:44:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 13:29:55 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 14:51:03 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,9 @@ int	ft_strncmp_reverse(const char *s1, const char *s2, size_t n)
 		s2_uchar--;
 		n--;
 	}
-	if (n == 0)
-		return (0);
-	else
+	/** if (n == 0) */
+		/** return (0); */
+	/** else */
 		return ((int)(*s1_uchar - *s2_uchar));
 }
 /** 경로를 체크해서 그에 맞는 경로 리스트를 반환 
@@ -113,6 +113,7 @@ t_list	*match_path_and_return_list(char *path, t_string *prefix, t_string *suffi
 		/** 디렉토리 검색을 위한 stat사용. */
 		stat(file->d_name, &buf);
 
+		/** printf("file [%s]\n", file->d_name); */
 
 		/** 만약 prefix 혹은 suffix가 빈문자열이면 비교검사 할 필요 없음. + .. 과 .는 제외  */
 		if (prefix->f_is_empty(prefix) && suffix->f_is_empty(suffix))
@@ -137,6 +138,7 @@ t_list	*match_path_and_return_list(char *path, t_string *prefix, t_string *suffi
 		else if (ft_strncmp(file->d_name, prefix->text, prefix->text_len) == 0 \
 				&& ft_strncmp_reverse(file->d_name, suffix->text, suffix->text_len) == 0)
 		{
+			/** printf("other->text[0]:%c\t\tfile_name[%s]\t\tS_ISDIR:%d\n",other->text[0], file->d_name, S_ISDIR(buf.st_mode)); */
 			if (other->text[0] == '/' && S_ISDIR(buf.st_mode))
 			{
 				ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
@@ -221,14 +223,14 @@ t_list	*expand_single_wildcard(t_token *tok, t_shell_config *config)
 		else
 			other->f_push_back(other, iter.f_next(&iter));
 	}
+
+
 	/** printf("path: [%s]\n", path->text); */
 	/** printf("prefix: [%s]\n", prefix->text); */
 	/** printf("suffix: [%s]\n", suffix->text); */
 	/** printf("other: [%s]\n", other->text); */
-	/** (2) 탐색한 prefix suffix를 바탕으로 리스트 생성. */
-	/** t_list *expand_tokens = NULL; */
-	/** 먼저 모든 후보군을 문자열로 저장.  */
-	/** ft_lstadd_back(&expand_tokens, ft_lstnew()); */
+
+
 	
 	t_list *new;
 
@@ -286,6 +288,14 @@ t_list	*expand_wildcard_glob_and_return_list(t_list *cur_token, t_shell_config *
 	
 	if (cur_token == NULL)
 		return (NULL);
+
+
+	/** Here */
+	/** printf("\n\nhere in each token\n"); */
+	/** print_tokens(cur_token); */
+	/** printf("\n\n"); */
+
+
 	expanded_token = NULL;
 	tok = cur_token->content;
 	redir_err_messege = ft_strdup(tok->str->text);
@@ -314,14 +324,16 @@ int	expand_wildcard_glob_once(t_list *tokens, t_shell_config *config)
 	t_list	*cur;
 	t_list	*tmp;
 	t_list	*tmp2;
+
 	int		is_error;
+
+	/** 못찾을 경우 복구용. */
 
 	is_error = false;
 	cur = tokens;
 	if (cur == NULL || cur->next == NULL)
 		return (SUCCESS);
 
-	// [ls] [*/*] [*/.c] [*/.h]
 	while (cur != NULL && cur->next != NULL)
 	{
 		if (has_wild_card(cur->next))
@@ -332,10 +344,15 @@ int	expand_wildcard_glob_once(t_list *tokens, t_shell_config *config)
 			{
 				ft_lstdelone(cur->next, delete_token);
 				cur->next = tmp2;
+
 			}
-			if (is_error == true) // ambiguous redirection error
-				return (ERROR);
-			while (cur->next != NULL)
+			/** 만약 못찾았다면 단순 연결 복구 */
+			else if (tmp2 == NULL)
+				cur->next = tmp;
+
+			/** if (is_error == true) // ambiguous redirection error */
+				/** return (ERROR); */
+			while (cur != NULL && cur->next != NULL)
 			{
 				tmp2 = cur;
 				cur = cur->next;
@@ -348,36 +365,65 @@ int	expand_wildcard_glob_once(t_list *tokens, t_shell_config *config)
 			cur = cur->next;
 		}
 	}
-	/** 이 부분 상당이 난감함. [ls] [*] [*] 는 안됨.   */
+	/** printf("\n\ncheck\n"); */
+	/** print_tokens(tmp2); */
 
-	/** if (cur != NULL && has_wild_card(cur))
-	  * {
-	  *     tmp2 = expand_wildcard_glob_and_return_list(cur->next, config, &is_error);
-	  *     ft_lstdelone(cur->next, delete_token);
-	  *     cur->next = tmp;
-	  *     while (cur->next != NULL)
-	  *     {
-	  *         tmp2 = cur;
-	  *         cur = cur->next;
-	  *     }
-	  *     tmp2->next = tmp;
-	  *     if (is_error == true) // ambiguous redirection error
-	  *         return (ERROR);
-	  * } */
+	if (tmp2 != NULL && tokens->next != cur && has_wild_card(cur))
+	{
+		/** printf("\n\n------------------------------------\n\n"); */
+		tmp = cur; // 마지막 노드
+		tmp2->next = expand_wildcard_glob_and_return_list(cur, config, &is_error);
+		if (tmp2->next != NULL)
+		{
+			ft_lstdelone(tmp, delete_token);
+		}
+		/** else if (tmp2->next == NULL) */
+			/** tmp2->next = cur; */
+	}
+
+
+	if (is_error == true) // ambiguous redirection error
+		return (ERROR);
+
 	return (SUCCESS);
+}
+
+int	has_wild_card_in_list(t_list *tokens)
+{
+	t_list	*cur;
+
+	cur = tokens;
+	while (cur != NULL)
+	{
+		if (has_wild_card(cur))
+			return (true);
+		cur = cur->next;
+	}
+	return (false);
 }
 
 int	expand_wildcard_glob(t_list *tokens, t_shell_config *config)
 {
 	int	status;
+	int	has_wild_card;
+	t_token	*tok;
+	char	*before_expansion;
 
+	tok = NULL;
+	before_expansion = NULL;
+	if (tokens != NULL && tokens->next != NULL)
+	{
+		tok = tokens->next->content;
+		before_expansion = ft_strdup(tok->str->text);
+	}
 	status = SUCCESS;
-
-	if (status == SUCCESS)
+	has_wild_card = false;
+	while (tokens != NULL && tokens->next != NULL && status == SUCCESS && has_wild_card_in_list(tokens))
+	{
+		has_wild_card = true;
 		status = expand_wildcard_glob_once(tokens, config);
-
-	if (status == SUCCESS)
-		status = expand_wildcard_glob_once(tokens, config);
-
+	}
+	if (has_wild_card == true && tokens->next == NULL)
+		tokens->next = ft_lstnew(new_token(before_expansion));
 	return (status);
 }

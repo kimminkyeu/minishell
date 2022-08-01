@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 17:31:37 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 12:52:31 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ int	open_file_greater(t_list *cur, int *pipe_fd, int *status)
 		*status = errno;
 		printf("lesh: %s: %s\n", tok->str->text, strerror(*status));
 	}
+	printf("status : %d\n", *status);
 	return (*status);
 }
 
@@ -101,7 +102,7 @@ int	open_file_append(t_list *cur, int *pipe_fd, int *status)
 	return (*status);
 }
 
-void	open_redirection(int *pipe_fd, t_list *redir_list, \
+int	open_redirection(int *pipe_fd, t_list *redir_list, \
 			t_shell_config *config)
 {
 	int				status;
@@ -109,23 +110,25 @@ void	open_redirection(int *pipe_fd, t_list *redir_list, \
 	t_list			*cur;
 
 	status = 0;
-	if (redir_list == NULL)
-		return ;
-	cur = redir_list;
-	while (cur != NULL)
+	if (redir_list != NULL)
 	{
-		tok = cur->content;
-		if (tok->type == E_TYPE_REDIR_LESS)
-			open_file_less(cur, pipe_fd, &status);
-		else if (tok->type == E_TYPE_REDIR_HEREDOC)
-			open_file_heredoc(cur, pipe_fd, &status, config);
-		else if (tok->type == E_TYPE_REDIR_GREATER)
-			open_file_greater(cur, pipe_fd, &status);
-		else if (tok->type == E_TYPE_REDIR_APPEND)
-			open_file_append(cur, pipe_fd, &status);
-		if (status != SUCCESS)
-			exit(status);
-		else
-			cur = cur->next;
+		cur = redir_list;
+		while (cur != NULL)
+		{
+			tok = cur->content;
+			if (tok->type == E_TYPE_REDIR_LESS)
+				open_file_less(cur, pipe_fd, &status);
+			else if (tok->type == E_TYPE_REDIR_HEREDOC)
+				open_file_heredoc(cur, pipe_fd, &status, config);
+			else if (tok->type == E_TYPE_REDIR_GREATER)
+				open_file_greater(cur, pipe_fd, &status);
+			else if (tok->type == E_TYPE_REDIR_APPEND)
+				open_file_append(cur, pipe_fd, &status);
+			if (status != SUCCESS)
+				break ;
+			else
+				cur = cur->next;
+		}
 	}
+	return (status);
 }

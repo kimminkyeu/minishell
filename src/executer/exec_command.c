@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 17:38:17 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/07/29 17:47:45 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 12:53:49 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,6 +59,8 @@ int	exec_exceptions(t_tree *node, char **cmd_argv, t_shell_config *config)
 	pipe_fd[READ] = config->stdin_backup;
 	pipe_fd[WRITE] = config->stdout_backup;
 	status = open_redirection(pipe_fd, node->redirection, config);
+	if (status != SUCCESS)
+		return (status);
 	if (pipe_fd[READ] != config->stdin_backup)
 	{
 		dup2(pipe_fd[READ], STDIN_FILENO);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_expand.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:44:57 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 01:13:10 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 11:09:50 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,8 @@
 extern int	g_is_sig_interupt;
 
 /** NOTE : is_dollar_expanded Flag is for [split_via_whitespace()] */
-int	expand_token_each(t_token *tok, bool *is_dollar_expanded, t_shell_config *config)
+int	expand_token_each(t_token *tok, bool *is_dollar_expanded, \
+		t_shell_config *config)
 {
 	int			status;
 	t_iterator	iter;
@@ -60,7 +61,7 @@ void	split_via_whitespace(t_list *tokens)
 	t_token	*tok;
 	t_list	*tmp;
 	char	*spliter;
-	
+
 	cur = tokens;
 	while (cur != NULL)
 	{
@@ -77,7 +78,6 @@ void	split_via_whitespace(t_list *tokens)
 		cur = cur->next;
 	}
 }
-
 
 /* NOTE : Iterator Pattern refactoring 
  * Because ec$ECHO becomes [echo hi]-[NULL],

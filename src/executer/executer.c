@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/17 22:15:09 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 01:10:45 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 11:08:43 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,7 +62,7 @@ void	execute_node(t_tree *node, int *status, t_shell_config *config)
 	else
 		*status = exec_general(node, cmd_argv, config);
 	if (cmd_argv != NULL)
-	    delete_strs(&cmd_argv);
+		delete_strs(&cmd_argv);
 }
 
 /** inorder_recur():

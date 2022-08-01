@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   environ_helper2.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/30 18:47:27 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/30 18:48:05 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 11:08:22 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 /** while copying, add declare -x and quote " "  */
 void	copy_strs_for_export(char **dst, char **src, size_t strs_count)
 {
-	size_t	i;
+	size_t		i;
 	t_string	*str;
 
 	i = 0;

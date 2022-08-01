@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 19:20:29 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/07/30 20:13:08 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 15:26:20 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,15 +45,16 @@ char	**get_cmd_argv(t_list *token)
 }
 
 // NOTE : if g_is_sig_interupt == true, signal: 2 + 128
-void	expand_dollar_sign(t_string *str, t_iterator *iter, \
-			bool *is_dollar_expanded, t_shell_config *config)
+int	expand_dollar_sign(t_string *str, t_iterator *iter, \
+		t_shell_config *config, t_token_type token_type)
 {
 	long	start;
 	long	end;
 	char	*env_key;
 	char	*env_value;
+	int		status;
 
-	*is_dollar_expanded = true;
+	status = 0;
 	if (iter->f_peek(iter) == '?')
 	{
 		if (g_is_sig_interupt == true)
@@ -71,8 +72,14 @@ void	expand_dollar_sign(t_string *str, t_iterator *iter, \
 		env_key = ft_substr(iter->line, start + 1, end - start);
 		env_value = get_environ_value(env_key, *(config->envp));
 		str->f_append(str, env_value);
+		if (token_type == E_TYPE_REDIR_ARG)
+		{
+			if (env_value == NULL || ft_strchr(env_value, ' ') != NULL)
+				status = 1;
+		}
 		free(env_key);
 	}
+	return (status);
 }
 
 /** NOTE : interpret $ARG */
@@ -87,7 +94,10 @@ int	expand_double_quote(t_string *str, t_iterator *iter, \
 		if (c == '\"')
 			return (SUCCESS);
 		else if (c == '$')
-			expand_dollar_sign(str, iter, is_dollar_expanded, config);
+		{
+			*is_dollar_expanded = true;
+			expand_dollar_sign(str, iter, config, E_TYPE_DEFAULT);
+		}		
 		else
 			str->f_push_back(str, c);
 	}

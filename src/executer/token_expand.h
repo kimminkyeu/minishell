@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_expand.h                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:47:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/31 21:26:18 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 15:06:06 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ int		expand_token(t_list *tokens, t_shell_config *config);
 
 char	**get_cmd_argv(t_list *token);
 
-void	expand_dollar_sign(t_string *str, t_iterator *iter, \
-		bool *is_dollar_expanded, t_shell_config *config);
+int		expand_dollar_sign(t_string *str, t_iterator *iter, \
+		t_shell_config *config, t_token_type token_type);
 
 int		expand_double_quote(t_string *str, t_iterator *iter, \
 		bool *is_dollar_expanded, t_shell_config *config);

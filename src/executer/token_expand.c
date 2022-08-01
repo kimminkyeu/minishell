@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/22 15:44:57 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 11:09:50 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 15:04:17 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,9 @@ int	expand_token_each(t_token *tok, bool *is_dollar_expanded, \
 	t_iterator	iter;
 	t_string	*expanded_str;
 	char		c;
+	char		*tok_origin;
 
+	tok_origin = tok->str->text;
 	status = SUCCESS;
 	init_iterator(&iter, tok->str->text);
 	expanded_str = new_string(tok->str->capacity);
@@ -42,7 +44,16 @@ int	expand_token_each(t_token *tok, bool *is_dollar_expanded, \
 			status = expand_double_quote(expanded_str, &iter, \
 					is_dollar_expanded, config);
 		else if (c == '$')
-			expand_dollar_sign(expanded_str, &iter, is_dollar_expanded, config);
+		{
+			*is_dollar_expanded = true;
+			status = expand_dollar_sign(expanded_str, &iter, config, tok->type);
+			if (status != SUCCESS)
+			{
+				ft_putstr_fd("lesh: ", STDERR_FILENO);
+				ft_putstr_fd(tok_origin, STDERR_FILENO);
+				ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
+			}
+		}
 		else
 			expanded_str->f_push_back(expanded_str, c);
 	}
@@ -93,7 +104,6 @@ int	expand_tokens(t_list *tokens, t_shell_config *config)
 	cur = tokens;
 	status = SUCCESS;
 	is_dollar_expanded = false;
-
 
 	/** printf("\033[31mBefore expansion\033[0m\n"); */
 	/** print_tokens(tokens); */

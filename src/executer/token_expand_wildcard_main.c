@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/31 00:44:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 13:29:55 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 14:04:43 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -282,13 +282,11 @@ t_list	*expand_wildcard_glob_and_return_list(t_list *cur_token, t_shell_config *
 {
 	t_token	*tok;
 	t_list	*expanded_token;
-	char	*redir_err_messege;
 	
 	if (cur_token == NULL)
 		return (NULL);
 	expanded_token = NULL;
 	tok = cur_token->content;
-	redir_err_messege = ft_strdup(tok->str->text);
 
 	/** 토큰 확장을 하고, *가 전체 리스트에서 없을 때 까지 재귀적으로 반복.  */
 	expanded_token = expand_single_wildcard(tok, config);
@@ -298,12 +296,13 @@ t_list	*expand_wildcard_glob_and_return_list(t_list *cur_token, t_shell_config *
 	if ((tok->type >= 5 && tok->type <= 9) || tok->type == 13)
 		if (expanded_token != NULL && expanded_token->next != NULL)
 		{
-			printf("lesh: %s: ambiguous redirect\n", redir_err_messege);
+			ft_putstr_fd("lesh: ", STDERR_FILENO);
+			ft_putstr_fd(tok->str->text, STDERR_FILENO);
+			ft_putstr_fd(": ambiguous redirect\n", STDERR_FILENO);
 			ft_lstclear(&expanded_token, delete_token);
 			expanded_token = NULL;
 			*is_error = true;
 		}
-	free(redir_err_messege);
 	return (expanded_token);
 }
 

@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 15:20:32 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 15:43:54 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,11 +108,11 @@ int	open_redirection(int *pipe_fd, t_list *redir_list, \
 	t_token			*tok;
 	t_list			*cur;
 
-	status = 0;
+	status = SUCCESS;
 	if (redir_list != NULL)
 	{
 		cur = redir_list;
-		while (cur != NULL)
+		while (cur != NULL && status == SUCCESS)
 		{
 			tok = cur->content;
 			if (tok->type == E_TYPE_REDIR_LESS)
@@ -123,10 +123,7 @@ int	open_redirection(int *pipe_fd, t_list *redir_list, \
 				open_file_greater(cur, pipe_fd, &status);
 			else if (tok->type == E_TYPE_REDIR_APPEND)
 				open_file_append(cur, pipe_fd, &status);
-			if (status != SUCCESS)
-				break ;
-			else
-				cur = cur->next;
+			cur = cur->next;
 		}
 	}
 	return (status);

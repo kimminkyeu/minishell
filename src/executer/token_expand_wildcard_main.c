@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token_expand_wildcard_main.c                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/31 00:44:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 01:12:38 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 13:29:55 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -328,8 +328,11 @@ int	expand_wildcard_glob_once(t_list *tokens, t_shell_config *config)
 		{
 			tmp = cur->next->next;
 			tmp2 = expand_wildcard_glob_and_return_list(cur->next, config, &is_error);
-			ft_lstdelone(cur->next, delete_token);
-			cur->next = tmp2;
+			if (tmp2 != NULL)
+			{
+				ft_lstdelone(cur->next, delete_token);
+				cur->next = tmp2;
+			}
 			if (is_error == true) // ambiguous redirection error
 				return (ERROR);
 			while (cur->next != NULL)

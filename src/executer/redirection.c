@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 12:52:31 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 13:32:24 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,6 @@ int	open_file_greater(t_list *cur, int *pipe_fd, int *status)
 		*status = errno;
 		printf("lesh: %s: %s\n", tok->str->text, strerror(*status));
 	}
-	printf("status : %d\n", *status);
 	return (*status);
 }
 

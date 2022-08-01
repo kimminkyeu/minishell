@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 23:15:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 10:05:57 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/01 22:41:36 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,8 @@
 #include "../../include/builtin.h"
 
 #define NO_SUCH_DIRECTORY (2)
+
+
 
 /* NOTE : if cmd is [cd -] or [cd ~], then substitute arglist[1]. 
  * [ cd ~/minishell/include ] should work to. */
@@ -74,18 +76,21 @@ static void	reset_pwd(char ***envp_ptr)
 	char	*path_new;
 	char	**arglist_new;
 
-	arglist_new = ft_calloc(3, sizeof(*arglist_new));
-	arglist_new[0] = ft_strdup("export");
-	path_old = ft_strjoin("PWD=", get_environ_value("HOME", *envp_ptr));
-	path_new = ft_strjoin("OLDPWD=", get_environ_value("HOME", *envp_ptr));
-	arglist_new[1] = path_old;
-	exec_export(arglist_new, envp_ptr);
-	free(arglist_new[1]);
-	arglist_new[1] = path_new;
-	exec_export(arglist_new, envp_ptr);
-	free(arglist_new[0]);
-	free(arglist_new[1]);
-	free(arglist_new);
+	if (chdir(get_environ_value("HOME", *envp_ptr)) == SUCCESS)
+	{
+		arglist_new = ft_calloc(3, sizeof(*arglist_new));
+		arglist_new[0] = ft_strdup("export");
+		path_old = ft_strjoin("PWD=", get_environ_value("HOME", *envp_ptr));
+		path_new = ft_strjoin("OLDPWD=", get_environ_value("HOME", *envp_ptr));
+		arglist_new[1] = path_old;
+		exec_export(arglist_new, envp_ptr);
+		free(arglist_new[1]);
+		arglist_new[1] = path_new;
+		exec_export(arglist_new, envp_ptr);
+		free(arglist_new[0]);
+		free(arglist_new[1]);
+		free(arglist_new);
+	}
 }
 
 static char	*get_current_directory(char **arglist)

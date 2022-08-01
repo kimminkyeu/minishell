@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:52:12 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 19:13:05 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 22:54:08 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,12 @@ bool	is_bracket_unclosed(t_token *tok_1)
 	char	*tmp;
 
 	c = tok_1->str->text[tok_1->str->text_len - 1];
+	if ((tok_1->str->text[0] == '(' && c != ')'))
+	{
+		tok_1->str->text[tok_1->str->text_len - 1] = '\0';
+		ft_putstr_fd("lesh: syntax error near unexpected token `newline'\n", STDERR_FILENO);
+		return (true);
+	}
 	if (c != ')' && c != '(')
 	{
 		tok_1->str->text[tok_1->str->text_len - 1] = '\0';
@@ -99,16 +105,19 @@ bool	is_last_token_meta(t_list *token_list)
 	tok_1 = cur->content;
 	if (tok_1->type == E_TYPE_REDIRECT)
 	{
-		ft_putstr_fd("lesh: syntax error near unexpected token \
-				`newline'\n", STDERR_FILENO);
+		ft_putstr_fd("lesh: syntax error near unexpected token `newline'\n", STDERR_FILENO);
 		return (true);
 	}
 	else if (is_meta_token_type(tok_1->type))
 	{
-		ft_putstr_fd("lesh: syntax error near unexpected \
-				token \'", STDERR_FILENO);
+		ft_putstr_fd("lesh: syntax error near unexpected token \'", STDERR_FILENO);
 		ft_putstr_fd(tok_1->str->text, STDERR_FILENO);
 		ft_putstr_fd("\'\n", STDERR_FILENO);
+		return (true);
+	}
+	if (tok_1->str->text[0] == ')')
+	{
+		ft_putstr_fd("lesh: syntax error near unexpected token `)'\n", STDERR_FILENO);
 		return (true);
 	}
 	else if (tok_1->type == E_TYPE_BRACKET && is_bracket_unclosed(tok_1))

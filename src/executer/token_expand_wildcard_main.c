@@ -6,189 +6,11 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/31 00:44:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 20:50:49 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/01 21:15:47 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <sys/types.h>
-#include <dirent.h>
-#include <sys/stat.h>
-#include "token_expand.h"
-#include "executer.h"
-#include "../parser/parse_tree.h"
-
-void	get_prefix(t_iterator *iter, t_string *prefix)
-{
-	int	c;
-
-	while (iter->f_has_next(iter))
-	{
-		c = iter->f_peek(iter);
-		if (c == '*')
-			break ;
-		else
-			prefix->f_push_back(prefix, iter->f_next(iter));
-	}
-}
-
-void	get_suffix(t_iterator *iter, t_string *suffix)
-{
-	int	c;
-
-	while (iter->f_has_next(iter))
-	{
-		c = iter->f_peek(iter);
-		if (c == '/')
-			break ;
-		else
-			suffix->f_push_back(suffix, iter->f_next(iter));
-	}
-}
-
-int	ft_strncmp_reverse(const char *s1, const char *s2, size_t n)
-{
-	char	*s1_uchar;
-	char	*s2_uchar;
-
-	s1_uchar = ft_strrchr(s1, '\0');
-	s2_uchar = ft_strrchr(s2, '\0');
-	while (s1_uchar >= s1 && s2_uchar >= s2 && (*s1_uchar == *s2_uchar) && n > 0)
-	{
-		s1_uchar--;
-		s2_uchar--;
-		n--;
-	}
-	return ((int)(*s1_uchar - *s2_uchar));
-}
-
-t_list	*match_path_and_return_list(char *path, t_string *prefix, t_string *suffix, t_string *other)
-{
-	t_list			*match;
-	DIR				*dir_ptr;
-	struct dirent	*file;
-	struct stat		buf;
-	t_string		*path_joined;
-
-	match = NULL;
-	dir_ptr = opendir(path);
-	if (path == NULL && dir_ptr == NULL)
-		return (NULL);
-	while (true)
-	{
-		file = readdir(dir_ptr);
-		if (file == NULL)
-			break ;
-		path_joined = new_string(64);
-		path_joined->f_append(path_joined, path);
-		if (path_joined->text[path_joined->text_len - 1] != '/')
-			path_joined->f_push_back(path_joined, '/');
-		path_joined->f_append(path_joined, file->d_name);
-		stat(path_joined->text, &buf);
-		delete_string(&path_joined);
-		if (prefix->f_is_empty(prefix) && suffix->f_is_empty(suffix))
-		{
-			if (ft_strncmp(file->d_name, "..", 2) != 0 && ft_strncmp(file->d_name, ".", 1) != 0)
-			{
-				if (other->text[0] == '/' && S_ISDIR(buf.st_mode))
-					ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
-				else if (other->text[0] != '/')
-					ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
-			}
-		}
-		else if (ft_strncmp(file->d_name, prefix->text, prefix->text_len) == 0 \
-				&& ft_strncmp_reverse(file->d_name, suffix->text, suffix->text_len) == 0)
-		{
-			if (other->text[0] == '/' && S_ISDIR(buf.st_mode))
-				ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
-			else if (other->text[0] != '/')
-				ft_lstadd_back(&match, ft_lstnew(new_token(file->d_name)));
-		}
-	}
-	closedir(dir_ptr);
-	return (match);
-}
-
-
-
-void	set_pattern_path(t_token *tok, t_pattern *pattern, t_iterator *iter)
-{
-	char	c;
-
-	if (ft_strchr(tok->str->text, '/') != NULL && ft_strchr(tok->str->text, '*') != NULL)
-	{
-		if (ft_strchr(tok->str->text, '/') < ft_strchr(tok->str->text, '*'))
-		{
-			while (iter->f_has_next(iter))
-			{
-				c = iter->f_peek(iter);
-				if (c == '*')
-					break ;
-				if (c == '/')
-				{
-					iter->f_next(iter);
-					break ;
-				}
-				pattern->path->f_push_back(pattern->path, iter->f_next(iter));
-			}
-		}
-	}
-}
-
-
-void	set_pattern_prefix_suffix_remainder(t_pattern *pattern, t_iterator *iter)
-{
-	char	c;
-	int		flag;
-	
-	flag = 0;
-	while (iter->f_has_next(iter))
-	{
-		c = iter->f_peek(iter);
-		if (flag != 2 && c == '*')
-		{
-			flag = 1;
-			iter->f_next(iter);
-		}
-		if (c == '/')
-		{
-			flag = 2;
-			pattern->remainder->f_push_back(pattern->remainder, iter->f_next(iter));
-		}
-		else if (flag == 0)
-			get_prefix(iter, pattern->prefix);
-		else if (flag == 1)
-			get_suffix(iter, pattern->suffix);
-		else
-			pattern->remainder->f_push_back(pattern->remainder, iter->f_next(iter));
-	}
-}
-
-void	set_pattern(t_token *tok, t_pattern *pattern, t_shell_config *config)
-{
-	t_iterator	iter;
-
-	init_iterator(&iter, tok->str->text);
-	pattern->path->f_append(pattern->path, get_environ_value("PWD", *config->envp));
-	pattern->path->f_push_back(pattern->path, '/');
-	set_pattern_path(tok, pattern, &iter);
-	set_pattern_prefix_suffix_remainder(pattern, &iter);
-}
-
-void	init_pattern(t_pattern *pattern)
-{
-	pattern->path = new_string(32);
-	pattern->prefix = new_string(32);
-	pattern->suffix = new_string(32);
-	pattern->remainder = new_string(32);
-}
-
-void	delete_pattern(t_pattern *pattern)
-{
-	delete_string(&pattern->path);
-	delete_string(&pattern->prefix);
-	delete_string(&pattern->suffix);
-	delete_string(&pattern->remainder);
-}
+#include "token_expand_wildcard.h"
 
 t_list	*expand_single_wildcard(t_token *tok, t_shell_config *config)
 {
@@ -199,7 +21,7 @@ t_list	*expand_single_wildcard(t_token *tok, t_shell_config *config)
 
 	init_pattern(&pattern);
 	set_pattern(tok, &pattern, config);
-	new = match_path_and_return_list(pattern.path->text, pattern.prefix, pattern.suffix, pattern.remainder);
+	new = match_path_and_return_list(pattern.path->text, &pattern);
 	if (pattern.path->text[pattern.path->text_len - 1] != '/')
 		pattern.path->f_push_back(pattern.path, '|');
 	cur = new;
@@ -213,19 +35,6 @@ t_list	*expand_single_wildcard(t_token *tok, t_shell_config *config)
 	}
 	delete_pattern(&pattern);
 	return (new);
-}
-
-int	has_wild_card(t_list *cur_token)
-{
-	t_token *tok;
-
-	if (cur_token == NULL)
-		return (false);
-	tok = cur_token->content;
-	if (ft_strchr(tok->str->text, '*'))
-		return (true);
-	else
-		return (false);
 }
 
 t_list	*expand_wildcard_glob_and_return_list(t_list *cur_token, t_shell_config *config, int *is_error)
@@ -277,20 +86,6 @@ int	expand_wildcard_glob_once(t_list *cur, t_shell_config *config, int *is_error
 		cur = cur->next;
 	}
 	return (*is_error);
-}
-
-int	has_wild_card_in_list(t_list *tokens)
-{
-	t_list	*cur;
-
-	cur = tokens;
-	while (cur != NULL)
-	{
-		if (has_wild_card(cur))
-			return (true);
-		cur = cur->next;
-	}
-	return (false);
 }
 
 int	expand_wildcard_glob(t_list *tokens, t_shell_config *config)

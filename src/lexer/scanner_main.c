@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   scanner_main.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 18:06:35 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 15:23:07 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 17:52:22 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@ t_list	*tokenize(char *line)
 
 int	is_syntax_error(t_list *token_list)
 {
+	if (token_list == NULL)
+		return (false);
 	if (is_meta_token_overlap(token_list))
 		return (true);
 	else if (is_last_token_meta(token_list))
@@ -79,7 +81,7 @@ void	set_redirection_type(t_list *token_list)
 	t_token	*tok;
 
 	tmp = token_list;
-	while (tmp->next != NULL)
+	while (tmp != NULL && tmp->next != NULL)
 	{
 		tok = tmp->content;
 		if (tok->type == E_TYPE_REDIRECT)

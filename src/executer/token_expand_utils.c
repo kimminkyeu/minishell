@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 19:20:29 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/08/02 15:42:57 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 18:04:28 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,10 @@ void	expand_dollar_sign(t_string *str, t_iterator *iter, \
 	if (iter->f_peek(iter) == '?')
 	{
 		if (g_is_sig_interupt == true)
-			str->f_append(str, "130");
+		{
+			str->f_append(str, "1");
+			g_is_sig_interupt = false;
+		}
 		else
 			str->f_append(str, ft_itoa(WEXITSTATUS(config->last_cmd_wstatus)));
 		iter->f_next(iter);
@@ -93,7 +96,8 @@ int	expand_double_quote(t_string *str, t_iterator *iter, \
 	}
 	iter->f_unget(iter);
 	c = iter->f_peek(iter);
-	print_error("lesh: syntax error near unexpected token", &c);
+	ft_putstr_fd("lesh: syntax error near unexpected token '\"'\n"\
+				, STDERR_FILENO);
 	return (ERROR);
 }
 
@@ -112,6 +116,7 @@ int	expand_single_quote(t_string *str, t_iterator *iter)
 	}
 	iter->f_unget(iter);
 	c = iter->f_peek(iter);
-	print_error("lesh: syntax error near unexpected token", &c);
+	ft_putstr_fd("lesh: syntax error near unexpected token '\''\n"\
+				, STDERR_FILENO);
 	return (ERROR);
 }

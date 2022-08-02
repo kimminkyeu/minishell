@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:30:26 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 15:15:09 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/02 15:38:17 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,18 +17,11 @@
 #include "../libft/include/libft.h"
 #include "../main/minishell.h"
 
-/* exit [n]: exit with status of n.
-** 1. no [n]: exit with exit status of last command.
-** 2-1. [n] more than 1: command exit status 1. !!exit fail!!
-** 2-2. [n] is not number: exit(255).
-*/
-
 /* how exit() work with argument:
 ** 1) atoll(alpha to longlong)
 ** 1-1) if over/underflow occurs, it's not a number.
 ** 2) cast into unsigned char
 */
-
 static bool	get_status(char *str, unsigned char *status)
 {
 	int					neg;
@@ -58,6 +51,11 @@ static bool	get_status(char *str, unsigned char *status)
 	return (false);
 }
 
+/* exit [n]: exit with status of n.
+** 1. no [n]: exit with exit status of last command.
+** 2-1. [n] more than 1: command exit status 1. !!exit fail!!
+** 2-2. [n] is not number: exit(255).
+*/
 int	exec_exit(char **arglist, char **our_envp, t_shell_config *config)
 {
 	unsigned char	status;

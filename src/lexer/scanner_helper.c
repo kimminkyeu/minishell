@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   scanner_helper.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:52:12 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 14:41:47 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 17:48:53 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ bool	is_last_token_meta(t_list *token_list)
 	t_token	*tok_1;
 
 	cur = token_list;
-	while (cur->next != NULL)
+	while (cur != NULL && cur->next != NULL)
 		cur = cur->next;
 	tok_1 = cur->content;
 	if (is_last_token_meta_2(tok_1))

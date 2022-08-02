@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/15 23:15:55 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 15:15:39 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/02 17:59:37 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@
 #include "../libft/include/libft.h"
 #include "../../include/builtin.h"
 
-#define NO_SUCH_DIRECTORY (2)
+#define NO_SUCH_DIRECTORY (1)
 
 /* NOTE : if cmd is [cd -] or [cd ~], then substitute arglist[1]. 
  * [ cd ~/minishell/include ] should work to. */

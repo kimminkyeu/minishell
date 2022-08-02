@@ -6,10 +6,10 @@
 #    By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/08/02 14:47:01 by minkyeki         ###   ########.fr        #
-#    Updated: 2022/08/01 17:07:08 by yehan            ###   ########seoul.kr   #
+#    Updated: 2022/08/02 18:09:20 by yehan            ###   ########seoul.kr   #
 #                                                                              #
 # **************************************************************************** #
+
 
 NAME			= minishell
 CC				= cc

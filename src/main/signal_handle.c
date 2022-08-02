@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 01:57:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 13:13:33 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 13:34:08 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,7 +95,8 @@ void	wait_every_pid(t_shell_config *config)
 			while (cur != NULL)
 			{
 				/** NOTE : Remove here */
-				/** printf("killing child processes ...\n"); */
+				printf("killing child processes ...\n");
+
 				cur_pid = *((pid_t *)cur->content);
 				kill(cur_pid, SIGTERM);
 				cur = cur->next;

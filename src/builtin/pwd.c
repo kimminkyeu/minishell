@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:33:02 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 16:54:07 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/02 15:15:18 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@
 */
 
 #define SUCCESS (0)
-#define ERROR	(0)
+#define ERROR	(1)
 
 int	exec_pwd(char **arglist, char **our_envp)
 {

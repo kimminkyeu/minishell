@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:30:26 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 17:41:19 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/02 15:15:09 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,8 +57,6 @@ static bool	get_status(char *str, unsigned char *status)
 	}
 	return (false);
 }
-
-# include <stdio.h>
 
 int	exec_exit(char **arglist, char **our_envp, t_shell_config *config)
 {

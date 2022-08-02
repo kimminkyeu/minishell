@@ -6,7 +6,7 @@
 #    By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/07/15 21:26:09 by minkyeki          #+#    #+#              #
-#    Updated: 2022/08/01 21:23:36 by minkyeki         ###   ########.fr        #
+#    Updated: 2022/08/02 14:47:01 by minkyeki         ###   ########.fr        #
 #    Updated: 2022/08/01 17:07:08 by yehan            ###   ########seoul.kr   #
 #                                                                              #
 # **************************************************************************** #
@@ -40,16 +40,19 @@ MAIN_SRC		= minishell prompt signal_handle heredoc heredoc_utils helper helper2
 
 LEXER_SRC		= token_create token_modify \
 				  scanner_main scanner_create scanner_function_ptr \
-				  scanner_helper scanner_get_token_1 scanner_get_token_2
+				  scanner_helper scanner_helper2 scanner_get_token_1 scanner_get_token_2
 
 PARSER_SRC		= parse_tree parse_tree_utils parse_tree_helper
+
 EXECUTER_SRC	= executer token_expand token_expand_utils get_full_path subshell \
 				  redirection redirection_utils exec_command exec_command_utils \
 				  token_expand_wildcard_main token_expand_wildcard_pattern \
 				  token_expand_wildcard_helper token_expand_wildcard_helper2
 
 BUILTIN_SRC		= environ environ_utils environ_helper environ_helper2 cd echo pwd exit
-STRING_SRC		= string_create string_modify string_utils
+
+STRING_SRC		= string_create string_modify string_modify2 string_utils
+
 ITERATOR_SRC	= iterator_create iterator_modify
 
 # NOTE : Add to SRC here

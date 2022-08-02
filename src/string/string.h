@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 12:26:31 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 00:24:54 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 14:46:39 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,7 +99,9 @@ int			str_replace(t_string *str, size_t pos, size_t len, \
 int			str_replace_all(t_string *str, const char *substr_old, \
 		const char *substr_new);
 
-/* TODO: add description */
+/* 
+ * Inserts additional characters into the string 
+ * right before the character indicated by pos (or p) */
 int			str_insert(t_string *str, size_t pos, const char *str_to_insert);
 
 #endif /* STRING_H */

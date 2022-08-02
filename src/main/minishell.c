@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 14:08:42 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/02 14:19:59 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,11 +55,9 @@ int	run_shell(char *line, t_shell_config *config)
 
 void	shell_loop(t_shell_config *config)
 {
-	int		status;
 	char	*line;
 
-	status = CMD_KEEP_RUNNING;
-	while (status != CMD_STOP_SHELL)
+	while (true)
 	{
 		line = readline_prompt(config);
 		if (line == NULL)
@@ -75,7 +73,7 @@ void	shell_loop(t_shell_config *config)
 			line = NULL;
 			continue ;
 		}
-		status = run_shell(line, config);
+		run_shell(line, config);
 		free(line);
 		line = NULL;
 	}

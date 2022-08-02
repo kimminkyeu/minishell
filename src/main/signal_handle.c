@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 01:57:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 13:34:08 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 15:13:05 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,9 +42,6 @@ void	sig_ctrl_c(int signal)
 		g_is_sig_interupt = true;
 		if (pid == -1)
 		{
-			/** TODO : Delete here */
-			/** printf("g_is_sigint : %d\n", g_is_sig_interupt); */
-
 			rl_replace_line("", 1);
 			ft_putstr_fd("\n", STDOUT_FILENO);
 			rl_on_new_line();
@@ -70,9 +67,17 @@ void	*new_pid(pid_t pid)
 	return (tmp);
 }
 
-void	del_pid(void *content)
+static void	kill_pid_list(t_list *cur)
 {
-	free(content);
+	pid_t	cur_pid;
+
+	while (cur != NULL)
+	{
+		cur_pid = *((pid_t *)cur->content);
+		kill(cur_pid, SIGTERM);
+		cur = cur->next;
+	}
+	g_is_sig_interupt = false;
 }
 
 void	wait_every_pid(t_shell_config *config)
@@ -88,47 +93,12 @@ void	wait_every_pid(t_shell_config *config)
 			waitpid(cur_pid, &config->last_cmd_wstatus, 0);
 		else
 			waitpid(cur_pid, NULL, 0);
-		/** NOTE : signal ctrl+c 부분이 없음. */
 		if (g_is_sig_interupt == true)
 		{
-			cur = config->pid_list;
-			while (cur != NULL)
-			{
-				/** NOTE : Remove here */
-				printf("killing child processes ...\n");
-
-				cur_pid = *((pid_t *)cur->content);
-				kill(cur_pid, SIGTERM);
-				cur = cur->next;
-			}
-			g_is_sig_interupt = false;
+			kill_pid_list(config->pid_list);
 			break ;
 		}
 		cur = cur->next;
 	}
-	g_is_sig_interupt = false;
-	ft_lstclear(&config->pid_list, del_pid);
+	ft_lstclear(&config->pid_list, free);
 }
-
-/** Waits every pids, and set last process pid's 
- *  wstatus to config->last_cmd_status. */
-/** void	wait_every_pid(t_shell_config *config)
-  * {
-  *     t_list	*cur;
-  *     pid_t	cur_pid;
-  *
-  *     cur = config->pid_list;
-  *     [> NOTE : signal ctrl+c 부분이 없음. <]
-  *
-  *     while (cur != NULL)
-  *     {
-  *         cur_pid = *((pid_t *)cur->content);
-  *         if (cur_pid == config->last_cmd_pid)
-  *             waitpid(cur_pid, &config->last_cmd_wstatus, 0);
-  *         else
-  *             waitpid(cur_pid, NULL, 0);
-  *         cur = cur->next;
-  *     }
-  *     g_is_sig_interupt = false;
-  *     ft_lstclear(&config->pid_list, del_pid);
-  * } */

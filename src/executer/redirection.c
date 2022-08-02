@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 21:22:10 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 15:13:47 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/08/01 10:09:42 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
@@ -114,25 +114,24 @@ int	open_redirection(int *pipe_fd, t_list *redir_list, \
 	t_list			*cur;
 
 	status = 0;
-	if (redir_list != NULL)
+	if (redir_list == NULL)
+		return (status);
+	cur = redir_list;
+	while (cur != NULL)
 	{
-		cur = redir_list;
-		while (cur != NULL)
-		{
-			tok = cur->content;
-			if (tok->type == E_TYPE_REDIR_LESS)
-				open_file_less(cur, pipe_fd, &status);
-			else if (tok->type == E_TYPE_REDIR_HEREDOC)
-				open_file_heredoc(cur, pipe_fd, &status, config);
-			else if (tok->type == E_TYPE_REDIR_GREATER)
-				open_file_greater(cur, pipe_fd, &status);
-			else if (tok->type == E_TYPE_REDIR_APPEND)
-				open_file_append(cur, pipe_fd, &status);
-			if (status != SUCCESS)
-				break ;
-			else
-				cur = cur->next;
-		}
+		tok = cur->content;
+		if (tok->type == E_TYPE_REDIR_LESS)
+			open_file_less(cur, pipe_fd, &status);
+		else if (tok->type == E_TYPE_REDIR_HEREDOC)
+			open_file_heredoc(cur, pipe_fd, &status, config);
+		else if (tok->type == E_TYPE_REDIR_GREATER)
+			open_file_greater(cur, pipe_fd, &status);
+		else if (tok->type == E_TYPE_REDIR_APPEND)
+			open_file_append(cur, pipe_fd, &status);
+		if (status != SUCCESS)
+			break ;
+		else
+			cur = cur->next;
 	}
 	return (status);
 }

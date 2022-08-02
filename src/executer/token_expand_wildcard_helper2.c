@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 21:12:45 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 21:13:58 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 15:16:20 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 int	has_wild_card(t_list *cur_token)
 {
-	t_token *tok;
+	t_token	*tok;
 
 	if (cur_token == NULL)
 		return (false);
@@ -46,7 +46,8 @@ int	ft_strncmp_reverse(const char *s1, const char *s2, size_t n)
 
 	s1_uchar = ft_strrchr(s1, '\0');
 	s2_uchar = ft_strrchr(s2, '\0');
-	while (s1_uchar >= s1 && s2_uchar >= s2 && (*s1_uchar == *s2_uchar) && n > 0)
+	while (s1_uchar >= s1 && s2_uchar >= s2 \
+			&& (*s1_uchar == *s2_uchar) && n > 0)
 	{
 		s1_uchar--;
 		s2_uchar--;

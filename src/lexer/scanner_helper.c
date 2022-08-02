@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:52:12 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 19:19:35 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/02 19:22:36 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,8 @@ bool	is_meta_token_overlap(t_list *token_list)
 		c = tok_2->str->text[0];
 		if (is_meta_token_type(tok_1->type) && is_meta_token_type(tok_2->type))
 		{
-			ft_putstr_fd("lesh: syntax error near unexpected token '", STDERR_FILENO);
+			ft_putstr_fd("lesh: syntax error near unexpected token '", \
+				STDERR_FILENO);
 			ft_putchar_fd(c, STDERR_FILENO);
 			ft_putstr_fd("'\n", STDERR_FILENO);
 			return (true);

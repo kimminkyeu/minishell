@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 19:20:29 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/07/30 20:13:08 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 15:42:57 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ char	**get_cmd_argv(t_list *token)
 	return (arglist);
 }
 
-// NOTE : if g_is_sig_interupt == true, signal: 2 + 128
+/* NOTE : if g_is_sig_interupt == true, signal: 2 + 128 */
 void	expand_dollar_sign(t_string *str, t_iterator *iter, \
 			bool *is_dollar_expanded, t_shell_config *config)
 {

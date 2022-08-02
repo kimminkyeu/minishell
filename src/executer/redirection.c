@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/23 15:34:25 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 15:13:47 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 15:41:24 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/08/01 10:09:42 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
@@ -16,10 +16,10 @@
 #include <readline/readline.h>
 #include <readline/history.h>
 
-#include <fcntl.h>//open
+#include <fcntl.h>
 #include <unistd.h>
 #include <sys/wait.h>
-#include <string.h>//strerror
+#include <string.h>
 
 #include "../main/minishell.h"
 #include "../lexer/token.h"

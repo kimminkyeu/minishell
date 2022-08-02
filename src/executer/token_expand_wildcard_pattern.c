@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 21:11:13 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 15:23:09 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 15:43:47 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	set_path_and_run_stat(struct dirent *file, char *path, struct stat *buf)
 {
-	t_string		*path_joined;
+	t_string	*path_joined;
 
 	path_joined = new_string(64);
 	path_joined->f_append(path_joined, path);

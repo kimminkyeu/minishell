@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 17:35:53 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/08/01 21:22:40 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 15:09:38 by minkyeki         ###   ########.fr       */
 /*   Updated: 2022/08/01 17:08:03 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
@@ -99,8 +99,8 @@ void	child_process(int *pipe_fd, t_tree *node, char **cmd_argv, \
 		dup2(config->stdout_backup, pipe_fd[WRITE]);
 	tmp_fd = pipe_fd[READ];
 	status = open_redirection(pipe_fd, node->redirection, config);
-		if (status != SUCCESS)
-			exit(status);
+	if (status != SUCCESS)
+		exit(status);
 	if (tmp_fd != pipe_fd[READ])
 		dup2(pipe_fd[READ], STDIN_FILENO);
 	dup2(pipe_fd[WRITE], STDOUT_FILENO);

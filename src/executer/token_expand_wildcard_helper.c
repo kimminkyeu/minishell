@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/01 21:10:00 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 21:10:58 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 15:15:58 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,8 @@ void	set_pattern(t_token *tok, t_pattern *pattern, t_shell_config *config)
 	t_iterator	iter;
 
 	init_iterator(&iter, tok->str->text);
-	pattern->path->f_append(pattern->path, get_environ_value("PWD", *config->envp));
+	pattern->path->f_append(pattern->path, \
+			get_environ_value("PWD", *config->envp));
 	pattern->path->f_push_back(pattern->path, '/');
 	set_pattern_path(tok, pattern, &iter);
 	set_pattern_prefix_suffix_remainder(pattern, &iter);

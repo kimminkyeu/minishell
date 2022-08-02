@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/29 16:20:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 14:49:24 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/02 15:24:15 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,9 @@
 #include "minishell.h"
 #include "heredoc.h"
 #include "../lexer/token.h"
+
+#define PIPE_ERROR		(1)
+#define FORK_ERROR		(-1)
 
 #define CHILD (0)
 #define NO_STOP_OR_EXIT_CHILD (0)
@@ -75,29 +78,45 @@ static int	parent_process(int *pipefd, pid_t pid, t_token *tok)
 	}
 }
 
+static void	child_process(int *pipefd, t_token *tok)
+{
+	char	*line;
+
+	close(pipefd[READ]);
+	while (true)
+	{
+		line = readline_prompt_heredoc();
+		if (is_limiter(line, tok->str->text) == true)
+			exit(EXIT_SUCCESS);
+		write(pipefd[WRITE], line, ft_strlen(line));
+		write(pipefd[WRITE], "\n", 2);
+		free(line);
+	}
+}
+
 static int	open_heredoc(t_token *tok)
 {
 	int		pipefd[2];
 	pid_t	pid;
-	char	*line;
+	int		status;
 
-	pipe(pipefd);
-	pid = fork();
-	if (pid == CHILD)
+	status = SUCCESS;
+	if (pipe(pipefd) == PIPE_ERROR)
 	{
-		close(pipefd[READ]);
-		while (true)
-		{
-			line = readline_prompt_heredoc();
-			if (is_limiter(line, tok->str->text) == true)
-				exit(EXIT_SUCCESS);
-			write(pipefd[WRITE], line, ft_strlen(line));
-			write(pipefd[WRITE], "\n", 2);
-			free(line);
-		}
+		perror("pipe()");
+		return (ERROR);
 	}
+	pid = fork();
+	if (pid == FORK_ERROR)
+	{
+		perror("fork()");
+		return (ERROR);
+	}
+	if (pid == CHILD)
+		child_process(pipefd, tok);
 	else
-		return (parent_process(pipefd, pid, tok));
+		status = parent_process(pipefd, pid, tok);
+	return (status);
 }
 
 int	set_heredoc(t_list *tokens)

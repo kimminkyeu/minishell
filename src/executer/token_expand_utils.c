@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 19:20:29 by han-yeseul        #+#    #+#             */
-/*   Updated: 2022/08/02 18:04:28 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/02 19:17:25 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,19 @@ char	**get_cmd_argv(t_list *token)
 	return (arglist);
 }
 
-/* NOTE : if g_is_sig_interupt == true, signal: 2 + 128 */
+void	expand_question_mark(t_string *str, t_iterator *iter, \
+			t_shell_config *config)
+{
+	if (g_is_sig_interupt == true)
+	{
+		str->f_append(str, "1");
+		g_is_sig_interupt = false;
+	}
+	else
+		str->f_append(str, ft_itoa(WEXITSTATUS(config->last_cmd_wstatus)));
+	iter->f_next(iter);
+}
+
 void	expand_dollar_sign(t_string *str, t_iterator *iter, \
 			bool *is_dollar_expanded, t_shell_config *config)
 {
@@ -55,16 +67,7 @@ void	expand_dollar_sign(t_string *str, t_iterator *iter, \
 
 	*is_dollar_expanded = true;
 	if (iter->f_peek(iter) == '?')
-	{
-		if (g_is_sig_interupt == true)
-		{
-			str->f_append(str, "1");
-			g_is_sig_interupt = false;
-		}
-		else
-			str->f_append(str, ft_itoa(WEXITSTATUS(config->last_cmd_wstatus)));
-		iter->f_next(iter);
-	}
+		expand_question_mark(str, iter, config);
 	else
 	{
 		start = iter->curpos;

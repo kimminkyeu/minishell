@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/29 16:20:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 13:29:01 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 14:13:02 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 #include "../lexer/token.h"
 
 #define CHILD (0)
+#define NO_STOP_OR_EXIT_CHILD (0)
 
 extern int	g_is_sig_interupt;
 
@@ -47,7 +48,7 @@ void	expand_token(t_token *tok)
 	tok->str = expanded_str;
 }
 
-void	open_heredoc(t_token *tok)
+int	open_heredoc(t_token *tok)
 {
 	int		pipefd[2];
 	pid_t	pid;
@@ -61,21 +62,12 @@ void	open_heredoc(t_token *tok)
 		while (true)
 		{
 			line = readline_prompt_heredoc();
-			/** line = readline("> "); */
 			if (is_limiter(line, tok->str->text) == true)
 				exit(SUCCESS);
 			write(pipefd[WRITE], line, ft_strlen(line));
 			write(pipefd[WRITE], "\n", 2);
 			free(line);
-
-
-			/** if (g_is_sig_interupt == true) */
-			/** { */
-			/**     [> printf("Exit\n"); <] */
-			/**     exit(SUCCESS); */
-			/** } */
 		}
-		/** g_is_sig_interupt = false; */
 		exit(10);
 	}
 	else
@@ -85,39 +77,27 @@ void	open_heredoc(t_token *tok)
 		while (true)
 		{
 			int ret = waitpid(pid, &w_status, WNOHANG);
-			if (ret == 0)
+			if (ret == NO_STOP_OR_EXIT_CHILD)
 			{
-				if (WEXITSTATUS(w_status) == 10 || g_is_sig_interupt == true)
+				if (g_is_sig_interupt == true)
 				{
+					g_is_sig_interupt = false;
 					kill(pid, SIGTERM);
-					break ;
+					return (ERROR);
 				}
+				else
+					continue ;				
 			}
 			else
-				return ;
+				break ;
 		}
-			/** perror("wait fail"); */
-
-		/** g_is_sig_interupt = false; */
-		/**  */
-
-		/** printf("g_is_sig_interupt in parent[%d]\n", g_is_sig_interupt); */
-
-		/** printf("parent waiting...\n"); */
-		/** while (g_is_sig_interupt == false) */
-		/** { */
-			/** if (g_is_sig_interupt == true) */
-				/** kill(pid, SIGTERM); */
-			/** printf("heredoc_sig_catched\n"); */
-			/** g_is_sig_interupt = false; */
-			/** return ; */
-		/** } */
 	}
 	close(pipefd[WRITE]);
 	tok->heredoc_fd = pipefd[READ];
+	return (SUCCESS);
 }
 
-void	set_heredoc(t_list *tokens)
+int	set_heredoc(t_list *tokens)
 {
 	t_list	*cur;
 	t_token	*tok;
@@ -131,8 +111,10 @@ void	set_heredoc(t_list *tokens)
 			cur = cur->next;
 			tok = cur->content;
 			expand_token(tok);
-			open_heredoc(tok);
+			if (open_heredoc(tok) == ERROR)
+				return (ERROR);
 		}
 		cur = cur->next;
 	}
+	return (SUCCESS);
 }

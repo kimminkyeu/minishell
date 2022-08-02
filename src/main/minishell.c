@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 22:55:45 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 14:08:42 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,8 @@ int	run_shell(char *line, t_shell_config *config)
 	tokens = tokenize(line);
 	if (tokens == NULL)
 		return (CMD_KEEP_RUNNING);
-	set_heredoc(tokens);
+	if (set_heredoc(tokens) == ERROR)
+		return (CMD_KEEP_RUNNING);
 	syntax_tree = parse(tokens);
 	if (syntax_tree == NULL)
 	{

@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 17:30:26 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 17:41:19 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/02 10:59:32 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 ** 2) cast into unsigned char
 */
 
-static bool	get_status(char *str, unsigned char *status)
+static bool	get_user_status(char *str, unsigned char *status)
 {
 	int					neg;
 	unsigned long long	num;
@@ -58,8 +58,6 @@ static bool	get_status(char *str, unsigned char *status)
 	return (false);
 }
 
-# include <stdio.h>
-
 int	exec_exit(char **arglist, char **our_envp, t_shell_config *config)
 {
 	unsigned char	status;
@@ -68,7 +66,7 @@ int	exec_exit(char **arglist, char **our_envp, t_shell_config *config)
 	ft_putstr_fd("exit\n", STDOUT_FILENO);
 	if (arglist[1] == NULL)
 		status = config->last_cmd_wstatus;
-	else if (get_status(arglist[1], &status) == false)
+	else if (get_user_status(arglist[1], &status) == false)
 	{
 		status = 255;
 		ft_putstr_fd("lesh: exit: ", STDERR_FILENO);

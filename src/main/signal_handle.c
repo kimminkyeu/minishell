@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/28 01:57:07 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 23:02:45 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 13:13:33 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,12 @@ void	sig_ctrl_c(int signal)
 	pid = waitpid(-1, NULL, WNOHANG);
 	if (signal == SIGINT)
 	{
+		g_is_sig_interupt = true;
 		if (pid == -1)
 		{
-			g_is_sig_interupt = true;
+			/** TODO : Delete here */
+			/** printf("g_is_sigint : %d\n", g_is_sig_interupt); */
+
 			rl_replace_line("", 1);
 			ft_putstr_fd("\n", STDOUT_FILENO);
 			rl_on_new_line();
@@ -91,6 +94,8 @@ void	wait_every_pid(t_shell_config *config)
 			cur = config->pid_list;
 			while (cur != NULL)
 			{
+				/** NOTE : Remove here */
+				/** printf("killing child processes ...\n"); */
 				cur_pid = *((pid_t *)cur->content);
 				kill(cur_pid, SIGTERM);
 				cur = cur->next;

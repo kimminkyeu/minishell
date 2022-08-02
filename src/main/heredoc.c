@@ -6,7 +6,7 @@
 /*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/29 16:20:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/01 23:12:22 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/02 13:29:01 by minkyeki         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,16 +61,59 @@ void	open_heredoc(t_token *tok)
 		while (true)
 		{
 			line = readline_prompt_heredoc();
+			/** line = readline("> "); */
 			if (is_limiter(line, tok->str->text) == true)
 				exit(SUCCESS);
 			write(pipefd[WRITE], line, ft_strlen(line));
 			write(pipefd[WRITE], "\n", 2);
 			free(line);
+
+
+			/** if (g_is_sig_interupt == true) */
+			/** { */
+			/**     [> printf("Exit\n"); <] */
+			/**     exit(SUCCESS); */
+			/** } */
 		}
+		/** g_is_sig_interupt = false; */
+		exit(10);
+	}
+	else
+	{
+		int w_status;	
+
+		while (true)
+		{
+			int ret = waitpid(pid, &w_status, WNOHANG);
+			if (ret == 0)
+			{
+				if (WEXITSTATUS(w_status) == 10 || g_is_sig_interupt == true)
+				{
+					kill(pid, SIGTERM);
+					break ;
+				}
+			}
+			else
+				return ;
+		}
+			/** perror("wait fail"); */
+
+		/** g_is_sig_interupt = false; */
+		/**  */
+
+		/** printf("g_is_sig_interupt in parent[%d]\n", g_is_sig_interupt); */
+
+		/** printf("parent waiting...\n"); */
+		/** while (g_is_sig_interupt == false) */
+		/** { */
+			/** if (g_is_sig_interupt == true) */
+				/** kill(pid, SIGTERM); */
+			/** printf("heredoc_sig_catched\n"); */
+			/** g_is_sig_interupt = false; */
+			/** return ; */
+		/** } */
 	}
 	close(pipefd[WRITE]);
-	if (wait(NULL) == -1)
-		perror("wait fail");
 	tok->heredoc_fd = pipefd[READ];
 }
 

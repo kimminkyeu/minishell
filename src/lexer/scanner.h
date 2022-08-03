@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   scanner.h                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42.fr>          +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 13:04:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/27 15:16:39 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/03 11:08:11 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ t_list	*create_initial_tokens(char *line);
 bool	is_last_token_meta(t_list *token_list);
 bool	is_bracket_unclosed(t_token *tok_1);
 bool	is_meta_token_overlap(t_list *token_list);
+bool	is_invalid_token_type(t_list *token_list);
 
 /* Wrapper function of iterator. */
 int		scanner_has_next(t_scanner *scan);
@@ -46,7 +47,7 @@ void	scanner_skip_white_space(t_scanner *scan);
 bool	is_meta_token_type(t_token_type type);
 bool	is_meta_char(char c);
 void	get_pipe(t_token *tok, t_scanner *scan);
-void	get_double_ampersand(t_token *tok, t_scanner *scan);
+void	get_ampersand(t_token *tok, t_scanner *scan);
 void	get_redirection(t_token *tok, t_scanner *scan);
 void	get_double_quote(t_token *tok, t_scanner *scan);
 void	get_single_quote(t_token *tok, t_scanner *scan);

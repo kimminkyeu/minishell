@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   scanner_helper2.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: minkyeki <minkyeki@student.42seoul.kr>     +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/02 14:36:40 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 14:42:22 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/03 11:09:07 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,7 @@ bool	is_bracket_unclosed(t_token *tok_1)
 bool	is_meta_token_type(t_token_type type)
 {
 	if (type != E_TYPE_PIPE && type != E_TYPE_DOUBLE_PIPE && \
-			type != E_TYPE_DOUBLE_AMPERSAND)
+			type != E_TYPE_DOUBLE_AMPERSAND && type != E_TYPE_AMPERSAND)
 		return (false);
 	else
 		return (true);

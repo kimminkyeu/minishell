@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   token.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: han-yeseul <han-yeseul@student.42.fr>      +#+  +:+       +#+        */
+/*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/13 15:39:24 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/07/29 16:45:28 by minkyeki         ###   ########.fr       */
+/*   Updated: 2022/08/03 10:45:00 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef enum e_token_type {
 	E_TYPE_DEFAULT,
 	E_TYPE_REDIRECT,
 	E_TYPE_REDIR_ARG_HEREDOC_QUOTED,
+	E_TYPE_AMPERSAND
 }	t_token_type;
 
 typedef struct s_token	t_token;

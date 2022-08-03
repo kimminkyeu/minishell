@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/12 10:02:06 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 14:19:59 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/03 11:10:55 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ int	g_is_sig_interupt = false;
 /* --------------------------------------------------* 
  * |	@ Helper functions for visualization.        |
  * ---------------------------------------------------
- * |     (1) Use "print_token(tokens);"              |
+ * |     (1) Use "print_tokens(tokens);"              |
  * |     (2) Use "print_tree(syntax_tree);"          |
  * --------------------------------------------------*/
 

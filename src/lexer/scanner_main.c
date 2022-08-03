@@ -6,7 +6,7 @@
 /*   By: yehan <yehan@student.42seoul.kr>           +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/07/25 18:06:35 by minkyeki          #+#    #+#             */
-/*   Updated: 2022/08/02 17:52:22 by yehan            ###   ########seoul.kr  */
+/*   Updated: 2022/08/03 11:15:21 by yehan            ###   ########seoul.kr  */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,13 @@ t_list	*tokenize(char *line)
 
 int	is_syntax_error(t_list *token_list)
 {
-	if (token_list == NULL)
-		return (false);
-	if (is_meta_token_overlap(token_list))
-		return (true);
-	else if (is_last_token_meta(token_list))
-		return (true);
+	if (token_list != NULL)
+	{
+		if (is_meta_token_overlap(token_list) == true \
+		|| is_last_token_meta(token_list) == true \
+		|| is_invalid_token_type(token_list) == true)
+			return (true);
+	}
 	return (false);
 }
 
@@ -42,7 +43,7 @@ static void	get_token(t_token *token, t_scanner *scanner, char c)
 	if (c == '|')
 		get_pipe(token, scanner);
 	else if (c == '&')
-		get_double_ampersand(token, scanner);
+		get_ampersand(token, scanner);
 	else if (c == '<' || c == '>')
 		get_redirection(token, scanner);
 	else if (c == '(')
